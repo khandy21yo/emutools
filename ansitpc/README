@@ -1,0 +1,27 @@
+ansitpc is a program that will create a tpc tape image file
+when given a set of filenames on the command line.
+
+The default output file name is "ansi.tpc", but it can be
+chaged using the "-o <filename>" option.
+
+To compile on Linux, use the following
+
+	cc -o ansitpc -lpopt ansitpc.c
+
+This is very much a work in progress, and I haven't tested it
+extensively, so it is likely to extremely buggy.
+
+
+Make sure all of the file names written to the tpc file are
+in 6.3 form (six characters, a dot, and three characters).
+Also, use unix2dos on those files as necessary for the target
+operating system.
+
+VMS currently will only read the first file on the tape.
+It also gets snitty if the file name does not contain a period.
+
+RSTS/E reads all the files on the tape.
+
+Kevin Handy
+--	khandy21yo
+--	@ gmail.com
