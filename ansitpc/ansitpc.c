@@ -11,6 +11,9 @@
 // manual, Appendix A.
 // DEC-11-ORPMA-B-D_RSTS_E_Programming_Manual_V06B-02_Nov76.pdf
 //
+// \Note Ref. American National Standard, Magnetic Tape Labels and
+// File Structure for Information Interchange, ANSI X3.27-1978
+//
 // Compile via
 //
 //	cc -o ansitpc ansitpc.c -lpopt
@@ -23,11 +26,23 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include <libgen.h>		/* XPG4.2 basename() */
 
 //
 // Prototypes
 //
 void *memcpyuc(char *dest, const char*source, int count);
+
+//
+// Global Data
+//
+//                                 123456789A123456789B123456789C123456789D123456789E123456789F123456789G123456789H
+static const char* vol1_default = "VOL1                                 D%%B4431200200                            3";
+static const char* hdr1_default = "HDR1                       00010001000100 00000 00000 000000DECRSTS/E           ";
+static const char* hdr2_default = "HDR2F0051200512                     M             00                            ";
+static char vol1[81];	/* Current VOL1 label */
+static char hdr1[81];	/* Current HDR1 label */
+static char hdr2[81];	/* Current HDR2 label */
 
 //! \brief Usage message
 //
@@ -43,7 +58,7 @@ void usage(poptContext optCon, int exitcode, char *error, char *addl)
 
 //! \brief Main Function
 //
-// Command lineprocessing
+// Command line processing
 //
 int main(int argc, const char *argv[])
 {
@@ -56,6 +71,7 @@ int main(int argc, const char *argv[])
 	const char *portname;
 	poptContext optCon;	/* context for parsing command-line options */
 	int fd;			/* tpc output channel */
+	int seqNo = 0;
 
 	struct poptOption optionsTable[] =
 	{
@@ -122,7 +138,8 @@ int main(int argc, const char *argv[])
 	while (portname = poptGetArg(optCon))
 	{
 		printf("Processing %s\n", portname);
-		write_file(fd, portname, label);
+		seqNo++;
+		write_file(fd, portname, seqNo);
 	}
 
 	//
@@ -138,17 +155,17 @@ int main(int argc, const char *argv[])
 	exit(0);
 }
 
-//! \brief Write vol1 header to tape
+//! \brief Write ANSI VOL1 header to tape
 //
-// ANSI Tape format
+// ANSI Tape Format
 //
-//	[bot] [vol1] [eof] 
-//	{ [hdr1] [hdr2] [eof] { [data] } [eof] [eof1][eof2] [rof]}
-//	[eof] [eof]
+//	BOT [VOL1]
+//	{ [HDR1] [HDR2] TM { [data] } TM [EOF1] [EOF2] TM }
+//	TM
 //
 
 //
-// [vol]
+// [VOL1]
 //	1-3	Label Identifier		"VOL"
 //	4	Label Number			"1"
 //	5-10	Volume identifier		1-6 alphanumeric
@@ -157,78 +174,86 @@ int main(int argc, const char *argv[])
 //	38-51	Owner Identifier		Used for volumeprotection
 //		D%%B4431JJJGGG			[jjj,ggg] = [proj,prog]
 //						D%% = Digital
-//						N = pdp11
+//						N = PDP-11
 //						4431 = prot code (unused)
 //	52-79	Reserved
-//	80	Label Standard Version		"1"
+//	80	Label-Standard Version		"3"
 //
 int write_vol1(int fd, const char *label)
 {
-	const char* vol1_default = "VOL1                                 D%B4431001002                             3";
-	char buffer[80];	/* Working buffer */
+	int  n;
 
 	//
 	// Fill in values
 	//
-	memcpy(buffer, vol1_default, 80);
-	memcpyuc(buffer + 4, label, strlen(label));
+	memcpy(vol1, vol1_default, 80);
+	n = strlen(label);
+	memcpyuc(vol1 + 4, label, n > 6 ? 6 : n);
 
 	//
 	// Write block
 	//
-	write_tpcblock(fd, buffer, 80);
+	write_tpcblock(fd, vol1, 80);
 }
 
 //
-// [hdr1]
+// [HDR1]
 //
 //	1-3	Label Identifier		"HDR"
 //	4	Label Number			"1"
 //	5-21	File Identifier			alphanumeric + special
 //	22-27	File Identifier			volume ID from header
-//	28-31	File Section Number		"0001"
-//	32-35	File Sequence Number		"0001"
+//	28-31	File Section Number		"0001" <no segmented files>
+//	32-35	File Sequence Number		nnnn numeric seq. no., from 1
 //	36-39	Generation Number		"00001"
 //	40-41	Generation Version		"00"
 //	42-47	Creation date			<space>YYDDD
-//						" 000000" if none
+//						" 00000" if none
 //	48-53	Expiration Date			<space>YYDDD
-//						" 00000: if none
+//						" 00000" if none
 //	54	Accessibility			" "
 //	55-60	BlockCount			"000000"
 //	61-73	System Code			"DECRSTS/E"
-//	74-80	Reserved
+//	74-80	Reserved                        "       "
 //
-int write_hdr1(int fd, const char* filename, const char *label)
+int write_hdr1(int fd, const char* filename, int seqNo)
 {
-	const char* hdr1_default = "HDR1                       00010001000100 00000 00000 000000DECRSTS/E           ";
-	char buffer[80];	/* Working buffer */
+	char fileId[18];	/* Working buffer */
+	char fileSeqNo[5];	/* Working buffer */
+	char* baseName;
+	int  n;
 
 	//
 	// Fill in values
 	//
-	memcpy(buffer, hdr1_default, 80);
-	memcpyuc(buffer + 4, filename, strlen(filename));
-	memcpyuc(buffer + 21, label, strlen(label));
+	memcpy(hdr1, hdr1_default, 80);
+	n = strlen(filename);
+	n = n > 17 ? 17 : n;
+	memcpyuc(fileId, filename, n);
+	fileId[n] = '\0';
+	baseName = basename(fileId);
+	memcpy(hdr1 + 4, baseName, strlen(baseName));
+	memcpy(hdr1 + 21, vol1 + 4, 6);
+	seqNo = seqNo > 9999 ? 9999 : seqNo;
+	sprintf(fileSeqNo, "%04d", seqNo);
+	memcpy(hdr1 + 31, fileSeqNo, 4);
 
 	//
 	// Write block
 	//
-	write_tpcblock(fd, buffer, 80);
+	write_tpcblock(fd, hdr1, 80);
 }
 
-
-
 //
-// [hdr2]
+// [HDR2]
 //
 //	1-3	Label Identifier		"HDR"
 //	4	Label Number			"2"
 //	5	Record Format			"U" is default
 //						"F" = fixed
-//						"D"=variable
-//						"S"= spanned
-//						"U"= undefined
+//						"D" = variable
+//						"S" = spanned
+//						"U" = undefined
 //	6-10	Block Length			512 is default
 //						(fiesize)
 //	11-15	Record Length			(clustersize)
@@ -243,109 +268,61 @@ int write_hdr1(int fd, const char* filename, const char *label)
 //	51-52	Buffer Offset			"00"
 //	53-80	Reserved
 //
-int write_hdr2(int fd, const char* filename)
+int write_hdr2(int fd)
 {
-	const char* hdr2_default = "HDR2F0051200512                     M             00                            ";
-	char buffer[80];	/* Working buffer */
 
 	//
 	// Fill in values
 	//
-	memcpy(buffer, hdr2_default, 80);
+	memcpy(hdr2, hdr2_default, 80);
 
 	//
 	// Write block
 	//
-	write_tpcblock(fd, buffer, 80);
+	write_tpcblock(fd, hdr2, 80);
+}
+
+//
+// [EOF1] same format as [HDR1], except
+//
+//	55-60	BlockCount			No. of data blocks
+//
+int write_eof1(int fd, int blockcount)
+{
+	char blockCount[7];
+
+	//
+	// Fill in values
+	//
+	memcpy(hdr1, "EOF", 3);
+	blockcount = blockcount > 999999 ? 999999 : blockcount;
+	sprintf(blockCount, "%06d", blockcount);
+	memcpy(hdr1 + 54, blockCount, 6);
+
+	//
+	// Write block
+	//
+	write_tpcblock(fd, hdr1, 80);
 }
 
 
 
 //
-// [eof1] (same format as [hdr1]
+// [EOF2] same format as [HDR2]
 //
-//	1-3	Label Identifier		"EOF"
-//	4	Label Number			"1"
-//	5-21	File Identifier			alphanumeric + special
-//	22-27	File Identifier			volume ID from header
-//	28-31	File Section Number		"0001"
-//	32-35	File Sequence Number		"0001"
-//	36-39	Generation Number		"00001"
-//	40-41	Generation Version		"00"
-//	42-47	Creation date			<space>YYDDD
-//						" 000000" if none
-//	48-53	Expiration Date			<space>YYDDD
-//						" 00000: if none
-//	54	Accessibility			" "
-//	55-60	BlockCount			"000000"
-//	61-73	System Code			"DECRSTS/E"
-//	74-80	Reserved
-//
-int write_eof1(int fd, const char* filename, int blockcount, const char *label)
+int write_eof2(int fd)
 {
-	const char* eof1_default = "EOF1                       00010001000100 00000 00000 000000DECRSTS/E           ";
-	char buffer[80];	/* Working buffer */
-	char strbuf[10];
 
 	//
 	// Fill in values
 	//
-	memcpy(buffer, eof1_default, 80);
-	memcpyuc(buffer + 4, filename, strlen(filename));
-	memcpyuc(buffer + 21, label, strlen(label));
-	sprintf(strbuf, "%06d", blockcount);
-	memcpy(buffer + 54, strbuf, 6);
+	memcpy(hdr2, "EOF", 3);
 
 	//
 	// Write block
 	//
-	write_tpcblock(fd, buffer, 80);
+	write_tpcblock(fd, hdr2, 80);
 }
-
-
-
-//
-// [eof2] same format as hdr2
-//
-//	1-3	Label Identifier		"EOF"
-//	4	Label Number			"2"
-//	5	Record Format			"U" is default
-//						"F" = fixed
-//						"D"=variable
-//						"S"= spanned
-//						"U"= undefined
-//	6-10	Block Length			512 is default
-//						(fiesize)
-//	11-15	Record Length			(clustersize)
-//	16-50	System dependent		16-36 = spaces
-//						37="A" record contains Fortran
-//						  control characters
-//						37=space,lf precedes and cr
-//						  follows each record
-//						37="M" record contains all
-//						  formcontrol characters.
-//						  (default)
-//	51-52	Buffer Offset			"00"
-//	53-80	Reserved
-//
-int write_eof2(int fd, const char* filename)
-{
-	const char* eof2_default = "EOF2F0051200512                     M             00                            ";
-	char buffer[80];	/* Working buffer */
-
-	//
-	// Fill in values
-	//
-	memcpy(buffer, eof2_default, 80);
-
-	//
-	// Write block
-	//
-	write_tpcblock(fd, buffer, 80);
-}
-
-
-
 
 //! Write block of data to tpc file
 //
@@ -377,7 +354,7 @@ int write_tpcblock(int fd, const char *buffer, unsigned int size)
 
 //! Write tape mark to tpc file
 //
-// Outputs one block of code to the tpc tape image file
+// Outputs a tape mark to the tpc tape image file
 //
 int write_tpcmark(int fd)
 {
@@ -393,7 +370,7 @@ int write_tpcmark(int fd)
 	write(fd, blocksize, 4);
 }
 
-int write_file(int fd, const char* filename,const char *label)
+int write_file(int fd, const char* filename, int seqNo)
 {
 	int fif;
 	const int recordsize = 512;
@@ -411,8 +388,8 @@ int write_file(int fd, const char* filename,const char *label)
 	//
 	// Headers
 	//
-	write_hdr1(fd, filename, label);
-	write_hdr2(fd, filename);
+	write_hdr1(fd, filename, seqNo);
+	write_hdr2(fd);
 	write_tpcmark(fd);
 
 	//
@@ -431,8 +408,8 @@ int write_file(int fd, const char* filename,const char *label)
 	//
 	// eof marks
 	//
-	write_eof1(fd, filename, blockcount, label);
-	write_eof2(fd, filename);
+	write_eof1(fd, blockcount);
+	write_eof2(fd);
 	write_tpcmark(fd);
 
 	close(fif);
