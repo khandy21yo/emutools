@@ -17,11 +17,6 @@ in 6.3 form (six characters, a dot, and three characters).
 Also, use unix2dos on those files as necessary for the target
 operating system.
 
-VMS currently will only read the first file on the tape.
-It also gets snitty if the file name does not contain a period.
-
-RSTS/E reads all the files on the tape.
-
 Kevin Handy
 --	khandy21yo
 --	@ gmail.com
