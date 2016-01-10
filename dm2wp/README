@@ -1,0 +1,191 @@
+The program has been modified by David Gesswein to more accuratly convert
+the documents.  It also can generate either wordperfect format, or a 
+modified wordperfect format which word likes.  The word conversion seems
+to work a little better right now.  Some known issues:
+
+Rulers don't quite work right, not all code are supported, the default
+ruler is different (WPS may not have a true default, I think you can
+set options on the print menu).  Also how rulers apply between headers
+and the body isn't correct.
+
+Right tabs at the end of line confuse word/wordperfect, they overlay
+two lines of text in some cases.  WPS wraps the text to the next line.
+
+These seem not too hard to clean up manually.  If you ask nice and provide
+an example where it is too hard to fix by hand I might try to change the
+program again.
+
+To compile under Linux cc -o dmproces dmproces.c -lm
+
+DOS compiles will need the sizes of some arrays reduced to fit in the
+segmented memory model.   This will prevent some documents from converting
+properly.
+
+At the top of dmproces.c are the following defines, if you want to convert
+to wordperfect change #define WORD to #undef WORD.  To try to compile
+under dos change the #define UNIX to #undef (I haven't tried that in a while,
+it probably won't work without some changes).  To print debugging information
+on the convertion define DEBUG and to dump the file in raw ascii text define
+DUMP.
+
+#define UNIX
+#define WORD
+#undef DEBUG
+#undef  DUMP
+
+This version supports RX01 images in the same format used by PDP-8 emulators,
+and the version my RX01 dump program on http://highgate.comm.sfu.ca/pdp8/
+produces.  
+
+For RX50 disks I used PUTR under DOS with the following options to generate 
+the images.  PUTR is available from ftp://ftp.dbit.com/pub/putr/.
+
+C:\PUTR>putr
+PUTR V1.24  Copyright (C) 1995, 1996, 1997 by John Wilson <wilson@dbit.com>
+All rights reserved
+
+(C:\PUTR)>format gb13 /rx50 /foreign
+Are you sure (Y/N)? y
+Create (B)lock or (S)ector image file? [S]
+(C:\PUTR)>mount b: /foreign
+(C:\PUTR)>mount z: gb13.dsk /foreign
+(C:\PUTR)>copy/device b: z:
+(C:\PUTR)>quit
+
+to run 
+dmproces gb13.dsk > results
+
+Results gives some information on the conversion process, look at with your
+favorate editor. Sorry, it probably isn't too obvious what some of the
+messages it prints really mean.  Many are prints of where it wasn't
+obvious what should be done with some of the codes in the file, look
+more closely at those files to see how well they converted.
+
+It will create dir.txt which is the directory of the disk, and wp###.wp
+which are the documents.
+
+If you need a DOS version email me and I will see if I can get it to compile
+again.
+
+David Gesswein
+djg@drs-esg.com (or djg@pdp8.net)
+
+Original readme from http://srv.net/~kth/index.html where I got the source
+for this program.
+
+DMPROCESS ET AL
+===============
+
+This set of programs are designed to convert Decmate II(tm)
+DecWord(tm) document disks into WordPerfect(tm) 5.0 format.
+The programs are supplies as-is, with no warrenty.
+
+To do a conversion, you will need the following hardware
+and software:
+
+        IBM PC or Compatible (XT or greater)
+        
+        Two floppy drives.
+                Drive "A" may be any high density drive,
+                either 3.5" or 5.25".
+                
+                Drive "B" must be a 5.25" floppy, to put
+                your Decmate floppies into.
+
+        A bootable floppy containing the following:
+                RAINDISK.SYS
+                CONFIG.SYS set up properly for RAINDISK
+                RAWREAD.EXE
+
+        The program DMPROCES.EXE
+
+        Patience, perseverence, and lots and lots of luck.
+
+
+Step 1. Creating Disk to Read RX50's
+====================================
+
+        Create a bootable floppy disk containing RAINDISK.SYS,
+        CONFIG.SYS, and RAWREAD.EXE. You will want to use a
+        high density floppy so that you can copy several disk
+        images onto it.
+
+        CONFIG.SYS should contain the line
+
+                device=raindos/d:1/f:0
+
+        You could set this up on your hard disk, if you are
+        feeling very trusting that the drivers are not going
+        to come back and bite you.
+
+        If you have d different configuration than the two
+        floppy version I'm describing here, you may need to
+        modify RAWREAD.C (so I'm leaving you on your own there).
+
+
+Step 2: Read an RX50 into a disk image
+======================================
+
+        Boot up using the floppy you created in step 1. During
+        the boot, RAINDOS should tell you what drive letter it
+        is assigning to the Rainbow Drive (C,D,E,...). It will
+        not be A or B. Remember this letter.
+
+        Put you Decmate II floppy in the B drive, and run RAWREAD.
+        
+        It will ask for the name of a disk file to create. For
+        example, you may use DOC.DSK.
+
+        Then it will ask for the drive to read, and give it the
+        letter you got from RAINDOS.
+
+        It will then (hopefully), read the floppy disk into an
+        image file (ie. DOC.DSK), which you will carry to the
+        next step.
+
+Step 3: Generating WordPerfect(tm) files from Disk Image
+========================================================
+
+        For this step, you will need DMPROCES.EXE.
+
+        Reboot the computer so that you have access to the
+        hard disk.
+        
+        Create a subdirectory for one floppys converted files.
+        DMPROCES's naming scheme (if you can call it that) will
+        overwrite one run with another's files otherwise.
+
+        Run DMPROCES giving it the name of the Disk image file
+
+                DMPROCES a:DOC.DSK
+
+        It will now generate a number of files in the current
+        subdirectory with names such as
+
+                WP0001.WP
+                WP0002.WP
+
+        These files are WordPerfect 5.0 format files, and you
+        can now scan through them at your leasure. Expect to
+        do a lot of editing to get the formatting correct (it
+        tries but DecWord and WordPerfect are not very good
+        matches).
+
+
+AUTHOR:
+=======
+
+        Kevin Handy (kth@srv.net)
+        Software Solutions, Inc.
+        Idaho falls, Idaho
+
+        I wrote DMPROCES a long time ago, when Decmates still
+        walked the Earth. The only changes I have made to the
+        program recently is to get it to compile with the current
+        version of Borland C without too many errors. The code
+        is very old, and some bit rot may have set in. Feel
+        free to fix any bugs, and add any enhancements to it,
+        but please send me a copy of your changes if they would
+        be of any interest to others.
+
+
