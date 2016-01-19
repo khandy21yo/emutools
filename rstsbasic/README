@@ -1,0 +1,29 @@
+This directory contains assorted basic programs for RSTS/E that I
+wrote long ago.
+
+
+decom
+	This is the start of a decompiler. It ra\eads in a .BAC
+	file and creates a .BAS file. However it is incomplete.
+	It should still handle many simple programs.
+
+	decdat.bas creates a table used by the actual decompler.
+		This helps reduce the memory usage needed by the
+		progeam, since RSTS/E had limited space to start
+		with.
+	decom.bas the decompler itself. Needs work.
+
+ktoth
+	An othello game.
+
+prime
+	A prime number generator.
+
+simtap
+	Read maktape into a simh tape file inside RSTS/E.
+
+kmaze
+	A maze creating program. Similiar to 'amazin' from "101
+	Basic Computer Games". This is actually the VS version.
+
+
