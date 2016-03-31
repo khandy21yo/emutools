@@ -12,11 +12,19 @@ it's filter design.
 Usage:
 
 	rno2roff < source > dest.roff
-	troff dest.roff > dest.ps
-	nrodd dest.rod > dest.txt
+	troff -ms dest.roff > dest.ps
+	nrodd -ms dest.rod > dest.txt
 
 Currently, no options exist.
 
 Compile:
 	 c++ -g -o rno2roff rno2roff.cc 
 
+Requirements:
+	Under Debian, you need to install the groff package.
+	There is a partial install to handle man pages, but ir is
+	missing the 'ma' macros.
+
+Author
+
+	Kevin Handy

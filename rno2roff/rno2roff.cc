@@ -75,6 +75,7 @@ std::string parse_text(
 {
 	std::string result;	//!< Result string being built.
 	char ch;		//< For looking at characters.
+	int firstchar = 1;	//< Are we on the first character?
 
 	//
 	// Handle any dor commands
@@ -211,6 +212,14 @@ std::string parse_text(
 			{
 				ch =tolower(ch);
 			}
+			//
+			// Did we somehow get a dot as the first character?
+			//
+			if (firstchar != 0 && ch == '.')
+			{
+				result += "\\&";
+			}
+			firstchar = 0;
 			result += ch;
 			break;
 		}
@@ -227,7 +236,7 @@ std::string parse_text(
 		return result;
 	}
 #else
-	if (*(result.rbegin()) == '\n')
+	if (*(result.rbegin()) == '\n' || *(result.rbegin()) == ' ')
 	{
 		result.erase(result.size() - 1, 1);
 	}
@@ -246,7 +255,8 @@ enum dotopt
 	OP_COMMENT = 100,	// Comment, eat text to end of line
 	OP_EASY,		// Simple command, ends at eol or ;
 	OP_DRPPRM,		// Like simple, but drops parameters
-	OP_FOOTNOTE		// Start of a footnote
+	OP_FOOTNOTE,		// Start of a footnote
+	OP_FIGURE		// FIGURE
 };
 //! \brief Structure to handle list of RNO commands
 //!
@@ -272,10 +282,10 @@ struct rno_commands rnoc[] =
 	"S", OP_EASY, ".sp",
 	"BLANK", 0, 0,
 	"B", 0, 0,
-	"FIGURE", 0, 0,
-	"FG", 0, 0,
-	"INDENT", 0, 0,
-	"I", 0, 0,
+	"FIGURE", OP_FIGURE, 0,
+	"FG", OP_FIGURE, 0,
+	"INDENT", OP_EASY, ".HP",
+	"I", OP_EASY, ".HP",
 	"PARAGRAPH", 0, 0,
 	"P", 0, 0,
 	"CENTER", OP_DRPPRM, ".ce",
@@ -357,8 +367,8 @@ struct rno_commands rnoc[] =
 	"LIT", 0, 0,
 	"END LITERAL", 0, 0,
 	"ELI", 0, 0,
-	"LEFT MARGIN", 0, 0,
-	"LM", 0, 0,
+	"LEFT MARGIN", OP_EASY, ".po",
+	"LM", OP_EASY, ".po",
 	"RIGHT MARGIN", 0, 0,
 	"RM", 0, 0,
 	"PAPER SIZE", 0, 0,
@@ -389,6 +399,7 @@ std::string parse_dot(
 {
 	std::string result;	//!< Result string being built.
 	int cmd;		//!< Used to search for dot command
+	std::string partial;	//!< Partial result
 
 	//
 	// Skip over the dot
@@ -431,6 +442,7 @@ std::string parse_dot(
 			{
 				ptr++;
 			}
+			result += "\n";
 			return result;
 
 		//
@@ -464,6 +476,28 @@ std::string parse_dot(
 			ptr = src.size();
 			in_footnote = 1;
 			return result;
+		//
+		// FIGURE
+		//
+		case OP_FIGURE:
+			partial = "";
+
+			//
+			// Copy to eol or ;
+			//
+			while (ptr < src.size() && src[ptr] != ';')
+			{
+				partial += src[ptr++];
+			}
+			while (ptr < src.size() && 
+				(src[ptr] == ';' || src[ptr] == ' '))
+			{
+				ptr++;
+			}
+			result = std::string(".ne ") +partial +
+				"\n.sp " + partial + "\n";
+			return result;
+
 		//
 		// Unknown command
 		//
