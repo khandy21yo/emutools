@@ -33,6 +33,7 @@ static int uc_flag = 0;		//!< Upper case flag (0 = lc everything,
 				//! 1 = retain case.
 static int uc1_flag = 0;	//!< Upper case next character (^)?
 static int uc2_flag = 0;	//!< Upper case characters (\^)?
+static int in_footnote = 0;	//!< In footnote?
 
 //! \brief Main function.
 //!
@@ -81,6 +82,16 @@ std::string parse_text(
 	while (ptr < src.size() && src[ptr] == '.')
 	{
 		result += parse_dot(src, ptr);
+	}
+
+	//
+	// Footnote end?
+	//
+	if (in_footnote != 0 && src[0] == '!')
+	{
+		result += ".FE\n";
+		ptr = src.size();
+		in_footnote = 0;
 	}
 
 	//
@@ -233,7 +244,9 @@ std::string parse_text(
 enum dotopt
 {
 	OP_COMMENT = 100,	// Comment, eat text to end of line
-	OP_EASY			// Simple command, ends at eol or ;
+	OP_EASY,		// Simple command, ends at eol or ;
+	OP_DRPPRM,		// Like simple, but drops parameters
+	OP_FOOTNOTE		// Start of a footnote
 };
 //! \brief Structure to handle list of RNO commands
 //!
@@ -265,11 +278,11 @@ struct rno_commands rnoc[] =
 	"I", 0, 0,
 	"PARAGRAPH", 0, 0,
 	"P", 0, 0,
-	"CENTER", 0, 0,
-	"CENTRE", 0, 0,
-	"C", 0, 0,
-	"FOOTNOTE", 0, 0,
-	"FN", 0, 0,
+	"CENTER", OP_DRPPRM, ".ce",
+	"CENTRE", OP_DRPPRM, ".ce",
+	"C", OP_DRPPRM, ".ce",
+	"FOOTNOTE", OP_FOOTNOTE, ".FS",
+	"FN", OP_FOOTNOTE, ".FS",
 	"NOTE", OP_EASY, ".NT",
 	"NT", OP_EASY, ".NT",
 	"END NOTE", OP_EASY, ".NE",
@@ -281,10 +294,10 @@ struct rno_commands rnoc[] =
 	"END LIST", 0, 0,
 	"ELS", 0, 0,
 	"COMMENT", OP_COMMENT, ".\\\"",
-	"PAGE", 0, 0,
-	"PG", 0, 0,
-	"TEST PAGE", 0, 0,
-	"TP", 0, 0,
+	"PAGE", OP_EASY, ".bp",
+	"PG", OP_EASY, ".bp",
+	"TEST PAGE", OP_EASY, ".ne",
+	"TP", OP_EASY, ".ne",
 	"NUMBER", 0, 0,
 	"NM", 0, 0,
 	"NONUMBER", 0, 0,
@@ -420,6 +433,37 @@ std::string parse_dot(
 			}
 			return result;
 
+		//
+		//
+		// Drop parameters
+		// For those cases where we don't have any translation
+		// for the parameters.
+		//
+		case OP_DRPPRM:
+			result =  std::string(rnoc[cmd].value) + " ";
+
+			//
+			// Copy to eol or ;
+			//
+			while (ptr < src.size() && src[ptr] != ';')
+			{
+				ptr++;
+			}
+			while (ptr < src.size() && 
+				(src[ptr] == ';' || src[ptr] == ' '))
+			{
+				ptr++;
+			}
+			return result;
+
+		//
+		// Copy everything to end of line
+		//
+		case OP_FOOTNOTE:
+			result =  std::string(rnoc[cmd].value) + "\n";
+			ptr = src.size();
+			in_footnote = 1;
+			return result;
 		//
 		// Unknown command
 		//
