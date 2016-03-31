@@ -19,8 +19,11 @@
 //
 // Prototypes
 //
-std::string parse_text(const std::string &src, int &ptr);
 int rno_filter(std::istream &in);
+std::string parse_text(const std::string &src, int &ptr);
+std::string parse_dot(const std::string &src, int &ptr);
+int search_dot(const std::string &src, int &ptr);
+int dot_match(const char *match, const std::string src, int &ptr);
 
 
 //
@@ -72,6 +75,17 @@ std::string parse_text(
 	std::string result;	//!< Result string being built.
 	char ch;		//< For looking at characters.
 
+	//
+	// Handle any dor commands
+	//
+	while (ptr < src.size() && src[ptr] == '.')
+	{
+		result += parse_dot(src, ptr);
+	}
+
+	//
+	// Handle ordinary text
+	//
 	while (ptr < src.size())
 	{
 
@@ -192,10 +206,34 @@ std::string parse_text(
 
 		ptr++;
 	}
+#if 0
+	if (*(result.rbegin()) == '\n')
+	{
+		return result.substr(0, result.size() -1);
+	}
+	else
+	{
+		return result;
+	}
+#else
+	if (*(result.rbegin()) == '\n')
+	{
+		result.erase(result.size() - 1, 1);
+	}
 	return result;
+#endif
 }
 
 
+//! \brief parsing option numbers
+//!
+//! These numbers are used to handle determining what to do with
+//! the dot commands
+//!
+enum dotopt
+{
+	OP_COMMENT = 100
+};
 //! \brief Structure to handle list of RNO commands
 //!
 //! This structure lists all of the dor commands defined in the
@@ -231,8 +269,8 @@ struct rno_commands rnoc[] =
 	"C", 0, 0,
 	"FOOTNOTE", 0, 0,
 	"FN", 0, 0,
-	"NOTE text", 0, 0,
-	"NT text", 0, 0,
+	"NOTE", 0, 0,
+	"NT", 0, 0,
 	"END NOTE", 0, 0,
 	"EN", 0, 0,
 	"LIST", 0, 0,
@@ -241,7 +279,7 @@ struct rno_commands rnoc[] =
 	"LE", 0, 0,
 	"END LIST", 0, 0,
 	"ELS", 0, 0,
-	"COMMENT text", 0, 0,
+	"COMMENT", OP_COMMENT, ".\\\"",
 	"PAGE", 0, 0,
 	"PG", 0, 0,
 	"TEST PAGE", 0, 0,
@@ -250,26 +288,26 @@ struct rno_commands rnoc[] =
 	"NM", 0, 0,
 	"NONUMBER", 0, 0,
 	"NNM", 0, 0,
-	"CHAPTER text", 0, 0,
-	"CH text", 0, 0,
+	"CHAPTER", 0, 0,
+	"CH", 0, 0,
 	"NUMBER CHAPTER", 0, 0,
 	"HEADERLEVEL", 0, 0,
 	"HL", 0, 0,
-	"TITLE text", 0, 0,
-	"T text", 0, 0,
-	"FIRST TITLE text", 0, 0,
-	"FT text", 0, 0,
-	"SUBTITLE text", 0, 0,
-	"ST text", 0, 0,
-	"INDEX text", 0, 0,
-	"X text", 0, 0,
-	"DO INDEX text", 0, 0,
+	"TITLE", 0, 0,
+	"T", 0, 0,
+	"FIRST TITLE", 0, 0,
+	"FT", 0, 0,
+	"SUBTITLE", 0, 0,
+	"ST", 0, 0,
+	"INDEX", 0, 0,
+	"X", 0, 0,
+	"DO INDEX", 0, 0,
 	"DX", 0, 0,
 	"PRINT INDEX", 0, 0,
 	"PX", 0, 0,
 	"SUBPAGE", 0, 0,
 	"END SUBPAGE", 0, 0,
-	"APPENDIX text", 0, 0,
+	"APPENDIX", 0, 0,
 	"AX", 0, 0,
 	"NUMBER APPENDIX a", 0, 0,
 	"HEADER arg", 0, 0,
@@ -324,4 +362,169 @@ struct rno_commands rnoc[] =
 	"NAP", 0, 0,
 	0, 0, 0
 };
+
+//! \brief Translate dot command
+//!
+//! Converts a dot command to roff command
+//!
+//! \return filtered string.
+//!
+std::string parse_dot(
+	const std::string &src,	//!< String to convert
+	int &ptr)		//!< Pointer into string
+{
+	std::string result;	//!< Result string being built.
+	int cmd;		//!< Used to search for dot command
+
+	//
+	// Skip over the dot
+	//
+	ptr++;
+
+	//
+	// Tryto find match
+	//
+	cmd = search_dot(src, ptr);
+
+	if (cmd)
+	{
+		switch(rnoc[cmd].opcode)
+		{
+		//
+		// .COMMENT.
+		// Copy everything to end of line
+		//
+		case OP_COMMENT:
+			result =  std::string(rnoc[cmd].value) +
+				" " + src.substr(ptr)  + "\n";
+			ptr = src.size();
+			return result;
+		//
+		// Unknown command
+		//
+		default:
+			result =  std::string(".\\\" Unhandled .") +
+				rnoc[cmd].text + " " + src.substr(ptr)  + "\n";
+			ptr = src.size();
+			return result;
+		}
+	}
+	else
+	{
+	//
+	// If we cannot handle this command
+	//
+		result =  std::string(".\\\" Unknown .") + src.substr(ptr)  + "\n";
+		ptr = src.size();
+		return result;
+	}
+}
+
+//! \brief Search for dot command in ist
+//!
+//! Tries to find command in command list.
+//!
+//! \return Item number in command list.
+//!
+int search_dot(
+	const std::string &src,	//!< String to convert
+	int &ptr)		//!< Pointer into string
+{
+	int cmd;		//!< Loop to scan for a command
+
+	//
+	// Scan through possible commands
+	//
+	for (cmd = 0; rnoc[cmd].text != 0; cmd++)
+	{
+		if (dot_match(rnoc[cmd].text, src, ptr))
+		{
+			return cmd;
+		}
+	}
+
+	//
+	// Not found
+	//
+	return 0;
+}
+
+
+//! \brief try to match a dot command
+//!
+//! Try to match a simgle dot command.
+//! This is made fun because:
+//! - Case is not important.
+//! - Spaces are not important.
+//! - The src string must not continue after match.
+//! Assumes that the first character after the dot is non-space.
+//!
+//! It will adjust ptr if there was a match
+//!
+//!
+//! \return 0 for no match, 1 got match.
+//!
+int dot_match(const char *match, const std::string src, int &ptr)
+{
+	int sptr = ptr;		//!< pointer in source text
+	int mptr = 0;		//!< pointer to string being matched
+
+	while (sptr <= src.size() && match[mptr] != 0)
+	{
+		//
+		// Point to next non-space source character
+		//
+		while (sptr < src.size() && src[sptr] == ' ')
+		{
+			sptr++;
+		}
+
+		//
+		// Point to next non-space match character
+		//
+		while (match[mptr] == ' ')
+		{
+			mptr++;
+		}
+
+		//
+		// Check characters
+		//
+		if (match[mptr] != toupper(src[sptr]))
+		{
+			return 0;
+		}
+
+		sptr++;
+		mptr++;
+	}
+
+	if (match[mptr] != 0)
+	{
+		//
+		// We didn't match to end of match string
+		//
+		return 0;
+	}
+	if (sptr < src.size())
+	{
+		switch (src[sptr])
+		{
+		case ' ':
+			sptr++;
+			ptr = sptr;
+			return 1;
+		default:
+			return 0;
+		}
+	}
+	else
+	{
+		//
+		// Matched to the end of the line
+		//
+		ptr = sptr;
+		return 1;
+	}
+}
 
