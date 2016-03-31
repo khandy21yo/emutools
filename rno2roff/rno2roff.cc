@@ -103,7 +103,7 @@ std::string parse_text(
 		// _  Underline     Quote next character
 		case '_':
 			// roff special characters don't match RNO specials
-			ch += src[++ptr];	// hope they aren't lying
+			ch = src[++ptr];	// hope they aren't lying
 			if (ch == '\\')
 			{
 				result += "\\\\";
@@ -232,7 +232,8 @@ std::string parse_text(
 //!
 enum dotopt
 {
-	OP_COMMENT = 100
+	OP_COMMENT = 100,	// Comment, eat text to end of line
+	OP_EASY			// Simple command, ends at eol or ;
 };
 //! \brief Structure to handle list of RNO commands
 //!
@@ -252,10 +253,10 @@ struct rno_commands
 //!
 struct rno_commands rnoc[] =
 {
-	"BREAK", 0, 0,
-	"BR", 0, 0,
-	"SKIP", 0, 0,
-	"S", 0, 0,
+	"BREAK", OP_EASY, ".br",
+	"BR", OP_EASY, ".br",
+	"SKIP", OP_EASY, ".sp",
+	"S", OP_EASY, ".sp",
 	"BLANK", 0, 0,
 	"B", 0, 0,
 	"FIGURE", 0, 0,
@@ -269,10 +270,10 @@ struct rno_commands rnoc[] =
 	"C", 0, 0,
 	"FOOTNOTE", 0, 0,
 	"FN", 0, 0,
-	"NOTE", 0, 0,
-	"NT", 0, 0,
-	"END NOTE", 0, 0,
-	"EN", 0, 0,
+	"NOTE", OP_EASY, ".NT",
+	"NT", OP_EASY, ".NT",
+	"END NOTE", OP_EASY, ".NE",
+	"EN", OP_EASY, ".NE",
 	"LIST", 0, 0,
 	"LS", 0, 0,
 	"LIST ELEMENT", 0, 0,
@@ -318,10 +319,10 @@ struct rno_commands rnoc[] =
 	"J", 0, 0,
 	"NOJUSTIFY", 0, 0,
 	"NJ", 0, 0,
-	"FILL", 0, 0,
-	"F", 0, 0,
-	"NOFILL", 0, 0,
-	"NF", 0, 0,
+	"FILL", OP_EASY, ".fi",
+	"F", OP_EASY, ".fi",
+	"NOFILL", OP_EASY, ".nf",
+	"NF", OP_EASY, ".nf",
 	"UPPER CASE", 0, 0,
 	"UC", 0, 0,
 	"LOWER CASE", 0, 0,
@@ -330,10 +331,10 @@ struct rno_commands rnoc[] =
 	"FL CAPITALIZE", 0, 0,
 	"NO FLAGS CAPITALIZE", 0, 0,
 	"NFL", 0, 0,
-	"HYPHENATION", 0, 0,
-	"HY", 0, 0,
-	"NO HYPHENATION", 0, 0,
-	"NHY", 0, 0,
+	"HYPHENATION", OP_EASY, ".hy",
+	"HY", OP_EASY, ".hy",
+	"NO HYPHENATION", OP_EASY, ".nh",
+	"NHY", OP_EASY, ".nh",
 	"FLAGS HYPHENATE", 0, 0,
 	"PERIOD", 0, 0,
 	"PR", 0, 0,
@@ -399,6 +400,26 @@ std::string parse_dot(
 				" " + src.substr(ptr)  + "\n";
 			ptr = src.size();
 			return result;
+		//
+		// Easy opcode
+		//
+		case OP_EASY:
+			result =  std::string(rnoc[cmd].value) + " ";
+
+			//
+			// Copy to eol or ;
+			//
+			while (ptr < src.size() && src[ptr] != ';')
+			{
+				result += src[ptr++];
+			}
+			while (ptr < src.size() && 
+				(src[ptr] == ';' || src[ptr] == ' '))
+			{
+				ptr++;
+			}
+			return result;
+
 		//
 		// Unknown command
 		//
