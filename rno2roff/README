@@ -1,0 +1,20 @@
+rno2eoff
+
+This is a filter to convert DSR RNO (Digital Standard Runoff)
+files into Unix nroff files.
+
+
+Note: This filter is in early development.
+It probably isn't very useful at the moment.
+It is probably only useful under Unix/Linux due to
+it's filter design.
+
+Usage:
+
+	rno2roff < source > dest
+
+Currently, no options exist.
+
+Compile:
+	 c++ -g -o rno2roff rno2roff.cc 
+
