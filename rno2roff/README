@@ -12,8 +12,8 @@ it's filter design.
 Usage:
 
 	rno2roff < source > dest.roff
-	troff -ms dest.roff > dest.ps
-	nrodd -ms dest.rod > dest.txt
+	troff -mm dest.roff > dest.ps
+	nrodd -mm dest.rod > dest.txt
 
 Currently, no options exist.
 

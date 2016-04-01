@@ -33,6 +33,7 @@ static int uc_flag = 0;		//!< Upper case flag (0 = lc everything,
 				//! 1 = retain case.
 static int uc1_flag = 0;	//!< Upper case next character (^)?
 static int uc2_flag = 0;	//!< Upper case characters (\^)?
+static int ul1_flag = 0;	//!< Underline next character?
 static int in_footnote = 0;	//!< In footnote?
 
 //! \brief Main function.
@@ -103,16 +104,17 @@ std::string parse_text(
 
 		switch (src[ptr])
 		{
-		// &  Ampersand     Underscoring
+		// & Ampersand Underscoring
 		case '&':
+			ul1_flag =1;
 			break;
 
-		// #  Number Sign   Explicit space
+		// # Number Sign Explicit space
 		case '#':
 			result.append("\\ ");
 			break;
 
-		// _  Underline     Quote next character
+		// _ Underline Quote next character
 		case '_':
 			// roff special characters don't match RNO specials
 			ch = src[++ptr];	// hope they aren't lying
@@ -126,7 +128,7 @@ std::string parse_text(
 			}
 			break;
 
-		// ^  Circumflex    Upper-case shift or mode lock
+		// ^ Circumflex Upper-case shift or mode lock
 		case '^':
 			//
 			// Try for mode lock
@@ -138,13 +140,18 @@ std::string parse_text(
 				uc2_flag = 1;
 				ptr++;
 				break;
+			case '&':
+				result += "\\fI";
+				ptr++;
+				break;
+
 			default:
 				uc1_flag = 1;
 				break;
 			}
 			break;
 
-		// \   Backslash    Lower-case shift or mode unlock
+		// \ Backslash Lower-case shift or mode unlock
 		case '\\':
 			//
 			// Try for mode lock
@@ -156,6 +163,10 @@ std::string parse_text(
 				uc2_flag = 0;
 				ptr++;
 				break;
+			case '&':
+				result += "\\fR";
+				ptr++;
+				break;
 			default:
 				uc1_flag = 2;
 				break;
@@ -163,12 +174,12 @@ std::string parse_text(
 			break;
 			break;
 
-		// <  Less-than     Capitalize next word
+		// < Less-than Capitalize next word
 		case '<':
 			result += src[ptr];
 			break;
 
-		// =  Equals-sign   Hypenation disable
+		// = Equals-sign Hypenation disable
 		case '=':
 			break;
 
@@ -220,7 +231,16 @@ std::string parse_text(
 				result += "\\&";
 			}
 			firstchar = 0;
+			if (ul1_flag)
+			{
+				result += "\\fI";
+			}
 			result += ch;
+			if (ul1_flag)
+			{
+				result += "\\fR";
+				ul1_flag = 0;
+			}
 			break;
 		}
 
@@ -276,6 +296,8 @@ struct rno_commands
 //!
 struct rno_commands rnoc[] =
 {
+	"BREAK", OP_EASY, ".br",	// this oneis ignored, because
+					// returning 0 is nomatch.
 	"BREAK", OP_EASY, ".br",
 	"BR", OP_EASY, ".br",
 	"SKIP", OP_EASY, ".sp",
@@ -284,8 +306,8 @@ struct rno_commands rnoc[] =
 	"B", 0, 0,
 	"FIGURE", OP_FIGURE, 0,
 	"FG", OP_FIGURE, 0,
-	"INDENT", OP_EASY, ".HP",
-	"I", OP_EASY, ".HP",
+	"INDENT", OP_EASY, ".ti",
+	"I", OP_EASY, ".ti",
 	"PARAGRAPH", 0, 0,
 	"P", 0, 0,
 	"CENTER", OP_DRPPRM, ".ce",
@@ -374,8 +396,8 @@ struct rno_commands rnoc[] =
 	"PAPER SIZE", 0, 0,
 	"PAGE SIZE", 0, 0,
 	"PS", 0, 0,
-	"SPACING", 0, 0,
-	"SP", 0, 0,
+	"SPACING", OP_EASY, ".ls",
+	"SP", OP_EASY, ".ls",
 	"STANDARD", 0, 0,
 	"SD", 0, 0,
 	"TAB STOPS", 0, 0,
@@ -420,15 +442,15 @@ std::string parse_dot(
 		// Copy everything to end of line
 		//
 		case OP_COMMENT:
-			result =  std::string(rnoc[cmd].value) +
-				" " + src.substr(ptr)  + "\n";
+			result = std::string(rnoc[cmd].value) +
+				" " + src.substr(ptr) + "\n";
 			ptr = src.size();
 			return result;
 		//
 		// Easy opcode
 		//
 		case OP_EASY:
-			result =  std::string(rnoc[cmd].value) + " ";
+			result = std::string(rnoc[cmd].value) + " ";
 
 			//
 			// Copy to eol or ;
@@ -452,7 +474,7 @@ std::string parse_dot(
 		// for the parameters.
 		//
 		case OP_DRPPRM:
-			result =  std::string(rnoc[cmd].value) + " ";
+			result = std::string(rnoc[cmd].value) + " ";
 
 			//
 			// Copy to eol or ;
@@ -472,7 +494,7 @@ std::string parse_dot(
 		// Copy everything to end of line
 		//
 		case OP_FOOTNOTE:
-			result =  std::string(rnoc[cmd].value) + "\n";
+			result = std::string(rnoc[cmd].value) + "\n";
 			ptr = src.size();
 			in_footnote = 1;
 			return result;
@@ -502,8 +524,8 @@ std::string parse_dot(
 		// Unknown command
 		//
 		default:
-			result =  std::string(".\\\" Unhandled .") +
-				rnoc[cmd].text + " " + src.substr(ptr)  + "\n";
+			result = std::string(".\\\" Unhandled .") +
+				src.substr(ptr) + "\n";
 			ptr = src.size();
 			return result;
 		}
@@ -513,7 +535,8 @@ std::string parse_dot(
 	//
 	// If we cannot handle this command
 	//
-		result =  std::string(".\\\" Unknown .") + src.substr(ptr)  + "\n";
+		result = std::string(".\\\" Unknown .") +
+			src + "\n";
 		ptr = src.size();
 		return result;
 	}
@@ -534,7 +557,7 @@ int search_dot(
 	//
 	// Scan through possible commands
 	//
-	for (cmd = 0; rnoc[cmd].text != 0; cmd++)
+	for (cmd = 1; rnoc[cmd].text != 0; cmd++)
 	{
 		if (dot_match(rnoc[cmd].text, src, ptr))
 		{
