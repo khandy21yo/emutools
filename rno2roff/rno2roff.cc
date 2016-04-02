@@ -57,6 +57,12 @@ int rno_filter(std::istream &in)
 	std::string buffer;
 	int ptr;
 
+	std::cout <<
+		".\\\" Converted from RNO to nroff\n" <<
+		".\\\" Uses the -mm macro\n" <<
+		".INITI B \"/tmp/rnoindex\"" <<
+		".INITR \"/tmp/rnoindex\"\n" << std::endl;
+
 	while (getline(in, buffer))
 	{
 		ptr = 0;
@@ -276,7 +282,10 @@ enum dotopt
 	OP_EASY,		// Simple command, ends at eol or ;
 	OP_DRPPRM,		// Like simple, but drops parameters
 	OP_FOOTNOTE,		// Start of a footnote
-	OP_FIGURE		// FIGURE
+	OP_FIGURE,		// FIGURE
+	OP_HEADER,		// Header level
+	OP_INDEX,		// Index entry
+	OP_CHAPTER		// Chapter title
 };
 //! \brief Structure to handle list of RNO commands
 //!
@@ -308,8 +317,8 @@ struct rno_commands rnoc[] =
 	"FG", OP_FIGURE, 0,
 	"INDENT", OP_EASY, ".ti",
 	"I", OP_EASY, ".ti",
-	"PARAGRAPH", 0, 0,
-	"P", 0, 0,
+	"PARAGRAPH", OP_EASY, ".P",
+	"P", OP_EASY, ".P",
 	"CENTER", OP_DRPPRM, ".ce",
 	"CENTRE", OP_DRPPRM, ".ce",
 	"C", OP_DRPPRM, ".ce",
@@ -319,12 +328,12 @@ struct rno_commands rnoc[] =
 	"NT", OP_EASY, ".NT",
 	"END NOTE", OP_EASY, ".NE",
 	"EN", OP_EASY, ".NE",
-	"LIST", 0, 0,
-	"LS", 0, 0,
-	"LIST ELEMENT", 0, 0,
-	"LE", 0, 0,
-	"END LIST", 0, 0,
-	"ELS", 0, 0,
+	"LIST", OP_DRPPRM, ".AL",
+	"LS", OP_DRPPRM, ".AL",
+	"LIST ELEMENT", OP_DRPPRM, ".LI",
+	"LE", OP_DRPPRM, ".LI",
+	"END LIST", OP_DRPPRM, ".LE",
+	"ELS", OP_DRPPRM, ".LE",
 	"COMMENT", OP_COMMENT, ".\\\"",
 	"PAGE", OP_EASY, ".bp",
 	"PG", OP_EASY, ".bp",
@@ -334,29 +343,29 @@ struct rno_commands rnoc[] =
 	"NM", 0, 0,
 	"NONUMBER", 0, 0,
 	"NNM", 0, 0,
-	"CHAPTER", 0, 0,
-	"CH", 0, 0,
+	"CHAPTER", OP_CHAPTER, 0,
+	"CH", OP_CHAPTER, 0,
 	"NUMBER CHAPTER", 0, 0,
-	"HEADERLEVEL", 0, 0,
-	"HL", 0, 0,
-	"TITLE", 0, 0,
-	"T", 0, 0,
+	"HEADERLEVEL", OP_HEADER, ".H",
+	"HL", OP_HEADER, ".H",
+	"TITLE", OP_INDEX, ".PH",
+	"T", OP_INDEX, ".PH",
 	"FIRST TITLE", 0, 0,
 	"FT", 0, 0,
 	"SUBTITLE", 0, 0,
 	"ST", 0, 0,
-	"INDEX", 0, 0,
-	"X", 0, 0,
+	"INDEX", OP_INDEX, ".IND",
+	"X", OP_INDEX, ".IND",
 	"DO INDEX", 0, 0,
 	"DX", 0, 0,
-	"PRINT INDEX", 0, 0,
-	"PX", 0, 0,
+	"PRINT INDEX", OP_EASY, ".INDP",
+	"PX", OP_EASY, ".INDP",
 	"SUBPAGE", 0, 0,
 	"END SUBPAGE", 0, 0,
 	"APPENDIX", 0, 0,
 	"AX", 0, 0,
-	"NUMBER APPENDIX a", 0, 0,
-	"HEADER arg", 0, 0,
+	"NUMBER APPENDIX", 0, 0,
+	"HEADER", 0, 0,
 	"HD", 0, 0,
 	"NOHEADER", 0, 0,
 	"NHD", 0, 0,
@@ -521,11 +530,80 @@ std::string parse_dot(
 			return result;
 
 		//
+		// .HEADER LEVEL
+		//
+		case OP_HEADER:
+			result = std::string(rnoc[cmd].value) + " ";
+
+			//
+			// Pick off header level number
+			//
+			while (ptr < src.size() && src[ptr] == ' ')
+			{
+				ptr++;
+			}
+			while (ptr < src.size() && src[ptr] != ' ')
+			{
+				result += src[ptr++];
+			}
+			while (ptr < src.size() && src[ptr] == ' ')
+			{
+				ptr++;
+			}
+
+			//
+			// Pull off text
+			//
+			partial = parse_text(src, ptr);
+			result += std::string(" \"") + partial + "\"\n";
+			ptr = src.size();
+			return result;
+
+		//
+		// .INDEX
+		//
+		case OP_INDEX:
+			result = std::string(rnoc[cmd].value) + " ";
+
+			while (ptr < src.size() && src[ptr] == ' ')
+			{
+				ptr++;
+			}
+
+			//
+			// Pull off text
+			//
+			partial = parse_text(src, ptr);
+			result += std::string(" \"") + partial + "\"\n";
+			ptr = src.size();
+			return result;
+
+		//
+		// .CHAPTER
+		// nroff doesn't seem to have one of these,so fake it.
+		//
+		case OP_CHAPTER:
+			while (ptr < src.size() && src[ptr] == ' ')
+			{
+				ptr++;
+			}
+
+			//
+			// Pull off text
+			//
+			partial = parse_text(src, ptr);
+			result =
+				std::string(".bp\n.sp 4\n.ce\nCHAPTER\n.ce\n") +
+				partial + "\n.sp 2\n";
+			ptr = src.size();
+			return result;
+
+		//
 		// Unknown command
 		//
 		default:
 			result = std::string(".\\\" Unhandled .") +
-				src.substr(ptr) + "\n";
+				src + "\n";
 			ptr = src.size();
 			return result;
 		}

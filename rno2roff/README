@@ -3,6 +3,15 @@ rno2eoff
 This is a filter to convert DSR RNO (Digital Standard Runoff)
 files into Unix nroff files.
 
+There are many differences between RNO and roff, so the final
+results may vary wildly, but it should be good enough to get a
+reasonable result.
+
+It does not completely cover all the runoff commands, and some
+of it just doesn't work right, but it is sufficient for what I
+was playing with at the time. You can also produce PostScript
+output for a fancier document. Those commands that are not
+handles are left in the .roff outout as comments.
 
 Note: This filter is in early development.
 It probably isn't very useful at the moment.
@@ -12,8 +21,8 @@ it's filter design.
 Usage:
 
 	rno2roff < source > dest.roff
-	troff -mm dest.roff > dest.ps
-	nrodd -mm dest.rod > dest.txt
+	groff -mm dest.roff > dest.ps
+	nroff -mm dest.rod > dest.txt
 
 Currently, no options exist.
 
@@ -27,4 +36,4 @@ Requirements:
 
 Author
 
-	Kevin Handy
+	Kevin Handy, March 2016
