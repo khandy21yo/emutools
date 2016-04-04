@@ -464,7 +464,7 @@ std::string parse_dot(
 			//
 			// Copy to eol or ;
 			//
-			while (ptr < src.size() && src[ptr] != ';')
+			while (ptr < src.size() && src[ptr] != ';' && src[ptr] != '.')
 			{
 				result += src[ptr++];
 			}
@@ -488,7 +488,7 @@ std::string parse_dot(
 			//
 			// Copy to eol or ;
 			//
-			while (ptr < src.size() && src[ptr] != ';')
+			while (ptr < src.size() && src[ptr] != ';' && src[ptr] != '.')
 			{
 				ptr++;
 			}
@@ -507,6 +507,7 @@ std::string parse_dot(
 			ptr = src.size();
 			in_footnote = 1;
 			return result;
+
 		//
 		// FIGURE
 		//
