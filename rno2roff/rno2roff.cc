@@ -285,7 +285,8 @@ enum dotopt
 	OP_FIGURE,		// FIGURE
 	OP_HEADER,		// Header level
 	OP_INDEX,		// Index entry
-	OP_CHAPTER		// Chapter title
+	OP_CHAPTER,		// Chapter title
+	OP_CASE			// Upper/lower case flags
 };
 //! \brief Structure to handle list of RNO commands
 //!
@@ -311,8 +312,8 @@ struct rno_commands rnoc[] =
 	"BR", OP_EASY, ".br",
 	"SKIP", OP_EASY, ".sp",
 	"S", OP_EASY, ".sp",
-	"BLANK", 0, 0,
-	"B", 0, 0,
+	"BLANK", OP_EASY, ".br\n.sp",
+	"B", OP_EASY, ".br\n.sp",
 	"FIGURE", OP_FIGURE, 0,
 	"FG", OP_FIGURE, 0,
 	"INDENT", OP_EASY, ".ti",
@@ -328,9 +329,9 @@ struct rno_commands rnoc[] =
 	"NT", OP_EASY, ".NT",
 	"END NOTE", OP_EASY, ".NE",
 	"EN", OP_EASY, ".NE",
+	"LIST ELEMENT", OP_DRPPRM, ".LI",
 	"LIST", OP_DRPPRM, ".AL",
 	"LS", OP_DRPPRM, ".AL",
-	"LIST ELEMENT", OP_DRPPRM, ".LI",
 	"LE", OP_DRPPRM, ".LI",
 	"END LIST", OP_DRPPRM, ".LE",
 	"ELS", OP_DRPPRM, ".LE",
@@ -341,11 +342,12 @@ struct rno_commands rnoc[] =
 	"TP", OP_EASY, ".ne",
 	"NUMBER", 0, 0,
 	"NM", 0, 0,
+	"NUMBER CHAPTER", 0, 0,
+	"NUMBER APPENDIX", 0, 0,
 	"NONUMBER", 0, 0,
 	"NNM", 0, 0,
 	"CHAPTER", OP_CHAPTER, 0,
 	"CH", OP_CHAPTER, 0,
-	"NUMBER CHAPTER", 0, 0,
 	"HEADERLEVEL", OP_HEADER, ".H",
 	"HL", OP_HEADER, ".H",
 	"TITLE", OP_INDEX, ".PH",
@@ -364,7 +366,6 @@ struct rno_commands rnoc[] =
 	"END SUBPAGE", 0, 0,
 	"APPENDIX", 0, 0,
 	"AX", 0, 0,
-	"NUMBER APPENDIX", 0, 0,
 	"HEADER", 0, 0,
 	"HD", 0, 0,
 	"NOHEADER", 0, 0,
@@ -377,10 +378,10 @@ struct rno_commands rnoc[] =
 	"F", OP_EASY, ".fi",
 	"NOFILL", OP_EASY, ".nf",
 	"NF", OP_EASY, ".nf",
-	"UPPER CASE", 0, 0,
-	"UC", 0, 0,
-	"LOWER CASE", 0, 0,
-	"LC", 0, 0,
+	"UPPER CASE", OP_CASE, "U",
+	"UC", OP_CASE, "U",
+	"LOWER CASE", OP_CASE, 0,
+	"LC", OP_CASE, 0,
 	"FLAGS CAPITALIZE", 0, 0,
 	"FL CAPITALIZE", 0, 0,
 	"NO FLAGS CAPITALIZE", 0, 0,
@@ -415,6 +416,7 @@ struct rno_commands rnoc[] =
 	"AP", 0, 0,
 	"NOAUTOPARAGRAPH", 0, 0,
 	"NAP", 0, 0,
+	"REQUIRE", OP_EASY, ".so",
 	0, 0, 0
 };
 
@@ -464,7 +466,8 @@ std::string parse_dot(
 			//
 			// Copy to eol or ;
 			//
-			while (ptr < src.size() && src[ptr] != ';' && src[ptr] != '.')
+			while (ptr < src.size() && src[ptr] != ';' &&
+				!(src[ptr] == '.' && src[ptr - 1]== ' '))
 			{
 				result += src[ptr++];
 			}
@@ -483,7 +486,7 @@ std::string parse_dot(
 		// for the parameters.
 		//
 		case OP_DRPPRM:
-			result = std::string(rnoc[cmd].value) + " ";
+			result = std::string(rnoc[cmd].value) + "\n";
 
 			//
 			// Copy to eol or ;
@@ -558,6 +561,7 @@ std::string parse_dot(
 			partial = parse_text(src, ptr);
 			result += std::string(" \"") + partial + "\"\n";
 			ptr = src.size();
+			uc2_flag = 0;
 			return result;
 
 		//
@@ -597,6 +601,28 @@ std::string parse_dot(
 				std::string(".bp\n.sp 4\n.ce\nCHAPTER\n.ce\n") +
 				partial + "\n.sp 2\n";
 			ptr = src.size();
+			uc2_flag = 0;
+			return result;
+
+		//
+		//
+		// Upper/Lower case
+		//
+		case OP_CASE:
+			uc_flag = rnoc[cmd].value == 0;
+
+			//
+			// Copy to eol or ;
+			//
+			while (ptr < src.size() && src[ptr] != ';' && src[ptr] != '.')
+			{
+				ptr++;
+			}
+			while (ptr < src.size() && 
+				(src[ptr] == ';' || src[ptr] == ' '))
+			{
+				ptr++;
+			}
 			return result;
 
 		//
@@ -715,6 +741,10 @@ int dot_match(const char *match, const std::string src, int &ptr)
 			sptr++;
 			ptr = sptr;
 			return 1;
+		case ';':
+		case '.':
+			return 1;
+
 		default:
 			return 0;
 		}
