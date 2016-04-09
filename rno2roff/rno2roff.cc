@@ -14,6 +14,7 @@
 #include <iostream>
 #include <string>
 
+#include<cstdlib>
 #include <cctype>
 
 //
@@ -286,7 +287,8 @@ enum dotopt
 	OP_HEADER,		// Header level
 	OP_INDEX,		// Index entry
 	OP_CHAPTER,		// Chapter title
-	OP_CASE			// Upper/lower case flags
+	OP_CASE,		// Upper/lower case flags
+	OP_REPEAT		// Repeat operator
 };
 //! \brief Structure to handle list of RNO commands
 //!
@@ -417,6 +419,7 @@ struct rno_commands rnoc[] =
 	"NOAUTOPARAGRAPH", 0, 0,
 	"NAP", 0, 0,
 	"REQUIRE", OP_EASY, ".so",
+	"REPEAT", OP_REPEAT, 0,
 	0, 0, 0
 };
 
@@ -433,6 +436,7 @@ std::string parse_dot(
 	std::string result;	//!< Result string being built.
 	int cmd;		//!< Used to search for dot command
 	std::string partial;	//!< Partial result
+	int value;		//!< Temporary value
 
 	//
 	// Skip over the dot
@@ -623,6 +627,72 @@ std::string parse_dot(
 			{
 				ptr++;
 			}
+			return result;
+
+		//
+		// .REPEAT
+		//
+		case OP_REPEAT:
+			result = "";
+
+			//
+			// Pick off header level number
+			//
+			while (ptr < src.size() && src[ptr] == ' ')
+			{
+				ptr++;
+			}
+			while (ptr < src.size() && src[ptr] != ' ')
+			{
+				partial += src[ptr++];
+			}
+			value = atoi(partial.c_str());
+			partial = "";
+			while (ptr < src.size() && src[ptr] == ' ')
+			{
+				ptr++;
+			}
+
+			//
+			// Pull off text
+			//
+			while (ptr < src.size() && src[ptr] != ';' &&
+				src[ptr] !='.')
+			{
+				partial += src[ptr++];
+			}
+			while (ptr < src.size() && 
+				(src[ptr] == ';' || src[ptr] == ' '))
+			{
+				ptr++;
+			}
+			//
+			// Strip off trailing spaces
+			//
+			while (partial.size() >0 && *(partial.rbegin()) == ' ')
+			{
+				partial = partial.substr(0, partial.size() - 1);
+			}
+			//
+			// Strip off any quotes (assume they match)
+			//
+			if (partial[0] == '"')
+			{
+				partial = partial.substr(1, partial.size() - 2);
+			}
+			//
+			// Marked up string?
+			//
+			if (partial.size() > 1 && partial[0] == '_')
+			{
+				partial = partial.substr(1);
+			}
+			while (value--)
+			{
+				result += partial;
+			}
+			result += "\n";
+			uc2_flag = 0;
 			return result;
 
 		//
