@@ -1,7 +1,8 @@
 rno2eoff
 
-This is a filter to convert DSR RNO (Digital Standard Runoff)
-files into Unix nroff files.
+This is a filter to convert RSTS/E DSR RNO (Digital Standard
+Runoff) files into Unix nroff/troff files. Some VAX RNO commands
+are also covered.
 
 There are many differences between RNO and roff, so the final
 results may vary wildly, but it should be good enough to get a
@@ -12,6 +13,13 @@ of it just doesn't work right, but it is sufficient for what I
 was playing with at the time. You can also produce PostScript
 output for a fancier document. Those commands that are not
 handles are left in the .roff outout as comments.
+
+Commands require some whitespace between the commands and its
+parameters. ".s1" won't work, but ".s 1" will.
+
+RSTS RNO defaults to ".UPPER CASE", but VAX RNO wants the default
+to be ".LOWER CASE". Add a ".LOWER CASE", or ".LS" at the top of
+the document if you need to forve this.
 
 Note: This filter is in early development.
 It probably isn't very useful at the moment.
@@ -31,8 +39,8 @@ Compile:
 
 Requirements:
 	Under Debian, you need to install the groff package.
-	There is a partial install to handle man pages, but ir is
-	missing the 'ma' macros.
+	There is usually a partial install to handle man pages,
+	but ir is missing the 'ma' macros.
 
 Author
 
