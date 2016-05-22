@@ -344,7 +344,7 @@
 
 6190	PRIN$ = PPCD$(CDT%) + " #" + STACK$(STACK% - 4%) &
 	\ PRIN$ = PRIN$ + ", RECORD " + STACK$(STACK% - 3%) &
-		IF STACK$(STACK% - 3%) <> "0% &
+		IF STACK$(STACK% - 3%) <> "0%" &
 	\ PRIN$ = PRIN$ + ", ??????" + STACK$(STACK% - 2%) &
 		IF STACK$(STACK% - 2%) <> "0%" &
 	\ PRIN$ = PRIN$ + ", COUNT " + STACK$(STACK% - 1%) &
@@ -705,9 +705,9 @@
 
 20000	! &
 
-20010	DATA	-24,DET,	-60,ERL,	-26,ERR, &
-		-58,LINE,	-30,NUM,	-34,NUM2, &
-		-16,PI,		-54,RECOUNT,	-62,STATUS, &
+20010	DATA	-24,"DET",	-60,"ERL",	-26,"ERR", &
+		-58,"LINE",	-30,"NUM",	-34,"NUM2", &
+		-16,"PI",	-54,"RECOUNT",	-62,"STATUS", &
 		  0,"" &
 
 21200	DATA 0017,0018,0018,0008,0001,0001,0004,0004,0004,0004
