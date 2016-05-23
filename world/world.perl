@@ -1,5 +1,11 @@
 #!/usr/bin/perl
-
+# world.perl
+#
+# This program generates a world map from the CIA World Database II.
+# The code is just a quick hack, and is quite ugly, but it works Ok.
+#
+# Kevin Handy, May 2016
+#
 use GD;
 
 # @filenames = ('namer-cil.txt');
@@ -14,12 +20,27 @@ use GD;
 # Define size of the thing
 #
 $fullwidth = 2400;	# Full width of image file
-$fulllength = 1400;	# Full height of image file
+$fulllength = 1800;	# Full height of image file
 $woffset = 20;		# Offset width
 $hoffset = 20;		# Offset height
-$wmax = 2360;		# Width of map area (< fullwidt - woffset)
-$hmax = 1340;		# Height of mp area (< fullheight - hoffset)
+$wmax = $fullwidth - 2 * $woffset;	# Width of map area
+$hmax = $fulllength - 2 * $hoffset;	# Height of mp area
 $max_rank = 2;		# Anything ranked higher is not displayed
+			#  The larger the number, the more detail included.
+			#  but too high and the map is very messy.
+
+#
+# These functios map the latitude and longitude to pixel positions
+# on the png.
+#
+sub remapx
+{
+	return int(((90 - $_[0]) / 180.0 * $hmax)) + $hoffset;
+}
+sub remapy
+{
+	return  int(((180 + $_[0]) / 360.0 * $wmax)) + $woffset;
+}
 
 #
 # create a new image
@@ -46,16 +67,6 @@ $im->interlaced('true');
 $im->rectangle($woffset,$hoffset,$woffset+$wmax,$hoffset+$hmax,$black);
 
 #
-# Draw a blue oval
-#
-#$im->arc(50,50,95,75,0,360,$blue);
-
-#
-# And fill it with red
-#
-#$im->fill(50,50,$red);
-
-#
 # Loop through list of files
 #
 for $file (@filenames)
@@ -64,10 +75,11 @@ for $file (@filenames)
 	&process_file($file);
 }
 
-# make sure we are writing to a binary stream
+#
+# Output map to a .png file
+#  Name hardcoded for now.
+#
 open(OUT, ">world.png") || die;;
-
-# Convert the image to PNG and print it on standard output
 print OUT $im->png;
 close OUT;
 
@@ -89,6 +101,10 @@ sub process_file
 		chomp;
 		if (substr($_, 0, 7) eq 'segment')
 		{
+			#
+			# Segment header.
+			#   Start a new line.
+			#
 			$lastx = -1;
 			$lasty = -1;
 			if ($_ =~ /(rank )([0-9]+)/)
@@ -99,9 +115,16 @@ sub process_file
 		}
 		elsif ($rank >= $max_rank)
 		{
+			# Ignore data that is outside of our desired ranking
 		}
 		else
 		{
+			#
+			# Split out the lat/long from the data line.
+			# The 1st method should always work, nut just in case.
+			# The 2nd method sometimes failes.
+			#   character pPositions are not fixed.
+			#
 			if ($_ =~ /([\-0-9\.]+)([ ]+)([\-0-9\.]+)/)
 			{
 				$xr = $1;
@@ -113,26 +136,46 @@ sub process_file
 				$yr = substr($_, 11);
 			}
 
-$maxx = $maxx > $xr ? $maxx : $xr;
-$minx = $minx < $xr ? $minx : $xr;
-$maxy = $maxy > $yr ? $maxy : $yr;
-$miny = $miny > $yr ? $miny : $yr;
+			#
+			# Debugging information.
+			# Looks mor max/min lat/long
+			#
+			$maxx = $maxx > $xr ? $maxx : $xr;
+			$minx = $minx < $xr ? $minx : $xr;
+			$maxy = $maxy > $yr ? $maxy : $yr;
+			$miny = $miny > $yr ? $miny : $yr;
 
-			$x = int(((90 - $xr) / 180.0 * $hmax));
-			$y = int(((180 + $yr) / 360.0 * $wmax));
+			#
+			# Convert lat/long to pixel positions
+			#
+			$x = remapx($xr);
+			$y = remapy($yr);
 
 			if ($lastx == -1)
 			{
+				# Don't hav a starting point for the line
+				# segment yet.
+				# This point will become the starting point.
 			}
 			elsif (abs($yr - $lastyr) > 80)
 			{
+				# This is to drop lines that cross the +/-
+				# barrier. Makes nasty lines across the map.
+				# Should split into two segments,
+				# but there's only a couple of these, so
+				# ignoring them seems to work out ok.
 			}
 			elsif ($lastx != $x || $lasty != $y)
 			{
+				# Plot a line segment
 #print STDERR "$x $y\n";
 				$im->line($lasty, $lastx, $y, $x, $black);
 			}
 
+			#
+			# Mark this point as the new start of the next
+			# line segment.
+			#
 			$lastx = $x;
 			$lasty = $y;
 			$lastxr = $xr;
@@ -141,5 +184,8 @@ $miny = $miny > $yr ? $miny : $yr;
 	}
 }
 
+#
+# Print out max/min lat/long.
+#
 print stderr "x=($minx,$maxx) y=($miny,$maxy)\n";
 
