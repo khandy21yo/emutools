@@ -7,3 +7,9 @@ be run from the same directory as the data set.
 The data set is probably dated by now, the polotical boundries are probably
 off, but intresting pictures can be generated.
 
+world.perl
+	Create world.png using the WDB data set.
+
+world_zipcode.perl
+	Overlap lat/long from zipcode table onto the WDB map.
+
