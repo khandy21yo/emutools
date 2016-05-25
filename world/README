@@ -13,3 +13,6 @@ world.perl
 world_zipcode.perl
 	Overlap lat/long from zipcode table onto the WDB map.
 
+world_customer.perl
+	Overlap the world map with customers that can be located via the
+	zipcode table.
