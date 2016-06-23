@@ -5,8 +5,8 @@ all: truec truel
 # Clean up all generated files
 #
 clean:
-	rm truec truec.ll
-	rm truel
+	-rm truec truec.ll
+	-rm truel
 
 #
 # truec is a very simple program that simply returns EXIT_SUCCESS as the
