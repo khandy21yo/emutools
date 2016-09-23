@@ -4,10 +4,13 @@ This is a script to help convert tcsh scripts to perl.
 Is is designed to convert a specific set of scripts.
 A generic tcsh to perl converter is probably impossible.
 
-There are numerusplaces that it does not do a very good
+There are numerus places that it does not do a very good
 job. This tool is meant as an aid to conversion, nt a
 completely correct translation. It gets confused easily.
 
-u are expected to finish the conversion by hand for all
+You are expected to finish the conversion by hand for all
 the things it handles wrong, but it is often easier than
 starting from scratch.
+
+tcsh2perl.perl < source.tcsh > source.perl
+
