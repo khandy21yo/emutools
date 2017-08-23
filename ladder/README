@@ -1,0 +1,11 @@
+This is a Unix version of the old ladder game that was
+distributed with Kaypro CP/M systems.
+
+I found it on the internet a long time ago, without any
+name attached to it.
+
+It has been modified from the original slightly to handle
+multiple characters typed, and fix some timing problems.
+
+Requires the curses/ncurses library to compile.
+
