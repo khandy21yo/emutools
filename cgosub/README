@@ -1,0 +1,9 @@
+This demonstrates how to use BASIC style GOSUB and RETURN
+in a C or C++ program.
+
+There are some restrictions, which asre the same as those
+regarding the use of 'goto', including no jumping outside
+of a function, no jumping over variable declarations, etc.
+
+It also seems to confuse debuggers.
+
