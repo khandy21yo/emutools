@@ -1,9 +1,17 @@
 This demonstrates how to use BASIC style GOSUB and RETURN
 in a C or C++ program.
 
+gosub.cc
+This version is based one setjmp/longjmp. Works on most C compilers.
 There are some restrictions, which asre the same as those
 regarding the use of 'goto', including no jumping outside
 of a function, no jumping over variable declarations, etc.
-
 It also seems to confuse debuggers.
 
+gosub2.cc
+This is an alternative to the first one. 
+It uses GCC extensions, but seems to also work with clang.
+I copied this from a web site, and slightly modified it.
+This version requires the stack to be global.
+I have not yet seen if debuggers like it any better than the
+first version yet.
