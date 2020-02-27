@@ -1,0 +1,14 @@
+This code was originally taken from the unix-archive from the directort
+
+	unix-archive/PDP-11/Trees/2.11BSD/usr/src/new/l11/
+
+and modified to be able to compile on a modern Linux system.
+This involved adding '#include' directives, remiving old prototypes
+for system functions 'extern int printf();', and adding prototypes
+for functions used-before-defined.
+
+The code is still mostly in K&R format, except for the prototypes
+that I added, and some code to fix compilation problems. I did not
+remove the 'register' or 'auto' declarations.
+
+kth, Feb 2020
