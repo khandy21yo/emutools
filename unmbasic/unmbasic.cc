@@ -101,7 +101,7 @@ void process(char *fn, bool debug)
 			std::cout << "<" << ((int)ch & 0xff) << ">";
 		}
 
-		switch(ch)
+		switch(((int)ch) & 0xff)
 		{
 		case 0:
 			std::cout << "\n";
@@ -695,7 +695,7 @@ void process(char *fn, bool debug)
 				std::cout << "<" << ((int)ch & 0xff) << ">";
 			}
 
-			switch(ch)
+			switch(((int)ch) & 0xff)
 			{
 			case 129:
 				std::cout << "LEFT$";
