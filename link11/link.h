@@ -4,17 +4,9 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <signal.h>
+#include <stdint.h>
 
-#ifdef vax
-#define WORD	unsigned short
-#endif //vax
-#ifdef pdp11
-#define WORD	unsigned
-#endif //pdp11
-
-#ifndef WORD	//kth
-#define WORD	unsigned short
-#endif
+#define WORD	uint16_t
 
 /********************* structure declarations *************************/
 
