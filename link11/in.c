@@ -1,8 +1,8 @@
 /* Input functions */
 
-# include 	"link.h"
+# include "link.h"
 
-	/* define maximum size of checksum contents */
+/* define maximum size of checksum contents */
 # define	MAXSIZE		40
 
 int getb();
@@ -28,7 +28,7 @@ char	*newfile;
 int	newmod;
 
 {
-	if (Fname == NULL || strcmp(Fname, newfile))	/* new file is 
+	if (Fname == NULL || strcmp(Fname, newfile))	/* new file is
 							** different */
 	{
 		Fname = newfile;
@@ -189,7 +189,7 @@ int getb()		/* get a byte from input file, add to "sum" */
 		/* check for EOF, return the byte */
 {
 	int	k;
-	
+
 	sum += (k = getc(Fp));
 
 	if (k == EOF)

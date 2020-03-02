@@ -1,4 +1,4 @@
-#include	"link.h"
+#include "link.h"
 /* linker support functions */
 
 
@@ -29,7 +29,7 @@ char	*s;
 
 {
 	WORD getword();
-	
+
 	derad50(getword(), s);
 	derad50(getword(), s + 3);
 	*(s + 6) = '\0';
@@ -46,10 +46,10 @@ char 	*s;
 
 {
 	s[2] = returnchar(x % 40);
-	x /= 40; 
+	x /= 40;
 	s[1] = returnchar(x % 40);
 	x /= 40;
-	s[0] = returnchar(x % 40); 
+	s[0] = returnchar(x % 40);
 }
 
 
@@ -72,7 +72,7 @@ unsigned short	k;
 	{
 		case 0:
 			return(' ');
-		
+
 		case 27:
 			return('$');
 

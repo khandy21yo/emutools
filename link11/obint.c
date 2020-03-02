@@ -1,10 +1,10 @@
 /*   Object File Interpreter  */
 
-#define	WORD	unsigned int
+#include "link.h"
 char *tack();
 WORD getword();
 
-# include	<stdio.h>
+# include <stdio.h>
 
 main(argc, argv)
 int	argc;
@@ -54,7 +54,7 @@ char	*fname;
 			case 0:
 				printf("program title: %s\n", sname);
 				break;
-			
+
 			case 1:
 				printf("program section: <%s>", sname);
 				printf(" %s, size: %06o\n", pstring(attr), value);

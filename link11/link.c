@@ -1,11 +1,11 @@
-# include	"link.h"
+# include "link.h"
 #include <time.h>
 
 // kth: demove stdio defined items
 // //char *sprintf(),*strcpy(), *ctime(), *strsub(), *tack(), *lalloc();
 char *strcpy(), *ctime(), *strsub(), *tack(), *lalloc();
-WORD	getword();
-#include	<signal.h>
+WORD getword();
+#include <signal.h>
 
 void sigx(int n);
 void post_bail();
@@ -15,8 +15,8 @@ void prattr(int x);
 void brag(char *s, long start, long size, char *tag);
 int dump_undefs(struct symbol *sym, int n);
 void printmap();
-void relsyms(struct symbol	*sym);	
-void asgn_rcs(struct psect 	*p);
+void relsyms(struct symbol *sym);
+void asgn_rcs(struct psect  *p);
 void relocate();
 void table(struct symbol *root[],struct symbol *new);
 void place_local(struct psect *ps);
@@ -40,7 +40,7 @@ struct symbol	*Sym_root = NULL;	/* root of symbol table */
 struct g_sect	*Gsect_root = NULL;	/* root of tree of global psects */
 WORD 		Maxabs = 0;		/* maximum size of absolute files,
 					** also low limit of relocatable code */
-WORD	R_counter;			/* relocation counter, used in 
+WORD	R_counter;			/* relocation counter, used in
 					** assigning relocation constants,
 					** also high limit of relocatable
 					** code after relocation */
@@ -50,8 +50,8 @@ int		Verbose	=0;		/* Boolean for verbose commentary */
 char		Do_411 = 0;		/* boolean for out file format */
 char		Do_map = 0;		/* boolean for printing load map */
 char		Do_lpr_map = 0;		/* boolean for line printing map */
-char		Do_bits = 0;		/* boolean for including relocation 
-					** bits in .out file */ 
+char		Do_bits = 0;		/* boolean for including relocation
+					** bits in .out file */
 char		C_rel = 0;		/* boolean for having out file end
 					** with '.o' */
 char		Do_kludge = 0;		/* boolean for writing global sybmbols
@@ -148,7 +148,7 @@ char	*argv[];
 				Do_411 = 1;
 			else if(!strcmp(s, "v"))
 				Verbose = 1;
-			else 
+			else
 			{
 				fprintf(stderr, "Unrecognizable argument: -%s\n", s);
 				Scanerr = 1;
@@ -164,11 +164,11 @@ char	*argv[];
 				end = end->nextfile;
 			}
 			s = tack(s, ".obj");
-			end->fname = s;		
+			end->fname = s;
 		}
 	}
 
-	if (File_root == NULL)	
+	if (File_root == NULL)
 	{
 		fprintf(stderr, "Error: no object files given\n");
 		exit(1);
@@ -195,7 +195,7 @@ char 	*s;
 char	*t;
 {
 	char *q;
-	
+
 	q = t;
 	while (*t)
 		if (*s++ != *t++)
@@ -260,7 +260,7 @@ struct psect	*newpsect()	/* allocate and initialize a new psect
 /***********************  newsymbol  ***************************************/
 
 
-struct symbol	*newsymbol()	/* allocate and initialize new symbol 
+struct symbol	*newsymbol()	/* allocate and initialize new symbol
 				** structure */
 {
 	struct symbol	*p;
@@ -275,7 +275,7 @@ struct symbol	*newsymbol()	/* allocate and initialize new symbol
 /**********************  newfile  ******************************************/
 
 
-struct objfile	*newfile()	/* allocate and initialize new psect 
+struct objfile	*newfile()	/* allocate and initialize new psect
 				** structure */
 {
 	struct objfile		*p;
@@ -406,7 +406,7 @@ void pass1()
 				strcpy(sym->name, name);
 				sym->type = attr;
 				sym->value = value;
-				if (attr & DEF)	/* if the symbol is defined, 
+				if (attr & DEF)	/* if the symbol is defined,
 						** place in link-list of
 						** symbols */
 				{
@@ -436,7 +436,7 @@ void pass1()
 
 void place_global(ps)		/* try to place the given program section
 				** in proper ins - dat - bss link-list by
-				** finding it in the global psect tree. if 
+				** finding it in the global psect tree. if
 				** it is not there then add to tree and place
 				** it through place_local */
 struct psect	*ps;
@@ -485,7 +485,7 @@ void place_local(ps)			/* place psect at end of its UNIX section
 struct psect	*ps;
 {
 	int type = ps->type;
-	
+
 	if( !(type & REL))		/* asect */
 	{
 		fprintf(stderr, "Don't know what to do with .asect yet\n");
@@ -504,7 +504,7 @@ struct psect	*ps;
 	{
 		if (Bss_root == NULL)
 			Bss_root = Bss_end = ps;
-		else 
+		else
 		{
 			Bss_end->next = ps;
 			Bss_end = ps;
@@ -642,7 +642,7 @@ void relocate()	/* assign relocation constants for all relocatable psects */
 
 void asgn_rcs(p)	/* assign relocation constants to
 		** the psects pointed to.  this routine uses the
-		** variable R_counter which contains the address of the 
+		** variable R_counter which contains the address of the
 		** next available space in memory */
 struct psect 	*p;	/* called with ins-dat-bss root */
 
@@ -682,7 +682,7 @@ struct psect 	*p;	/* called with ins-dat-bss root */
 				} while (d->pssame != NULL);
 
 			else		/* sames are concatenated */
-				/* travel through sames 
+				/* travel through sames
 				** add size to R_counter before assigning
 				** to rc for each psect.
 				** redefine size as number of bytes in psect */
@@ -716,7 +716,7 @@ struct psect 	*p;	/* called with ins-dat-bss root */
 
 void relsyms(sym)		/* relocate global symbols */
 
-struct symbol	*sym;	
+struct symbol	*sym;
 {
 	if (sym == NULL)
 		return;
@@ -742,9 +742,9 @@ void printmap()
 	else
 	{
 		long datstart = Tex_size;
-		
+
 		if(Do_411) datstart = 0L;
-		
+
 		/* print map header */
 		time(tvec);
 		fprintf(Mapp, "%s    Linker-11 version 22may79    %s\n", Outname, ctime(tvec));
@@ -776,7 +776,7 @@ void printmap()
 				pp = pp->obsame;
 			}
 		}
-		fprintf(Mapp, "%s", dashes);	
+		fprintf(Mapp, "%s", dashes);
 		if (dump_undefs(Sym_root, 0))
 			fprintf(Mapp, "\n%s\n", dashes);
 		else

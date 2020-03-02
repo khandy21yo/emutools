@@ -1,4 +1,4 @@
-# include	<stdio.h>
+# include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -9,7 +9,7 @@
 #define WORD	unsigned short
 #endif //vax
 #ifdef pdp11
-#define WORD	unsigned 
+#define WORD	unsigned
 #endif //pdp11
 
 #ifndef WORD	//kth
@@ -27,10 +27,10 @@ struct psect		/* program section structure
 			** constants (*next), 2) by object file so that relocation
 			** constants may be found when interpreting the code
 			** section within a object file (*obsame).
-			** In addition global program sections of the same 
+			** In addition global program sections of the same
 			** name and type must be grouped together (*pssame).
 			** Also, a list of global relocatable symbols defined
-			** in the psect in used to relocate these 
+			** in the psect in used to relocate these
 			** symbols (*slist). */
 {
 	char		name[7];
@@ -67,7 +67,7 @@ struct objfile		/* object file structure */
 {
 	char		*fname;
 	struct objfile  *nextfile;	/* next file in link-list of files */
-	struct psect	*psect_list;	/* root to link-list of psects 
+	struct psect	*psect_list;	/* root to link-list of psects
 					** in this object file */
 	char		pname[7];	/* program name */
 	char		*ver_id;	/* version identification */
@@ -86,7 +86,7 @@ struct g_sect		/* structure for global program section tree */
 {
 	char		name[7];	/* psect name */
 	char		type;		/* M11 coded type */
-	struct psect	*last_sect;	/* pointer to the last psect in the 
+	struct psect	*last_sect;	/* pointer to the last psect in the
 					** link-list of global same psects */
 	struct g_sect	*leftt;		/* left child */
 	struct g_sect	*rightt;	/* right child */

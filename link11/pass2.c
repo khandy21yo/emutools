@@ -1,4 +1,4 @@
-# include	"link.h"
+# include "link.h"
 # define	MAXREG		8
 WORD	getword();
 // kth: remove stdio defined items
@@ -12,8 +12,8 @@ int linkseek(WORD nlc,WORD nrbits);
 int bytewrite(int value);
 void dump_tree(struct symbol *sym);
 int vreg_oper(int drctv,struct outword *wbuff);
-int relwrite(WORD value, WORD	rbits);
-int abswrite(WORD value, WORD	rbits);
+int relwrite(WORD value, WORD rbits);
+int abswrite(WORD value, WORD rbits);
 int dump_locals(struct objfile *obj);
 int transcode(struct objfile *obj);
 int get_type(int attr);
@@ -29,7 +29,7 @@ extern struct symbol	*Sym_root;	/* root of symbol table */
 extern struct g_sect	*Gsect_root;	/* root of global psect tree */
 WORD	Maxabs;			/* maximum size of absolute files,
 					** also low limit of relocatable code */
-extern WORD	R_counter;		/* relocation counter, used in 
+extern WORD	R_counter;		/* relocation counter, used in
 					** assigning relocation constants,
 					** also high limit of relocatable
 					** code after relocation */
@@ -38,8 +38,8 @@ extern char	Do_410;			/* out file format boolean */
 extern char	Do_411;			/* out file format boolean */
 extern char	Do_map;			/* boolean for printing load map */
 extern char	Do_lpr_map;		/* boolean for line printing map */
-extern char	Do_bits;		/* boolean for including relocation 
-					** bits in .out file */ 
+extern char	Do_bits;		/* boolean for including relocation
+					** bits in .out file */
 extern char	Do_kludge;		/* boolean to write global symbols in
 					** out file table with underscore */
 extern char	Do_silent;		/* boolean for not printing zero
@@ -54,7 +54,7 @@ int		T_counter;		/* used for assigning numbers to the
 					** referenced in relocation bits */
 int		Glc;			/* global location counter */
 struct outword	Curr;			/* Curr.val is the current relocation
-					** constant, and Curr.rbits is the 
+					** constant, and Curr.rbits is the
 					** current relocation bits */
 WORD	Tex_size;		/* for out file */
 WORD	Dat_size;		/* for out file */
@@ -70,15 +70,15 @@ char		Symname[20];		/* name of temporary file for symbol table */
 char	*Mapname;		/* name of the map file */
 FILE	*Mapp;			/* pointer for map file */
 char	No_out;			/* boolean for no out file */
-char		Undefineds = 0;		/* boolean, set if there are any 
-					** references to undefined global 
+char		Undefineds = 0;		/* boolean, set if there are any
+					** references to undefined global
 					** symbols in the out file */
 struct outword	Vreg[MAXREG];		/* virtual registers */
 
 /**************************  warmup  ****************************************/
 
 //kth: define return type
-int 
+int
 warmup (void)	/* get ready for pass 2: open out file and write header,
 		** open temporary file for out file
 		** symbol table and write global variables to it */
@@ -109,7 +109,7 @@ warmup (void)	/* get ready for pass 2: open out file and write header,
 	h[5] = Transadd;
 	h[6] = 0;
 	h[7] = Do_bits ? 0 : 1;
-	
+
 	fseek(Outp, 0L, 0);
 	fwrite(h, 8, 2, Outp);
 
@@ -140,7 +140,7 @@ warmup (void)	/* get ready for pass 2: open out file and write header,
 /*************************  dump_tree  **************************************/
 
 
-void 
+void
 dump_tree (		/* dump the sub-tree of symbols pointed to by *sym and
 			** number its contents for future reference to
 			** undefined symbols */
@@ -149,7 +149,7 @@ dump_tree (		/* dump the sub-tree of symbols pointed to by *sym and
 {
 	if (sym == NULL)
 		return;
-	
+
 	dump_tree(sym->left);
 
 	write_sym(sym->name, Do_kludge);
@@ -167,7 +167,7 @@ dump_tree (		/* dump the sub-tree of symbols pointed to by *sym and
 /**************************  write_sym  ***********************************/
 
 
-int 
+int
 write_sym (	/* write the given symbol as 8 bytes (null padded)
 			** in the symbol file , if flag then write the symbol
 			** with an underscore */
@@ -194,7 +194,7 @@ write_sym (	/* write the given symbol as 8 bytes (null padded)
 /****************************  pass2  ****************************************/
 
 
-int 
+int
 pass2 (void)		/* translate code and write local symbols */
 
 {
@@ -214,7 +214,7 @@ pass2 (void)		/* translate code and write local symbols */
 /************************  transcode  ****************************************/
 
 
-int 
+int
 transcode (		/* translate code */
     struct objfile *obj		/* object file to translate code from */
 )
@@ -373,7 +373,7 @@ transcode (		/* translate code */
 /*************************  abswrite  *****************************************/
 
 
-int 
+int
 abswrite (	/* write value in the out file */
     WORD value,
     WORD rbits	/* relocation bits */
@@ -389,8 +389,8 @@ abswrite (	/* write value in the out file */
 /************************  relwrite  ****************************************/
 
 
-int 
-relwrite (	/* write value in out file relative to 
+int
+relwrite (	/* write value in out file relative to
 			** global location counter */
     WORD value,
     WORD rbits
@@ -400,8 +400,8 @@ relwrite (	/* write value in out file relative to
 	Glc += 2;
 	if (Do_bits)
 		Putw((rbits == Curr.rbits) ? 0 : (rbits | 01), Bitp);
-			/* if the relocation bits for the word being written are 
-			** the same as the current psect's then the word is an 
+			/* if the relocation bits for the word being written are
+			** the same as the current psect's then the word is an
 			** absolute offset, otherwise add 1 to the relocation
 			** bits to indicate relativity to the PC */
 }
@@ -410,7 +410,7 @@ relwrite (	/* write value in out file relative to
 /*************************  bytewrite  *************************************/
 
 
-int 
+int
 bytewrite (	/* write the byte in the out file */
     int value
 )
@@ -423,7 +423,7 @@ bytewrite (	/* write the byte in the out file */
 /*************************  get_rc  *****************************************/
 
 
-int 
+int
 get_rc (	/* place in wbuff the relocation constant and
 				** relocation bits of psname
 				** or if psname is NULL the psect whose
@@ -465,7 +465,7 @@ get_rc (	/* place in wbuff the relocation constant and
 /*****************************  get_bits  **********************************/
 
 
-int 
+int
 get_bits (	/* get the out file symbol table bits and convert
 			** to relocation table bits */
     int attributes	/* the M11 attributes of a psect */
@@ -478,7 +478,7 @@ get_bits (	/* get the out file symbol table bits and convert
 /*****************************  get_type  ***********************************/
 
 
-int 
+int
 get_type (		/* decode the psect type into out file symbol table
 			** attribute word format */
     int attr
@@ -498,7 +498,7 @@ get_type (		/* decode the psect type into out file symbol table
 /***************************  get_sym  ***************************************/
 
 
-void 
+void
 get_sym (		/* get the value of the symbol in the input stream */
     struct outword *wbuff
 )
@@ -564,7 +564,7 @@ get_sym (		/* get the value of the symbol in the input stream */
 
 /***************************  vreg_oper  *************************************/
 
-int 
+int
 vreg_oper (		/* preform an operation on a virtual register */
     int drctv,		/* directive (operation) */
     struct outword *wbuff		/* source value and relocation bits */
@@ -638,7 +638,7 @@ vreg_oper (		/* preform an operation on a virtual register */
 /**************************  do040  ***************************************/
 
 
-int 
+int
 do040 (	/* do 040 code directive */
     struct objfile *obj
 )
@@ -686,7 +686,7 @@ do040 (	/* do 040 code directive */
 /*************************  p_limit  **************************************/
 
 
-void 
+void
 p_limit (	/* find the low or high limit of a psect */
     struct objfile *obj,
     int drctv
@@ -763,7 +763,7 @@ p_limit (	/* find the low or high limit of a psect */
 /***************************  linkseek  *************************************/
 
 
-int 
+int
 linkseek (
     WORD nlc,	/* new location counter */
     WORD nrbits	/* new relocation bits */
@@ -798,14 +798,14 @@ skerr:		fprintf(stderr, "Fseek error\n");
 # define	MAXCONSTS	10
 
 
-int 
+int
 dump_locals (	/* dump local symbols */
     struct objfile *obj
 )
 {
 	int		rconst[MAXCONSTS];	/* relocation constants */
 	int		segment[MAXCONSTS];	/* segment type for out file */
-	struct psect	*last;			
+	struct psect	*last;
 	struct psect	*temp;
 	char		sname[7];		/* symbol name */
 	char		index;
@@ -833,7 +833,7 @@ dump_locals (	/* dump local symbols */
 		type = getbyte();
 		index = getbyte();
 		value = getword();
-		
+
 		if (type & 001)		/* if internal m11 symbol, forget it */
 			continue;
 
@@ -846,7 +846,7 @@ dump_locals (	/* dump local symbols */
 			Putw(get_type(temp->type), Symp);
 			Putw(value + temp->rc, Symp);
 		}
-		else 
+		else
 		{
 			Putw(segment[index], Symp);
 			Putw(value + rconst[index], Symp);
@@ -858,7 +858,7 @@ dump_locals (	/* dump local symbols */
 /************************  uerror  ******************************************/
 
 
-int 
+int
 uerror (	/* print user error message and increment Nerrors */
     char *mess
 )
@@ -873,7 +873,7 @@ uerror (	/* print user error message and increment Nerrors */
 /**************************  loose_ends  ************************************/
 
 
-int 
+int
 loose_ends (void)
 {
 	int c;
@@ -884,7 +884,7 @@ loose_ends (void)
 	{
 		if (ferror(Bitp))
 			werror(Bitname);
-		
+
 		Bitp = freopen(Bitname, "r", Bitp);
 		if (Bitp == NULL)
 			lerror("can't reopen relocation bits file");
@@ -907,7 +907,7 @@ loose_ends (void)
 			lerror("can't reopen symbol table file");
 
 		/* send r/w head to end of rbits or code section in out file */
-			
+
 		fseek(Outp, (long) ((Tex_size + Dat_size) * (Do_bits + 1) + 020L), 0);
 
 		nbytes = 0;
@@ -950,7 +950,7 @@ loose_ends (void)
 /****************************  bail_out  ***********************************/
 
 
-void 
+void
 bail_out (void)	/* unlink any opened output file then exit */
 
 {
@@ -969,7 +969,7 @@ bail_out (void)	/* unlink any opened output file then exit */
 /********************************  werror  **********************************/
 
 
-int 
+int
 werror (		/* write error handler */
     char *fname
 )
