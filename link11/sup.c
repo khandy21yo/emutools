@@ -5,15 +5,15 @@
 
 //char *strcpy(), *strcat();
 
-int returnchar(register unsigned short k);
-int derad50(register unsigned short x,register char *s);
+int returnchar(unsigned short k);
+int derad50(unsigned short x,char *s);
 
 /************************  lerror  ****************************************/
 
 
 // kth: define return type
 int lerror(mess)	/* linker program error, print message and exit */
-register char	*mess;
+char	*mess;
 {
 	fprintf(stderr, "linker program error: %s\n", mess);
 	bail_out();
@@ -25,7 +25,7 @@ register char	*mess;
 
 int dc_symbol(s)	/* decode rad50 symbol in input stream and place in */
 		/* the buffer s. */
-register char	*s;
+char	*s;
 
 {
 	WORD getword();
@@ -41,8 +41,8 @@ register char	*s;
 
 int derad50(x,s)	/* decode a word in which 3 characters are coded by */
 			/* the RAD50 scheme. */
-register unsigned short	x;
-register char 	*s;
+unsigned short	x;
+char 	*s;
 
 {
 	s[2] = returnchar(x % 40);
@@ -58,7 +58,7 @@ register char 	*s;
 
 int returnchar(k)   	/* return a character according to RAD50 coding */
 			/* scheme, called by derad50 */
-register unsigned short	k;
+unsigned short	k;
 {
 	if (k >= 1 && k <= 26)
 		/* k represents a letter */
@@ -95,10 +95,10 @@ register unsigned short	k;
 
 char	*lalloc(amount)		/* storage allocator, calls calloc and if */
 				/* null is returned calls error */
-register int	amount;		/* number of bytes of storage needed */
+int	amount;		/* number of bytes of storage needed */
 {
 	//char *calloc();
-	register char	*temp;
+	char	*temp;
 
 	if ((temp = calloc(1, (unsigned)amount)) == NULL)
 	{
@@ -116,10 +116,10 @@ register int	amount;		/* number of bytes of storage needed */
 
 char	*tack(s, t)	/* catenate s with t if s does not already end with t */
 
-register char	*s;
-register char	*t;
+char	*s;
+char	*t;
 {
-	register char	*new;
+	char	*new;
 	int 		s_len;
 	int		t_len;
 
@@ -142,10 +142,10 @@ register char	*t;
 
 int strip(s, t)	/* strip t off the end of s if it is there */
 
-register char	*s;
-register char	*t;
+char	*s;
+char	*t;
 {
-	register int	s_len;
+	int	s_len;
 	int		t_len;
 
 	s_len = strlen(s);

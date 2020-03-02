@@ -6,19 +6,19 @@ WORD	getword();
 
 int werror(char *fname);
 void p_limit(struct objfile *obj, int drctv);
-void get_sym(register struct outword *wbuff);
-int get_bits(register int attributes);
-int linkseek(register WORD nlc,register WORD nrbits);
+void get_sym(struct outword *wbuff);
+int get_bits(int attributes);
+int linkseek(WORD nlc,WORD nrbits);
 int bytewrite(int value);
-void dump_tree(register struct symbol *sym);
-int vreg_oper(register int drctv,register struct outword *wbuff);
-int relwrite(register WORD value, register WORD	rbits);
-int abswrite(register WORD value, register WORD	rbits);
+void dump_tree(struct symbol *sym);
+int vreg_oper(int drctv,struct outword *wbuff);
+int relwrite(WORD value, WORD	rbits);
+int abswrite(WORD value, WORD	rbits);
 int dump_locals(struct objfile *obj);
 int transcode(struct objfile *obj);
-int get_type(register int attr);
+int get_type(int attr);
 int Putw(int x, FILE *p);
-int write_sym(register char *sname, register int flag);
+int write_sym(char *sname, int flag);
 
 
 /******************** variables with global scope ************************/
@@ -144,7 +144,7 @@ void
 dump_tree (		/* dump the sub-tree of symbols pointed to by *sym and
 			** number its contents for future reference to
 			** undefined symbols */
-    register struct symbol *sym
+    struct symbol *sym
 )
 {
 	if (sym == NULL)
@@ -171,8 +171,8 @@ int
 write_sym (	/* write the given symbol as 8 bytes (null padded)
 			** in the symbol file , if flag then write the symbol
 			** with an underscore */
-    register char *sname,
-    register int flag
+    char *sname,
+    int flag
 )
 {
 	if (flag)
@@ -219,8 +219,8 @@ transcode (		/* translate code */
     struct objfile *obj		/* object file to translate code from */
 )
 {
-	register int	drctv;		/* directive from obj file */
-	register int	value;		/* temporary variable */
+	int	drctv;		/* directive from obj file */
+	int	value;		/* temporary variable */
 	int		vrd;		/* possible virtual register directive */
 	static struct outword	wbuff;
 
@@ -375,8 +375,8 @@ transcode (		/* translate code */
 
 int 
 abswrite (	/* write value in the out file */
-    register WORD value,
-    register WORD rbits	/* relocation bits */
+    WORD value,
+    WORD rbits	/* relocation bits */
 )
 {
 	Putw(value, Outp);
@@ -392,8 +392,8 @@ abswrite (	/* write value in the out file */
 int 
 relwrite (	/* write value in out file relative to 
 			** global location counter */
-    register WORD value,
-    register WORD rbits
+    WORD value,
+    WORD rbits
 )
 {
 	Putw(value - Glc - 2, Outp);
@@ -429,14 +429,14 @@ get_rc (	/* place in wbuff the relocation constant and
 				** or if psname is NULL the psect whose
 				** name is in the input stream, and whose object
 				** file is pointed to by 'obj'. */
-    register struct outword *wbuff,
+    struct outword *wbuff,
     struct objfile *obj,
-    register char *psname
+    char *psname
 )
 
 {
 	char			name[7];	/* the name of the psect */
-	register struct psect	*ps;
+	struct psect	*ps;
 
 	/* if psname is NULL get name from input stream */
 	if (psname == NULL)
@@ -468,7 +468,7 @@ get_rc (	/* place in wbuff the relocation constant and
 int 
 get_bits (	/* get the out file symbol table bits and convert
 			** to relocation table bits */
-    register int attributes	/* the M11 attributes of a psect */
+    int attributes	/* the M11 attributes of a psect */
 )
 {
 	return (2 * (get_type(attributes) - 1));
@@ -481,7 +481,7 @@ get_bits (	/* get the out file symbol table bits and convert
 int 
 get_type (		/* decode the psect type into out file symbol table
 			** attribute word format */
-    register int attr
+    int attr
 )
 {
 	if (!(attr & REL))	/* absolute */
@@ -500,13 +500,13 @@ get_type (		/* decode the psect type into out file symbol table
 
 void 
 get_sym (		/* get the value of the symbol in the input stream */
-    register struct outword *wbuff
+    struct outword *wbuff
 )
 
 {
 	char			sname[7];	/* the name of the symbol */
-	register struct symbol  *sym;
-	register int		cond;		/* used for branching left
+	struct symbol  *sym;
+	int		cond;		/* used for branching left
 						** or right */
 	int			index;		/* virtual register index */
 
@@ -566,11 +566,11 @@ get_sym (		/* get the value of the symbol in the input stream */
 
 int 
 vreg_oper (		/* preform an operation on a virtual register */
-    register int drctv,		/* directive (operation) */
-    register struct outword *wbuff		/* source value and relocation bits */
+    int drctv,		/* directive (operation) */
+    struct outword *wbuff		/* source value and relocation bits */
 )
 {
-	register int	index;		/* index of destination register */
+	int	index;		/* index of destination register */
 	static char	mess[] = "unrelocatable arithmetic expression";
 
 	index = getbyte() - 1;
@@ -640,11 +640,11 @@ vreg_oper (		/* preform an operation on a virtual register */
 
 int 
 do040 (	/* do 040 code directive */
-    register struct objfile *obj
+    struct objfile *obj
 )
 {
-	register int	drctv;
-	register int	index;
+	int	drctv;
+	int	index;
 
 	switch (drctv = getbyte())
 	{
@@ -692,10 +692,10 @@ p_limit (	/* find the low or high limit of a psect */
     int drctv
 )
 {
-	register struct psect	*ps;
-	register struct g_sect	*gptr;
+	struct psect	*ps;
+	struct g_sect	*gptr;
 	int			cond;
-	register int		index;
+	int		index;
 	char			pname[7];
 
 	dc_symbol(pname);
@@ -765,8 +765,8 @@ p_limit (	/* find the low or high limit of a psect */
 
 int 
 linkseek (
-    register WORD nlc,	/* new location counter */
-    register WORD nrbits	/* new relocation bits */
+    WORD nlc,	/* new location counter */
+    WORD nrbits	/* new relocation bits */
 )
 {
 	long	where;
@@ -860,7 +860,7 @@ dump_locals (	/* dump local symbols */
 
 int 
 uerror (	/* print user error message and increment Nerrors */
-    register char *mess
+    char *mess
 )
 {
 	Nerrors++;
@@ -876,8 +876,8 @@ uerror (	/* print user error message and increment Nerrors */
 int 
 loose_ends (void)
 {
-	register int c;
-	register int	nbytes;	/* number of bytes in out file symbol table */
+	int c;
+	int	nbytes;	/* number of bytes in out file symbol table */
 
 
 	if (Do_bits)

@@ -9,18 +9,18 @@ WORD	getword();
 
 void sigx(int n);
 void post_bail();
-void dump_symlist(register struct symbol *sym);
-void fattr(register int x, register char *s, register char *t);
+void dump_symlist(struct symbol *sym);
+void fattr(int x, char *s, char *t);
 void prattr(int x);
 void brag(char *s, long start, long size, char *tag);
 int dump_undefs(struct symbol *sym, int n);
 void printmap();
-void relsyms(register struct symbol	*sym);	
-void asgn_rcs(register struct psect 	*p);
+void relsyms(struct symbol	*sym);	
+void asgn_rcs(struct psect 	*p);
 void relocate();
-void table(register struct symbol *root[],register struct symbol *new);
-void place_local(register struct psect *ps);
-void place_global(register struct psect *ps);
+void table(struct symbol *root[],struct symbol *new);
+void place_local(struct psect *ps);
+void place_global(struct psect *ps);
 void pass1();
 void outnames();
 void scanargs(int argc,char *argv[]);
@@ -108,9 +108,9 @@ void scanargs(argc, argv)
 int	argc;
 char	*argv[];
 {
-	register char			*s;
+	char			*s;
 	char				*r;
-	register struct objfile		*end;	/* last file in link-list */
+	struct objfile		*end;	/* last file in link-list */
 
 	struct objfile			*newfile();	/* allocaters */
 
@@ -191,10 +191,10 @@ char	*argv[];
 
 char	*strsub(s, t)	/* if t is the initial part of s then return a pointer
 			** to the rest of s, else return NULL */
-register char 	*s;
-register char	*t;
+char 	*s;
+char	*t;
 {
-	register char *q;
+	char *q;
 	
 	q = t;
 	while (*t)
@@ -248,7 +248,7 @@ void outnames()	/* determine names of output files */
 struct psect	*newpsect()	/* allocate and initialize a new psect
 				** structure */
 {
-	register struct psect	*p;
+	struct psect	*p;
 
 	p = (struct psect *) lalloc(sizeof (struct psect));
 	p->next = p->pssame = p->obsame = NULL;
@@ -263,7 +263,7 @@ struct psect	*newpsect()	/* allocate and initialize a new psect
 struct symbol	*newsymbol()	/* allocate and initialize new symbol 
 				** structure */
 {
-	register struct symbol	*p;
+	struct symbol	*p;
 
 	p = (struct symbol *) lalloc(sizeof (struct symbol));
 	p->prsect = (struct psect *)NULL;
@@ -278,7 +278,7 @@ struct symbol	*newsymbol()	/* allocate and initialize new symbol
 struct objfile	*newfile()	/* allocate and initialize new psect 
 				** structure */
 {
-	register struct objfile		*p;
+	struct objfile		*p;
 
 	p = (struct objfile *) lalloc(sizeof (struct objfile));
 	p->nextfile = NULL;
@@ -294,7 +294,7 @@ struct objfile	*newfile()	/* allocate and initialize new psect
 struct g_sect	*new_gsect()
 
 {
-	register struct g_sect	*p;
+	struct g_sect	*p;
 
 	p = (struct g_sect *) lalloc(sizeof(struct g_sect));
 	p->leftt = p->rightt = NULL;
@@ -310,10 +310,10 @@ void pass1()
 {
 	char			name[7];	/* string from M11 */
 	char			attr;		/* attribute from M11 */
-	register int		type;		/* type of string */
+	int		type;		/* type of string */
 	int			value;		/* from M11 */
-	register struct objfile *of;		/* current object file */
-	register struct psect	*ps;		/* current psect */
+	struct objfile *of;		/* current object file */
+	struct psect	*ps;		/* current psect */
 	struct symbol		*sym;		/* current and last symbol
 						** in symbol list */
 	struct symbol		**nextsym;	/* pointer to pointer which
@@ -439,10 +439,10 @@ void place_global(ps)		/* try to place the given program section
 				** finding it in the global psect tree. if 
 				** it is not there then add to tree and place
 				** it through place_local */
-register struct psect	*ps;
+struct psect	*ps;
 {
-	register struct	g_sect 	**ptr;
-	register int		cond;
+	struct	g_sect 	**ptr;
+	int		cond;
 
 	ptr = &Gsect_root;
 	while (*ptr != NULL)
@@ -482,9 +482,9 @@ register struct psect	*ps;
 
 void place_local(ps)			/* place psect at end of its UNIX section
 				** type link-list */
-register struct psect	*ps;
+struct psect	*ps;
 {
-	register int type = ps->type;
+	int type = ps->type;
 	
 	if( !(type & REL))		/* asect */
 	{
@@ -528,11 +528,11 @@ register struct psect	*ps;
 
 void table(root, new)	/* place new symbol structure in symbol table tree */
 
-register struct symbol	*root[];	/* pointer to root pointer of tree */
-register struct symbol	*new;		/* pointer to symbol (structure) to
+struct symbol	*root[];	/* pointer to root pointer of tree */
+struct symbol	*new;		/* pointer to symbol (structure) to
 					** be added */
 {
-	register int	cond;
+	int	cond;
 
 	for (;;)	/* repeat until break */
 	{
@@ -586,7 +586,7 @@ register struct symbol	*new;		/* pointer to symbol (structure) to
 void relocate()	/* assign relocation constants for all relocatable psects */
 
 {
-	register unsigned temp;
+	unsigned temp;
 	struct outword	trans_rc;
 
 	R_counter = Maxabs;	/* set relocation counter to follow
@@ -644,11 +644,11 @@ void asgn_rcs(p)	/* assign relocation constants to
 		** the psects pointed to.  this routine uses the
 		** variable R_counter which contains the address of the 
 		** next available space in memory */
-register struct psect 	*p;	/* called with ins-dat-bss root */
+struct psect 	*p;	/* called with ins-dat-bss root */
 
 {
-	register int		size;	/* addendum to R_counter */
-	register struct psect 	*d;	/* temporary pointer used to access
+	int		size;	/* addendum to R_counter */
+	struct psect 	*d;	/* temporary pointer used to access
 					** same psects */
 	for (;;)	/* repeat until break */
 	{
@@ -716,7 +716,7 @@ register struct psect 	*p;	/* called with ins-dat-bss root */
 
 void relsyms(sym)		/* relocate global symbols */
 
-register struct symbol	*sym;	
+struct symbol	*sym;	
 {
 	if (sym == NULL)
 		return;
@@ -731,8 +731,8 @@ register struct symbol	*sym;
 
 void printmap()
 {
-	register struct objfile	*op;
-	register struct psect 	*pp;
+	struct objfile	*op;
+	struct psect 	*pp;
 	time_t *		tvec;	/* time vector */
 	static char		dashes[] = "----------------";
 
@@ -806,8 +806,8 @@ void prattr(int x)
 	fattr(x&GBL,"gbl", "loc");
 }
 void fattr(x, s, t)
-	register int x;
-	register char *s, *t;
+	int x;
+	char *s, *t;
 {
 	if(x) fprintf(Mapp, s);
 	else  fprintf(Mapp, t);
@@ -816,9 +816,9 @@ void fattr(x, s, t)
 
 
 void dump_symlist(sym)	/* write to the map file the symbol list for a psect */
-register struct symbol	*sym;
+struct symbol	*sym;
 {
-	register int	i;
+	int	i;
 
 	for (i = 0; sym != NULL; sym = sym->symlist)
 	{

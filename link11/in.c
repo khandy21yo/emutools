@@ -68,7 +68,7 @@ int	newmod;
 int morebytes()	/* returns 1 if there are unread bytes of the current */
 		/* checksum module type, returns 0 if not */
 {
-	register int	temptype;
+	int	temptype;
 
 	if (No_code)	/* if no code section, return 0 and reset */
 	{
@@ -115,7 +115,7 @@ int getbyte()	/* return next byte of current checksum module type */
 
 WORD getword()	/* return next word */
 {
-	register int	temp;
+	int	temp;
 
 	temp = 0377 & getbyte();
 	return (0400 * getbyte() + temp);
@@ -147,7 +147,7 @@ int	sum;	/* sum of input bytes */
 int read_mod()	/* read a checksum module and return type */
 
 {
-	register int	i;
+	int	i;
 	sum = 0;
 	if (getb() != 1)
 	{
@@ -188,7 +188,7 @@ int read_mod()	/* read a checksum module and return type */
 int getb()		/* get a byte from input file, add to "sum" */
 		/* check for EOF, return the byte */
 {
-	register int	k;
+	int	k;
 	
 	sum += (k = getc(Fp));
 
