@@ -8,17 +8,17 @@ int werror(char *fname);
 void p_limit(struct objfile *obj, int drctv);
 void get_sym(struct outword *wbuff);
 int get_bits(int attributes);
-int linkseek(WORD nlc,WORD nrbits);
-int bytewrite(int value);
+void linkseek(WORD nlc,WORD nrbits);
+void bytewrite(int value);
 void dump_tree(struct symbol *sym);
-int vreg_oper(int drctv,struct outword *wbuff);
-int relwrite(WORD value, WORD rbits);
-int abswrite(WORD value, WORD rbits);
-int dump_locals(struct objfile *obj);
-int transcode(struct objfile *obj);
+void vreg_oper(int drctv,struct outword *wbuff);
+void relwrite(WORD value, WORD rbits);
+void abswrite(WORD value, WORD rbits);
+void dump_locals(struct objfile *obj);
+void transcode(struct objfile *obj);
 int get_type(int attr);
-int Putw(int x, FILE *p);
-int write_sym(char *sname, int flag);
+void Putw(int x, FILE *p);
+void write_sym(char *sname, int flag);
 
 
 /******************** variables with global scope ************************/
@@ -78,8 +78,7 @@ struct outword	Vreg[MAXREG];		/* virtual registers */
 /**************************  warmup  ****************************************/
 
 //kth: define return type
-int
-warmup (void)	/* get ready for pass 2: open out file and write header,
+void warmup (void)	/* get ready for pass 2: open out file and write header,
 		** open temporary file for out file
 		** symbol table and write global variables to it */
 
@@ -167,8 +166,7 @@ dump_tree (		/* dump the sub-tree of symbols pointed to by *sym and
 /**************************  write_sym  ***********************************/
 
 
-int
-write_sym (	/* write the given symbol as 8 bytes (null padded)
+void write_sym (	/* write the given symbol as 8 bytes (null padded)
 			** in the symbol file , if flag then write the symbol
 			** with an underscore */
     char *sname,
@@ -194,8 +192,7 @@ write_sym (	/* write the given symbol as 8 bytes (null padded)
 /****************************  pass2  ****************************************/
 
 
-int
-pass2 (void)		/* translate code and write local symbols */
+void pass2 (void)		/* translate code and write local symbols */
 
 {
 	struct objfile	*obj;	/* which object file */
@@ -214,8 +211,7 @@ pass2 (void)		/* translate code and write local symbols */
 /************************  transcode  ****************************************/
 
 
-int
-transcode (		/* translate code */
+void transcode (		/* translate code */
     struct objfile *obj		/* object file to translate code from */
 )
 {
@@ -373,8 +369,7 @@ transcode (		/* translate code */
 /*************************  abswrite  *****************************************/
 
 
-int
-abswrite (	/* write value in the out file */
+void abswrite (	/* write value in the out file */
     WORD value,
     WORD rbits	/* relocation bits */
 )
@@ -389,8 +384,7 @@ abswrite (	/* write value in the out file */
 /************************  relwrite  ****************************************/
 
 
-int
-relwrite (	/* write value in out file relative to
+void relwrite (	/* write value in out file relative to
 			** global location counter */
     WORD value,
     WORD rbits
@@ -410,8 +404,7 @@ relwrite (	/* write value in out file relative to
 /*************************  bytewrite  *************************************/
 
 
-int
-bytewrite (	/* write the byte in the out file */
+void bytewrite (	/* write the byte in the out file */
     int value
 )
 {
@@ -423,8 +416,7 @@ bytewrite (	/* write the byte in the out file */
 /*************************  get_rc  *****************************************/
 
 
-int
-get_rc (	/* place in wbuff the relocation constant and
+void get_rc (	/* place in wbuff the relocation constant and
 				** relocation bits of psname
 				** or if psname is NULL the psect whose
 				** name is in the input stream, and whose object
@@ -564,8 +556,7 @@ get_sym (		/* get the value of the symbol in the input stream */
 
 /***************************  vreg_oper  *************************************/
 
-int
-vreg_oper (		/* preform an operation on a virtual register */
+void vreg_oper (		/* preform an operation on a virtual register */
     int drctv,		/* directive (operation) */
     struct outword *wbuff		/* source value and relocation bits */
 )
@@ -598,10 +589,12 @@ vreg_oper (		/* preform an operation on a virtual register */
 		case 0202:
 			Vreg[index].val -= wbuff->val;
 			if (Do_bits && wbuff->rbits)
+			{
 				if (Vreg[index].rbits == wbuff->rbits)
 					Vreg[index].rbits = 0;
 				else
 					uerror(mess);
+			}
 			break;
 
 		case 0203:
@@ -638,8 +631,7 @@ vreg_oper (		/* preform an operation on a virtual register */
 /**************************  do040  ***************************************/
 
 
-int
-do040 (	/* do 040 code directive */
+void do040 (	/* do 040 code directive */
     struct objfile *obj
 )
 {
@@ -763,8 +755,7 @@ p_limit (	/* find the low or high limit of a psect */
 /***************************  linkseek  *************************************/
 
 
-int
-linkseek (
+void linkseek (
     WORD nlc,	/* new location counter */
     WORD nrbits	/* new relocation bits */
 )
@@ -798,8 +789,7 @@ skerr:		fprintf(stderr, "Fseek error\n");
 # define	MAXCONSTS	10
 
 
-int
-dump_locals (	/* dump local symbols */
+void dump_locals (	/* dump local symbols */
     struct objfile *obj
 )
 {
@@ -808,7 +798,7 @@ dump_locals (	/* dump local symbols */
 	struct psect	*last;
 	struct psect	*temp;
 	char		sname[7];		/* symbol name */
-	char		index;
+	int		index;
 	char		type;
 	int		value;
 	int		i;
@@ -858,10 +848,8 @@ dump_locals (	/* dump local symbols */
 /************************  uerror  ******************************************/
 
 
-int
-uerror (	/* print user error message and increment Nerrors */
-    char *mess
-)
+void uerror (	/* print user error message and increment Nerrors */
+    char *mess)
 {
 	Nerrors++;
 	fprintf(stderr, "%s\n", mess);
@@ -982,7 +970,8 @@ werror (		/* write error handler */
 		unlink(Bitname);
 	exit(1);
 }
-int Putw(x, p)
+
+void Putw(x, p)
 	int x;
 	FILE *p;
 {

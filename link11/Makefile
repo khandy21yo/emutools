@@ -3,7 +3,7 @@ DESTDIR=
 # kth: lose undefined option
 #SEPFLAG=-i
 SEPFLAG=
-CFLAGS=	-O0 -g
+CFLAGS=	-O0 -g -Wall
 
 HDRS=	link.h
 SRCS=	in.c link.c pass2.c sup.c 

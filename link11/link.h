@@ -128,16 +128,16 @@ struct g_sect		/* structure for global program section tree */
 
 
 //kth: define various functions to fix compiler warnings
-int lerror(char *mess);
-int strip(char *s, char *t);
+void lerror(char *mess);
+void strip(char *s, char *t);
 void bail_out();
-int dc_symbol(char *s);
-int uerror(char *mess);
-int do040(struct objfile *obj);
-int get_rc(struct outword *wbuff, struct objfile *obj, char *psname);
+void dc_symbol(char *s);
+void uerror(char *mess);
+void do040(struct objfile *obj);
+void get_rc(struct outword *wbuff, struct objfile *obj, char *psname);
 int getbyte();
 int morebytes();
-int ch_input(char *newfile, int newmod);
+void ch_input(char *newfile, int newmod);
 int loose_ends (void);
-int pass2 (void);
-int warmup (void);
+void pass2 (void);
+void warmup (void);

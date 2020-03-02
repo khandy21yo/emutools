@@ -7,7 +7,7 @@
 
 int getb();
 int read_mod();
-int inerror(char *mess);
+void inerror(char *mess);
 
 
 static char	*Fname = NULL;	/* name of current input file */
@@ -23,9 +23,9 @@ static char	No_code = 0;	/* flag set if a code section was attempted to
 /***************************  ch_input  ************************************/
 
 
-int ch_input(newfile, newmod)	/* change input checksum buffer contents */
-char	*newfile;
-int	newmod;
+void ch_input(	/* change input checksum buffer contents */
+	char	*newfile,
+	int	newmod)
 
 {
 	if (Fname == NULL || strcmp(Fname, newfile))	/* new file is
@@ -100,7 +100,7 @@ int getbyte()	/* return next byte of current checksum module type */
 	if ((Count == 0) && !morebytes())
 	{
 		lerror("End of checksum module");
-		/* NOTREACHED */
+		return 0; /* NOTREACHED */
 	}
 	else
 	{
@@ -125,7 +125,7 @@ WORD getword()	/* return next word */
 /****************************  inerror  **********************************/
 
 
-int inerror(mess)	/* print error message and filename then exit. */
+void inerror(mess)	/* print error message and filename then exit. */
 		/* called when a user error has occurred concerning the */
 		/* input file */
 char 	*mess;

@@ -341,9 +341,11 @@ void pass1()
 
 			  case 1:	/* program section */
 			  case 5:	/* program section */
-			  if(Verbose)
-				fprintf(stderr,"gsd%d <%6s> %o\n",
-					type, name, attr);
+				if (Verbose)
+				{
+					fprintf(stderr,"gsd%d <%6s> %o\n",
+						type, name, attr);
+				}
 
 				/* increment size if odd */
 				value += (value % 2) ? 1 : 0;
@@ -559,7 +561,7 @@ struct symbol	*new;		/* pointer to symbol (structure) to
 					uerror(Erstring);
 					}
 				}
-				/* else	/* get rid of old undefined symbol */
+				/* else	get rid of old undefined symbol */
 				{
 					new->left = (*root)->left;
 					new->right = (*root)->right;
@@ -733,7 +735,7 @@ void printmap()
 {
 	struct objfile	*op;
 	struct psect 	*pp;
-	time_t *		tvec;	/* time vector */
+	time_t *		tvec = 0;	/* time vector */
 	static char		dashes[] = "----------------";
 
 	Mapp = fopen(Mapname, "w");
@@ -791,7 +793,7 @@ void brag(s, start, size, tag)
 {
 	long stop = 0177777 & (size + start);
 
-	fprintf(Mapp, "%s:\t%06O\t%06O\t%06O\t%s\n", s, start, stop, size, tag);
+	fprintf(Mapp, "%s:\t%06lo\t%06lo\t%06lo\t%s\n", s, start, stop, size, tag);
 }
 
 void prattr(int x)

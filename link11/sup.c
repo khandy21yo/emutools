@@ -6,14 +6,14 @@
 //char *strcpy(), *strcat();
 
 int returnchar(unsigned short k);
-int derad50(unsigned short x,char *s);
+void derad50(unsigned short x,char *s);
 
 /************************  lerror  ****************************************/
 
 
 // kth: define return type
-int lerror(mess)	/* linker program error, print message and exit */
-char	*mess;
+void lerror(	/* linker program error, print message and exit */
+	char	*mess)
 {
 	fprintf(stderr, "linker program error: %s\n", mess);
 	bail_out();
@@ -23,9 +23,9 @@ char	*mess;
 /**************************  dc_symbol  **************************************/
 
 
-int dc_symbol(s)	/* decode rad50 symbol in input stream and place in */
+void dc_symbol(	/* decode rad50 symbol in input stream and place in */
 		/* the buffer s. */
-char	*s;
+	char	*s)
 
 {
 	WORD getword();
@@ -39,10 +39,10 @@ char	*s;
 /******************************  derad50  ************************************/
 
 
-int derad50(x,s)	/* decode a word in which 3 characters are coded by */
+void derad50(	/* decode a word in which 3 characters are coded by */
 			/* the RAD50 scheme. */
-unsigned short	x;
-char 	*s;
+	unsigned short	x,
+	char 	*s)
 
 {
 	s[2] = returnchar(x % 40);
@@ -56,9 +56,9 @@ char 	*s;
 /******************************  returnchar  *******************************/
 
 
-int returnchar(k)   	/* return a character according to RAD50 coding */
+int returnchar(   	/* return a character according to RAD50 coding */
 			/* scheme, called by derad50 */
-unsigned short	k;
+	unsigned short	k)
 {
 	if (k >= 1 && k <= 26)
 		/* k represents a letter */
@@ -84,7 +84,7 @@ unsigned short	k;
 
 		default:
 			lerror("RAD50 non-character");
-			/* NOTREACHED */
+			return 0; /* NOTREACHED */
 	}
 
 }
@@ -104,7 +104,7 @@ int	amount;		/* number of bytes of storage needed */
 	{
 		fprintf(stderr, "Error: core size exceeded.\n");
 		bail_out();
-		/* NOTREACHED */
+		return 0; /* NOTREACHED */
 	}
 	else
 		return (temp);
@@ -140,10 +140,9 @@ char	*t;
 /******************************  strip  ************************************/
 
 
-int strip(s, t)	/* strip t off the end of s if it is there */
-
-char	*s;
-char	*t;
+void strip(	/* strip t off the end of s if it is there */
+	char	*s,
+	char	*t)
 {
 	int	s_len;
 	int		t_len;
