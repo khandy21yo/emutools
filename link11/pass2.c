@@ -919,7 +919,7 @@ loose_ends (void)
 			werror(Mapname);
 		fclose(Mapp);
 		if (Do_lpr_map)
-			execl("/usr/bin/lpr", "lpr", Mapname, 0);
+			execl("/usr/bin/lpr", "lpr", Mapname, (char *)0);
 	}
 
 	if (ferror(Outp))
