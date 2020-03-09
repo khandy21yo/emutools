@@ -3,7 +3,7 @@
 # include "link.h"
 
 /* define maximum size of checksum contents */
-# define	MAXSIZE		40
+# define	MAXSIZE		400
 
 int getb();
 int read_mod();
@@ -151,7 +151,8 @@ int read_mod()	/* read a checksum module and return type */
 	sum = 0;
 	if (getb() != 1)
 	{
-		if (feof(Fp) && No_code)
+//		if (feof(Fp) && No_code)
+		if (No_code)
 			return ( 6 );
 		else
 			inerror("Not in object file format");
@@ -162,9 +163,13 @@ int read_mod()	/* read a checksum module and return type */
 	Count = getb();
 	Count += 0400 * getb() - 6;
 	if (Count > MAXSIZE)
+	{
+		printf("DEBUG: Count = %d\n", Count);
 		lerror("checksum size too large");
+	}
 	Type = getb();
 			/* clear zero byte */
+	printf("DEBUG: Count = %d, Type = %d\n", Count, Type);
 	getb();
 			/* read checksum contents into buffer */
 	for (i = 0; i < Count; i++)
@@ -172,10 +177,13 @@ int read_mod()	/* read a checksum module and return type */
 			/* read checksum */
 	getb();
 	if (sum % 0400 != 0)
+	{
+		printf("DEBUG: sum = %d\n", sum);
 		inerror("Checksum error, reassemble");
+	}
 			/* clear zero trailer byte if Count even */
-	if (Count % 2 == 0)
-		getb();
+//	if (Count % 2 == 0)
+//		getb();
 			/* set pointer to next character to be read */
 	Next = Buff;
 	return (Type);
@@ -192,6 +200,7 @@ int getb()		/* get a byte from input file, add to "sum" */
 
 	sum += (k = getc(Fp));
 
+printf("getb: char %d, sum %d\n", k, sum);
 	if (k == EOF)
 		No_code = 1;
 	return (0377 & k);
