@@ -1,4 +1,4 @@
-This code was originally taken from the unix-archive from the directort
+This code was originally taken from the unix-archive from the directory
 
 	unix-archive/PDP-11/Trees/2.11BSD/usr/src/new/l11/
 
@@ -7,8 +7,47 @@ This involved adding '#include' directives, remiving old prototypes
 for system functions 'extern int printf();', and adding prototypes
 for functions used-before-defined.
 
-The code is still mostly in K&R format, except for the prototypes
-that I added, and some code to fix compilation problems. I did not
-remove the 'register' or 'auto' declarations.
+Other changes were madee to handle linking a RT11 object file
+from a RSTS/E system. It does something now, but I don't know
+exactly how functional it really is.
+
+The code is still mostly in K&R format, except for the bits I
+modified.
+
+It expects RT11 format object files.
+
+Some things seem to work (like -v), and some segfault (like -ls)
+
+Command line options defined in link.c are:
+
+	-na:<name>
+		Out file name (.out)
+	-ls, -mp
+		Do_map
+	-lp
+		Do_map, spool output
+	-od
+		Do_odt
+	-r
+		Do_bits
+	-c
+		Do_bits, C_rel
+	-K
+		Do_bits, C_rel, Do_kludge
+	-
+		Do_silent
+	-ns
+		Do_table
+	-go
+		No_locals
+	-no
+		No_out
+	-n
+		Do_410
+	-i
+		Do_411
+	-v
+		Verbose
+
 
 kth, Feb 2020
