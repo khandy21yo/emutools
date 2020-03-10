@@ -148,14 +148,28 @@ int read_mod()	/* read a checksum module and return type */
 
 {
 	int	i;
+	int	c1, c2;
+
 	sum = 0;
-	if (getb() != 1)
+	if ((c1 = getb()) != 1)
 	{
 //		if (feof(Fp) && No_code)
 		if (No_code)
 			return ( 6 );
 		else
+		{
+			// Try to see if we are at eof.
+			// Unlike Unix, DEC OS's bad disk blocks to 512.
+			// I'm assuming to nulls at this point mean EOF.
+			//
+			c2 = getb();
+			if ((c1 == 0 || c1 == -1) && (c2 == 0 || c2 == -1))
+			{
+				No_code = 1;
+				return ( 6 );
+			}
 			inerror("Not in object file format");
+		}
 	}
 			/* clear zero byte */
 	getb();
@@ -164,12 +178,12 @@ int read_mod()	/* read a checksum module and return type */
 	Count += 0400 * getb() - 6;
 	if (Count > MAXSIZE)
 	{
-		printf("DEBUG: Count = %d\n", Count);
+//		printf("DEBUG: Count = %d\n", Count);
 		lerror("checksum size too large");
 	}
 	Type = getb();
 			/* clear zero byte */
-	printf("DEBUG: Count = %d, Type = %d\n", Count, Type);
+//	printf("DEBUG: Count = %d, Type = %d\n", Count, Type);
 	getb();
 			/* read checksum contents into buffer */
 	for (i = 0; i < Count; i++)
@@ -178,7 +192,7 @@ int read_mod()	/* read a checksum module and return type */
 	getb();
 	if (sum % 0400 != 0)
 	{
-		printf("DEBUG: sum = %d\n", sum);
+//		printf("DEBUG: sum = %d\n", sum);
 		inerror("Checksum error, reassemble");
 	}
 			/* clear zero trailer byte if Count even */
@@ -200,7 +214,7 @@ int getb()		/* get a byte from input file, add to "sum" */
 
 	sum += (k = getc(Fp));
 
-printf("getb: char %d, sum %d\n", k, sum);
+// printf("getb: char %d, sum %d\n", k, sum);
 	if (k == EOF)
 		No_code = 1;
 	return (0377 & k);
