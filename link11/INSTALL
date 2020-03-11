@@ -1,0 +1,34 @@
+There are two ways to build/install this package
+
+1. Using the original Makefile
+
+	To build
+
+		type 'makel make obint
+
+	To install
+
+		stall with 'make install'
+
+2. Using cmake
+
+	To build
+
+		mkdir build
+		cd build
+		cmake ..
+
+		make
+
+	To install
+
+		make install
+
+	To create Debian package
+
+		cpack
+
+	To install debian package
+
+		dpkg -i link11-0.1.1-Linux.deb
+
