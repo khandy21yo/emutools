@@ -6,12 +6,22 @@ WORD getword();
 
 # include <stdio.h>
 
-main(argc, argv)
+
+void vrdirect(char *s, WORD drctv);
+void regcheck(char *s);
+void lst(char *fname);
+void code(char *fname);
+void gsd(char *fname);
+void sdo040();
+
+ 
+
+int main(argc, argv)
 int	argc;
 char	*argv[];
 
 {
-	int 	whicharg;
+	int	whicharg;
 	char	*filename;
 	char	*cat_obj();
 
@@ -31,7 +41,7 @@ char	*argv[];
 	}
 }
 
-gsd(fname)
+void gsd(fname)
 char	*fname;
 {
 	char	sname[7];	/* symbol name */
@@ -91,8 +101,8 @@ char	*fname;
 	}
 }
 
-code(fname)
-char 	*fname;
+void code(fname)
+char	*fname;
 {
 	char		sname[7];	/* symbol name buffer */
 	char		vrstring[40];	/* string used as an argument to */
@@ -166,7 +176,7 @@ char 	*fname;
 				break;
 
 			case 040:
-				do040();
+				sdo040();
 				break;
 
 			case 044:
@@ -239,7 +249,7 @@ char 	*fname;
 }
 
 
-lst(fname)	/* local symbol table dump */
+void lst(fname)	/* local symbol table dump */
 char	*fname;
 {
 	char	sname[7];
@@ -291,7 +301,7 @@ int	attr;
 }
 
 
-regcheck(s)	/* checks to see if the string is suppossed to */
+void regcheck(s)	/* checks to see if the string is suppossed to */
 		/* represent a register rather than a symbol, */
 		/* if so it adds "reg." to the string */
 char	*s;
@@ -305,8 +315,8 @@ char	*s;
 }
 
 
-vrdirect(s, drctv)		/* print virtual register directive */
-char	 	*s;		/* string argument to directive */
+void vrdirect(s, drctv)		/* print virtual register directive */
+char		*s;		/* string argument to directive */
 WORD drctv;	/* the directive */
 {
 	char	reg;	/* destination character register */
@@ -349,7 +359,7 @@ WORD drctv;	/* the directive */
 }
 
 
-do040()		/* 040 is used for misc. directives to virtual registers */
+void sdo040()		/* 040 is used for misc. directives to virtual registers */
 
 {
 	int	drctv;		/* the drctv */
@@ -397,7 +407,7 @@ char	getreg()	/* reads a byte to determine register character */
 	return('A' + getbyte() - 1);
 }
 
-char 	*gsstring(attr)	/* decodes attr (which specifies global symbol */
+char	*gsstring(attr)	/* decodes attr (which specifies global symbol */
 			/* attributes) into a string */
 int	attr;
 {
@@ -417,7 +427,7 @@ int	attr;
 }
 
 
-char 	*lsstring(attr)	/* decodes attr (which specifies local symbol */
+char	*lsstring(attr)	/* decodes attr (which specifies local symbol */
 			/* attributes) into a string */
 int	attr;
 {
@@ -448,7 +458,7 @@ int	attr;
 /***********************  bail_out  ****************************************/
 
 
-int bail_out()
+void bail_out()
 {
-	exit();
+	exit(1);
 }
