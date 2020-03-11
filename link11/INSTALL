@@ -14,6 +14,10 @@ There are two ways to build/install this package
 
 	To build
 
+		You will want to build in a dieectory other rgan the original
+		source directory, otherwise cmake will overwrite the original
+		Makefile.
+
 		mkdir build
 		cd build
 		cmake ..
