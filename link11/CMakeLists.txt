@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.12.2)
 
-project (link11)
+project (link11 VERSION 0.2
+	DESCRIPTION "PDP-11 linker"
+	LANGUAGES C)
 
 
 add_executable(l11 in.c link.c pass2.c sup.c)
