@@ -802,7 +802,7 @@ void prattr(int x)
 	fattr(x&SHR, "shr, ", "prv, ");
 	fattr(x&INS, "ins, ", "");
 	fattr(x&BSS, "bss, ", "");
-	fattr( !((x&BSS) || (x&INS)), "dat,", "");
+	fattr( !((x&BSS) || (x&INS)), "dat, ", "");
 	fattr(x&REL, "rel, ", "abs, ");
 	fattr(x&OVR,"ovr, ", "con, ");
 	fattr(x&GBL,"gbl", "loc");
