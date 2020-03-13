@@ -735,7 +735,7 @@ void printmap()
 {
 	struct objfile	*op;
 	struct psect 	*pp;
-	time_t *		tvec = 0;	/* time vector */
+	time_t		tvec = 0;	/* time vector */
 	static char		dashes[] = "----------------";
 
 	Mapp = fopen(Mapname, "w");
@@ -748,8 +748,8 @@ void printmap()
 		if(Do_411) datstart = 0L;
 
 		/* print map header */
-		time(tvec);
-		fprintf(Mapp, "%s    Linker-11 version 22may79    %s\n", Outname, ctime(tvec));
+		time(&tvec);
+		fprintf(Mapp, "%s    Linker-11 version 22may79    %s\n", Outname, ctime(&tvec));
 		fprintf(Mapp, "Magic number:     %o\t",
 				Do_410 ? 0410 : ( Do_411 ? 0411 : 0407) );
 		if(Do_410) fprintf(Mapp, "(Shared text)\n");
