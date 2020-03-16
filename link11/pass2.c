@@ -4,21 +4,21 @@ WORD	getword();
 // kth: remove stdio defined items
 // char *sprintf();
 
-int werror(char *fname);
-void p_limit(struct objfile *obj, int drctv);
-void get_sym(struct outword *wbuff);
-int get_bits(int attributes);
-void linkseek(WORD nlc,WORD nrbits);
-void bytewrite(int value);
-void dump_tree(struct symbol *sym);
-void vreg_oper(int drctv,struct outword *wbuff);
-void relwrite(WORD value, WORD rbits);
-void abswrite(WORD value, WORD rbits);
-void dump_locals(struct objfile *obj);
-void transcode(struct objfile *obj);
-int get_type(int attr);
-void Putw(int x, FILE *p);
-void write_sym(char *sname, int flag);
+static int werror(char *fname);
+static void p_limit(struct objfile *obj, int drctv);
+static void get_sym(struct outword *wbuff);
+static int get_bits(int attributes);
+static void linkseek(WORD nlc,WORD nrbits);
+static void bytewrite(int value);
+static void dump_tree(struct symbol *sym);
+static void vreg_oper(int drctv,struct outword *wbuff);
+static void relwrite(WORD value, WORD rbits);
+static void abswrite(WORD value, WORD rbits);
+static void dump_locals(struct objfile *obj);
+static void transcode(struct objfile *obj);
+static int get_type(int attr);
+static void Putw(int x, FILE *p);
+static void write_sym(char *sname, int flag);
 
 
 /******************** variables with global scope ************************/
@@ -139,7 +139,7 @@ void warmup (void)	/* get ready for pass 2: open out file and write header,
 /*************************  dump_tree  **************************************/
 
 
-void
+static void
 dump_tree (		/* dump the sub-tree of symbols pointed to by *sym and
 			** number its contents for future reference to
 			** undefined symbols */
@@ -166,7 +166,7 @@ dump_tree (		/* dump the sub-tree of symbols pointed to by *sym and
 /**************************  write_sym  ***********************************/
 
 
-void write_sym (	/* write the given symbol as 8 bytes (null padded)
+static void write_sym (	/* write the given symbol as 8 bytes (null padded)
 			** in the symbol file , if flag then write the symbol
 			** with an underscore */
     char *sname,
@@ -211,7 +211,7 @@ void pass2 (void)		/* translate code and write local symbols */
 /************************  transcode  ****************************************/
 
 
-void transcode (		/* translate code */
+static void transcode (		/* translate code */
     struct objfile *obj		/* object file to translate code from */
 )
 {
@@ -369,7 +369,7 @@ void transcode (		/* translate code */
 /*************************  abswrite  *****************************************/
 
 
-void abswrite (	/* write value in the out file */
+static void abswrite (	/* write value in the out file */
     WORD value,
     WORD rbits	/* relocation bits */
 )
@@ -384,7 +384,7 @@ void abswrite (	/* write value in the out file */
 /************************  relwrite  ****************************************/
 
 
-void relwrite (	/* write value in out file relative to
+static void relwrite (	/* write value in out file relative to
 			** global location counter */
     WORD value,
     WORD rbits
@@ -404,7 +404,7 @@ void relwrite (	/* write value in out file relative to
 /*************************  bytewrite  *************************************/
 
 
-void bytewrite (	/* write the byte in the out file */
+static void bytewrite (	/* write the byte in the out file */
     int value
 )
 {
@@ -457,7 +457,7 @@ void get_rc (	/* place in wbuff the relocation constant and
 /*****************************  get_bits  **********************************/
 
 
-int
+static int
 get_bits (	/* get the out file symbol table bits and convert
 			** to relocation table bits */
     int attributes	/* the M11 attributes of a psect */
@@ -470,7 +470,7 @@ get_bits (	/* get the out file symbol table bits and convert
 /*****************************  get_type  ***********************************/
 
 
-int
+static int
 get_type (		/* decode the psect type into out file symbol table
 			** attribute word format */
     int attr
@@ -490,7 +490,7 @@ get_type (		/* decode the psect type into out file symbol table
 /***************************  get_sym  ***************************************/
 
 
-void
+static void
 get_sym (		/* get the value of the symbol in the input stream */
     struct outword *wbuff
 )
@@ -556,7 +556,7 @@ get_sym (		/* get the value of the symbol in the input stream */
 
 /***************************  vreg_oper  *************************************/
 
-void vreg_oper (		/* preform an operation on a virtual register */
+static void vreg_oper (		/* preform an operation on a virtual register */
     int drctv,		/* directive (operation) */
     struct outword *wbuff		/* source value and relocation bits */
 )
@@ -678,7 +678,7 @@ void do040 (	/* do 040 code directive */
 /*************************  p_limit  **************************************/
 
 
-void
+static void
 p_limit (	/* find the low or high limit of a psect */
     struct objfile *obj,
     int drctv
@@ -755,7 +755,7 @@ p_limit (	/* find the low or high limit of a psect */
 /***************************  linkseek  *************************************/
 
 
-void linkseek (
+static void linkseek (
     WORD nlc,	/* new location counter */
     WORD nrbits	/* new relocation bits */
 )
@@ -789,7 +789,7 @@ skerr:		fprintf(stderr, "Fseek error\n");
 # define	MAXCONSTS	10
 
 
-void dump_locals (	/* dump local symbols */
+static void dump_locals (	/* dump local symbols */
     struct objfile *obj
 )
 {
@@ -957,7 +957,7 @@ bail_out (void)	/* unlink any opened output file then exit */
 /********************************  werror  **********************************/
 
 
-int
+static int
 werror (		/* write error handler */
     char *fname
 )
@@ -971,7 +971,7 @@ werror (		/* write error handler */
 	exit(1);
 }
 
-void Putw(x, p)
+static void Putw(x, p)
 	int x;
 	FILE *p;
 {

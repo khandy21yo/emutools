@@ -5,9 +5,9 @@
 /* define maximum size of checksum contents */
 # define	MAXSIZE		400
 
-int getb();
-int read_mod();
-void inerror(char *mess);
+static int getb();
+static int read_mod();
+static void inerror(char *mess);
 
 
 static char	*Fname = NULL;	/* name of current input file */
@@ -125,7 +125,7 @@ WORD getword()	/* return next word */
 /****************************  inerror  **********************************/
 
 
-void inerror(mess)	/* print error message and filename then exit. */
+static void inerror(mess)	/* print error message and filename then exit. */
 		/* called when a user error has occurred concerning the */
 		/* input file */
 char 	*mess;
@@ -144,7 +144,7 @@ int	sum;	/* sum of input bytes */
 /***************************  read_mod  **************************************/
 
 
-int read_mod()	/* read a checksum module and return type */
+static int read_mod()	/* read a checksum module and return type */
 
 {
 	int	i;
@@ -207,7 +207,7 @@ int read_mod()	/* read a checksum module and return type */
 /*************************  getb  ***************************************/
 
 
-int getb()		/* get a byte from input file, add to "sum" */
+static int getb()		/* get a byte from input file, add to "sum" */
 		/* check for EOF, return the byte */
 {
 	int	k;
