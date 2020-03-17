@@ -1,8 +1,5 @@
 # include "link.h"
 # define	MAXREG		8
-WORD	getword();
-// kth: remove stdio defined items
-// char *sprintf();
 
 static int werror(char *fname);
 static void p_limit(struct objfile *obj, int drctv);
@@ -83,6 +80,7 @@ void warmup (void)	/* get ready for pass 2: open out file and write header,
 
 {
 	WORD h[8];
+	int i;
 
 	Outp = fopen(Outname, "w");
 	if (Outp == NULL)
@@ -90,8 +88,12 @@ void warmup (void)	/* get ready for pass 2: open out file and write header,
 		sprintf(Erstring, "%s not accessible\n", Outname);
 		lerror(Erstring);
 	}
-	fseek(Outp, 15L+(long)Tex_size+(long)Dat_size, 0);
-	putc(0, Outp);
+	// pre-extend file
+//	fseek(Outp, 15L+(long)Tex_size+(long)Dat_size, 0);
+//	putc(0, Outp);
+	fseek(Outp, 0L, 0);
+	for (i = 0; i <= 15L+(long)Tex_size+(long)Dat_size; i++)
+		putc(0, Outp);
 
 	/* write header for out file */
 	if (Do_410)
@@ -110,7 +112,7 @@ void warmup (void)	/* get ready for pass 2: open out file and write header,
 
 	fseek(Outp, 0L, 0);
 	//fwrite(h, 8, 2, Outp);
-	for (int i = 0; i < 8; i++)
+	for (i = 0; i < 8; i++)
 	{
 		Putw(h[i], Outp);
 	}
