@@ -7,23 +7,23 @@ char *strcpy(), *ctime(), *strsub(), *tack(), *lalloc();
 WORD getword();
 #include <signal.h>
 
-void sigx(int n);
-void post_bail();
-void dump_symlist(struct symbol *sym);
-void fattr(int x, char *s, char *t);
-void prattr(int x);
-void brag(char *s, long start, long size, char *tag);
-int dump_undefs(struct symbol *sym, int n);
-void printmap();
-void relsyms(struct symbol *sym);
-void asgn_rcs(struct psect  *p);
-void relocate();
-void table(struct symbol *root[],struct symbol *new);
-void place_local(struct psect *ps);
-void place_global(struct psect *ps);
-void pass1();
-void outnames();
-void scanargs(int argc,char *argv[]);
+static void sigx(int n);
+static void post_bail();
+static void dump_symlist(struct symbol *sym);
+static void fattr(int x, char *s, char *t);
+static void prattr(int x);
+static void brag(char *s, long start, long size, char *tag);
+static int dump_undefs(struct symbol *sym, int n);
+static void printmap();
+static void relsyms(struct symbol *sym);
+static void asgn_rcs(struct psect  *p);
+static void relocate();
+static void table(struct symbol *root[],struct symbol *new);
+static void place_local(struct psect *ps);
+static void place_global(struct psect *ps);
+static void pass1();
+static void outnames();
+static void scanargs(int argc,char *argv[]);
 
 
 /******************** variables with global scope ************************/
@@ -104,7 +104,7 @@ char	*argv[];
 /*********************  scanargs  ******************************************/
 
 
-void scanargs(argc, argv)
+static void scanargs(argc, argv)
 int	argc;
 char	*argv[];
 {
@@ -215,7 +215,7 @@ char	*t;
 /****************************  outnames  ************************************/
 
 
-void outnames()	/* determine names of output files */
+static void outnames()	/* determine names of output files */
 
 {
 	if (Outname == NULL)
@@ -305,7 +305,7 @@ struct g_sect	*new_gsect()
 /*********************  pass1  *********************************************/
 
 
-void pass1()
+static void pass1()
 
 {
 	char			name[7];	/* string from M11 */
@@ -436,7 +436,7 @@ void pass1()
 /*****************************  place_global  ******************************/
 
 
-void place_global(ps)		/* try to place the given program section
+static void place_global(ps)		/* try to place the given program section
 				** in proper ins - dat - bss link-list by
 				** finding it in the global psect tree. if
 				** it is not there then add to tree and place
@@ -482,7 +482,7 @@ struct psect	*ps;
 /*************************  place_local  *******************************/
 
 
-void place_local(ps)			/* place psect at end of its UNIX section
+static void place_local(ps)			/* place psect at end of its UNIX section
 				** type link-list */
 struct psect	*ps;
 {
@@ -528,7 +528,7 @@ struct psect	*ps;
 /*************************  table  **************************************/
 
 
-void table(root, new)	/* place new symbol structure in symbol table tree */
+static void table(root, new)	/* place new symbol structure in symbol table tree */
 
 struct symbol	*root[];	/* pointer to root pointer of tree */
 struct symbol	*new;		/* pointer to symbol (structure) to
@@ -585,7 +585,7 @@ struct symbol	*new;		/* pointer to symbol (structure) to
 # define	_8K	020000
 
 
-void relocate()	/* assign relocation constants for all relocatable psects */
+static void relocate()	/* assign relocation constants for all relocatable psects */
 
 {
 	unsigned temp;
@@ -642,7 +642,7 @@ void relocate()	/* assign relocation constants for all relocatable psects */
 
 
 
-void asgn_rcs(p)	/* assign relocation constants to
+static void asgn_rcs(p)	/* assign relocation constants to
 		** the psects pointed to.  this routine uses the
 		** variable R_counter which contains the address of the
 		** next available space in memory */
@@ -716,7 +716,7 @@ struct psect 	*p;	/* called with ins-dat-bss root */
 /*************************  relsyms  **************************************/
 
 
-void relsyms(sym)		/* relocate global symbols */
+static void relsyms(sym)		/* relocate global symbols */
 
 struct symbol	*sym;
 {
@@ -731,7 +731,7 @@ struct symbol	*sym;
 /*************************  printmap  ***********************************/
 
 
-void printmap()
+static void printmap()
 {
 	struct objfile	*op;
 	struct psect 	*pp;
@@ -786,7 +786,7 @@ void printmap()
 	}
 }
 
-void brag(s, start, size, tag)
+static void brag(s, start, size, tag)
 	char *s;
 	long start, size;
 	char *tag;
@@ -796,7 +796,7 @@ void brag(s, start, size, tag)
 	fprintf(Mapp, "%s:\t%06lo\t%06lo\t%06lo\t%s\n", s, start, stop, size, tag);
 }
 
-void prattr(int x)
+static void prattr(int x)
 {
 	fprintf(Mapp, "\t");
 	fattr(x&SHR, "shr, ", "prv, ");
@@ -807,7 +807,8 @@ void prattr(int x)
 	fattr(x&OVR,"ovr, ", "con, ");
 	fattr(x&GBL,"gbl", "loc");
 }
-void fattr(x, s, t)
+
+static void fattr(x, s, t)
 	int x;
 	char *s, *t;
 {
@@ -817,7 +818,7 @@ void fattr(x, s, t)
 /*****************************  dump_symlist  *******************************/
 
 
-void dump_symlist(sym)	/* write to the map file the symbol list for a psect */
+static void dump_symlist(sym)	/* write to the map file the symbol list for a psect */
 struct symbol	*sym;
 {
 	int	i;
@@ -835,7 +836,7 @@ struct symbol	*sym;
 /*****************************  dump_undefs  *******************************/
 
 
-int dump_undefs(sym, n)	/* dump into map file all undefined global symbols */
+static int dump_undefs(sym, n)	/* dump into map file all undefined global symbols */
 struct symbol	*sym;
 int		n;
 {
@@ -855,7 +856,7 @@ int		n;
 /**************************  post_bail  *************************************/
 
 
-void post_bail()	/* set interrupt routine to bail_out */
+static void post_bail()	/* set interrupt routine to bail_out */
 
 {
 	sigx(1);
@@ -863,7 +864,8 @@ void post_bail()	/* set interrupt routine to bail_out */
 	sigx(3);
 	sigx(15);
 }
-void sigx(int n)
+
+static void sigx(int n)
 {
 	if(signal(n, SIG_IGN) != SIG_IGN)
 		signal(n, bail_out);

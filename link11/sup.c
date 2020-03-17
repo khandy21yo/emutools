@@ -5,8 +5,8 @@
 
 //char *strcpy(), *strcat();
 
-int returnchar(unsigned short k);
-void derad50(unsigned short x,char *s);
+static int returnchar(unsigned short k);
+static void derad50(unsigned short x,char *s);
 
 /************************  lerror  ****************************************/
 
@@ -39,7 +39,7 @@ void dc_symbol(	/* decode rad50 symbol in input stream and place in */
 /******************************  derad50  ************************************/
 
 
-void derad50(	/* decode a word in which 3 characters are coded by */
+static void derad50(	/* decode a word in which 3 characters are coded by */
 			/* the RAD50 scheme. */
 	unsigned short	x,
 	char 	*s)
@@ -56,7 +56,7 @@ void derad50(	/* decode a word in which 3 characters are coded by */
 /******************************  returnchar  *******************************/
 
 
-int returnchar(   	/* return a character according to RAD50 coding */
+static int returnchar(   	/* return a character according to RAD50 coding */
 			/* scheme, called by derad50 */
 	unsigned short	k)
 {
