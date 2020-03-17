@@ -77,7 +77,6 @@ struct outword	Vreg[MAXREG];		/* virtual registers */
 
 /**************************  warmup  ****************************************/
 
-//kth: define return type
 void warmup (void)	/* get ready for pass 2: open out file and write header,
 		** open temporary file for out file
 		** symbol table and write global variables to it */
@@ -110,7 +109,11 @@ void warmup (void)	/* get ready for pass 2: open out file and write header,
 	h[7] = Do_bits ? 0 : 1;
 
 	fseek(Outp, 0L, 0);
-	fwrite(h, 8, 2, Outp);
+	//fwrite(h, 8, 2, Outp);
+	for (int i = 0; i < 8; i++)
+	{
+		Putw(h[i], Outp);
+	}
 
 	if (Do_table)
 	{

@@ -337,12 +337,12 @@ static void pass1()
 			{
 			  case 0:	/* program name */
 				strcpy(of->pname, name);
-				break;
 				if (Verbose)
 				{
 					fprintf(stderr,"Program %d <%6s> %o\n",
 						type, name, attr);
 				}
+				break;
 
 			  case 1:	/* program section */
 			  case 5:	/* program section */
