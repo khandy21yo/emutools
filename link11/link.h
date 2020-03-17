@@ -133,3 +133,6 @@ void ch_input(char *newfile, int newmod);
 int loose_ends (void);
 void pass2 (void);
 void warmup (void);
+WORD getword();
+char *tack(char *s, char *t);
+char	*lalloc(int amount);

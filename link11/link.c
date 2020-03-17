@@ -1,10 +1,6 @@
 # include "link.h"
 #include <time.h>
 
-// kth: demove stdio defined items
-// //char *sprintf(),*strcpy(), *ctime(), *strsub(), *tack(), *lalloc();
-char *strcpy(), *ctime(), *strsub(), *tack(), *lalloc();
-WORD getword();
 #include <signal.h>
 
 static void sigx(int n);
@@ -24,6 +20,7 @@ static void place_global(struct psect *ps);
 static void pass1();
 static void outnames();
 static void scanargs(int argc,char *argv[]);
+static char *strsub(char *s, char *t);
 
 
 /******************** variables with global scope ************************/
@@ -78,6 +75,7 @@ char		Erstring[80];		/* buffer for error messages */
 int		Nerrors = 0;		/* the number of user errors */
 char		No_out = 0;		/* boolean for no out file */
 char		Scanerr = 0;		/* boolean for error in arguments */
+int		Debug = 0;		/* boolean to turn on debugging print */
 
 /**********************  main  ********************************************/
 
@@ -148,6 +146,8 @@ char	*argv[];
 				Do_411 = 1;
 			else if(!strcmp(s, "v"))
 				Verbose = 1;
+			else if(!strcmp(s, "debug"))
+				Debug = 1;
 			else
 			{
 				fprintf(stderr, "Unrecognizable argument: -%s\n", s);
@@ -189,7 +189,7 @@ char	*argv[];
 /***************************  strsub  ***************************************/
 
 
-char	*strsub(s, t)	/* if t is the initial part of s then return a pointer
+static char	*strsub(s, t)	/* if t is the initial part of s then return a pointer
 			** to the rest of s, else return NULL */
 char 	*s;
 char	*t;
@@ -338,6 +338,11 @@ static void pass1()
 			  case 0:	/* program name */
 				strcpy(of->pname, name);
 				break;
+				if (Verbose)
+				{
+					fprintf(stderr,"Program %d <%6s> %o\n",
+						type, name, attr);
+				}
 
 			  case 1:	/* program section */
 			  case 5:	/* program section */
@@ -399,6 +404,11 @@ static void pass1()
 				Transadd = value;
 				Transfile = of;
 				strcpy(Transsect, name);
+				if (Verbose)
+				{
+					fprintf(stderr,"Transfer %d <%6s> %o\n",
+						type, name, value);
+				}
 				break;
 
 			  case 4:	/* global symbol */
@@ -417,11 +427,21 @@ static void pass1()
 				}
 				/* place in symbol table */
 				table(&Sym_root, sym);
+				if (Verbose)
+				{
+					fprintf(stderr,"Global %d <%6s> %o\n",
+						type, name, value);
+				}
 				break;
 
 			  case 6:	/* version identification */
 				of->ver_id = lalloc(7);
 				strcpy(of->ver_id, name);
+				if (Verbose)
+				{
+					fprintf(stderr,"Version %d <%6s> %o\n",
+						type, name, value);
+				}
 				break;
 
 			  default:
