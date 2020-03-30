@@ -1,0 +1,737 @@
+;Last Modified:   6-SEP-1988 14:19:55.00, By: RLB 
+
+		.TITLE	WATCH - Watch terminal output stream
+		.LIBRARY	/SYS$LIBRARY:LIB/
+		.LINK		'SYS$SYSTEM:SYS.STB'/SELECTIVE_SEARCH
+		$CCBDEF				; Channel control block offsets
+		$IPLDEF				; Define IPL levels
+		$TTYDEF				; Define term driver structures
+		$TTYDEFS			;  ditto
+		$TTYMDMDEF			; Define modem control signals
+		$TTYVECDEF			; Define port/class vectors
+		$TT2DEF				; Define terminal chars
+		$SSDEF				; Define system service returns
+		$DVIDEF				; GETDVI definitions
+		$DYNDEF				; Dynamic memory struct types
+		$FKBDEF				; Define fork block
+
+		.PSECT	$DATA	RD, WRT, NOEXE, NOSHR, LONG
+
+WAIT:		.BLKQ		1		; Flush timer quadword
+TERM_IOSB:	.BLKQ		1		; Terminal output IOSB
+INPUT_IOSB:	.BLKQ		1		; Terminal input IOSB
+MBX_IOSB:	.BLKQ		1		; Mailbox IOSB
+USER_IOSB:	.BLKQ		1		; User IOSB
+USER_UCB:	.BLKL		1		; User's terminal UCB
+
+TERM_CHARS:	.BLKL		3		; Terminal characteristics
+ORIG_CHARS:	.BLKL		3		; Original characteristics
+
+NAME_ARGS:	.LONG		3		; Arg list for find UCB routine
+DESCR:		.BLKL		1		; Device name descr address
+UCB:		.BLKL		1		; Returned UCB address
+PUCB:		.BLKL		1		; Returned phys UCB address
+
+SEND_ARGS:	.LONG		1		; Arg list for send char routine
+SEND_CHAR:	.BLKL		1		; Character to send
+
+TERM_EF:	.BLKL		1		; Terminal output EF
+INPUT_EF:	.BLKL		1		; Terminal input EF
+MBX_EF:		.BLKL		1		; Mailbox event flag
+MBX_SIZE:	.LONG		512		; Size of terminal mailbox
+MBX_QUO:	.LONG		2048		; Quota for terminal mailbox
+
+T_NAME:		.LONG		64		; Descriptor for terminal name
+		.ADDRESS	NAME_BUF
+
+DVI_LIST:	.WORD		64		; GETDVI item list for
+		.WORD		DVI$_DEVNAM	; Getting mailbox device name
+		.ADDRESS	MBX_NAME
+		.ADDRESS	MBX_DESC
+		.LONG		0
+		.LONG		0
+
+MBX_DESC:	.BLKL		1		; Descriptor for data mailbox
+		.ADDRESS	MBX_NAME	; Device name
+MBX_NAME:	.BLKB		64
+
+EXIT_BLOCK:	.BLKL		1		; Link
+		.ADDRESS	EXIT_HANDLER	; Handler
+		.LONG		1
+		.ADDRESS	EXIT_CODE	; Exit reason
+EXIT_CODE:	.BLKL		1
+
+FLAGS:		.LONG		0		; Status flags
+MBX_CHAN:	.BLKW		1		; Terminal Mailbox Channel
+INPUT_CHAN:	.BLKW		1		; user input channel
+USER_MBX:	.BLKW		1		; User input mailbox chan
+		.ALIGN	LONG
+
+NAME_BUF:	.BLKB		64		; Terminal name input buffer
+MBX_BUF:	.BLKB		2048		; Mailbox buffer
+INPUT_MBX_BUF:	.BLKB		512		; Buffer for term mailbox
+INPUT_BUF:	.BLKB		80		; Input buffer
+WHICH:		.ASCID		/What terminal:/
+USER_TERM:	.ASCID		/SYS$COMMAND/	; User's terminal for output
+TIMER:		.ASCID		/0 00:00:00.10/	; Wait for one tenth second
+ENABLED:	.ASCID		/Input mode enabled - ^\ to disable/
+DISABLED:	.ASCID		/Input mode disabled/
+NOT_SUPPORTED:	.ASCID		/You can't WATCH that terminal/<13><10>
+NOT_YOUR_OWN:	.ASCID		/You can't WATCH your own terminal/<13><10>
+
+		.MACRO	STATUS ?L1
+		BLBS	R0, L1
+		$EXIT_S	R0
+L1:
+		.ENDM	STATUS
+
+		.SBTTL	WATCH - Setup entry point
+
+		.PSECT	$CODE	RD, NOWRT, SHR, EXE, LONG
+		.ENTRY	WATCH, ^M<>
+
+		$BINTIM_S	TIMBUF=TIMER,-		; Convert delay to
+				TIMADR=WAIT		;  binary
+		STATUS
+;+
+;	Assign a channel to the user's terminal with an
+;	associated mailbox.
+;-
+		PUSHAL		USER_MBX		; Channel for user mailbox
+		PUSHAL		INPUT_CHAN		; Channel for user term
+		PUSHAL		MBX_SIZE		; And message size
+		PUSHAL		MBX_QUO			; Quota
+		PUSHAL		USER_TERM		; Device name
+		CALLS		#5,G^LIB$ASN_WTH_MBX	; Assign the channel
+		STATUS
+;+
+;	Get the UCB address of the user's terminal for later checks
+;-
+		$CMKRNL_S ROUTIN=GET_USER_UCB
+		STATUS
+;+
+;	Get the user terminal characteristics
+;-
+		$QIOW_S		CHAN=INPUT_CHAN,-
+				FUNC=#IO$_SENSEMODE,-
+				P1=ORIG_CHARS, P2=#12
+		STATUS
+		MOVQ		ORIG_CHARS, TERM_CHARS	; Copy for mods
+		MOVL		ORIG_CHARS+8, TERM_CHARS+8
+;+
+;	Allocate event flags
+;-
+		PUSHAL		MBX_EF			; Get the mailbox EF
+		CALLS		#1,G^LIB$GET_EF
+		STATUS
+		PUSHAL		TERM_EF
+		CALLS		#1,G^LIB$GET_EF
+		STATUS
+		PUSHAL		INPUT_EF
+		CALLS		#1,G^LIB$GET_EF
+		STATUS
+;+
+;	Create the data mailbox, and get it's UCB address
+;-
+		$CREMBX_S	CHAN=MBX_CHAN,-		; Create the mailbox
+				MAXMSG=#2048
+		STATUS
+		$GETDVI_S	CHAN=MBX_CHAN,-		; Get the mailbox name
+				ITMLST=DVI_LIST,-
+				EFN=#1
+		STATUS
+		$WAITFR_S	EFN=#1
+		STATUS
+		MOVAL	MBX_DESC, DESCR		; Point to mailbox descriptor
+		$CMKRNL_S	ROUTIN=FIND_UCB,-
+				ARGLST=NAME_ARGS
+		STATUS
+		MOVL	UCB, MBX_UCB		; Point to mailbox UCB
+;+
+;	Get the name of the terminal to slave
+;+
+START:		PUSHAL	T_NAME			; Return length
+		PUSHAL	WHICH			; Prompt
+		PUSHAL	T_NAME			; Return buffer
+		CALLS	#3, G^LIB$GET_FOREIGN	; Get the terminal name
+		STATUS
+		MOVAL	NAME_BUF, R0		; Check for trailing colon
+10$:		CMPB	(R0), #^A/:/		; Is it a colon?
+		BEQL	30$			; Yup, all done
+		CMPB	(R0), #^A/ /		; A space?
+		BNEQ	20$			; Nope.
+		MOVB	#^A/:/,(R0)		; Yes.. add colon.
+		BRB	30$			; All done
+20$:		INCL	R0			; Point to next
+		BRB	10$			; Loop back
+;+
+;	Uppercase the string and find the UCB
+;-
+30$:		PUSHAL	T_NAME
+		PUSHAL	T_NAME
+		CALLS	#2, G^STR$UPCASE	; Upcase it
+; Put getdvi here...
+		MOVAL	T_NAME, DESCR		; Point kernel routine to arglist
+		$CMKRNL_S	ROUTIN=FIND_UCB,-; Find the device UCB
+				ARGLST=NAME_ARGS
+		STATUS
+		MOVL	UCB, TERM_UCB		; Store UCB for it
+		TSTL	PUCB			; Is it virtual?
+		BEQL	40$			; Nope.
+		MOVL	PUCB, TERM_UCB		; Yes, use physical
+
+40$:		CALLS	#0, G^SET_EXIT		; Declare the exit handler
+
+		CMPL	TERM_UCB, USER_UCB	; Same UCB address as user's?
+		BNEQ	50$			; Branch if not
+		PUSHAL	NOT_YOUR_OWN		; Push message address
+		CALLS	#1, G^LIB$PUT_OUTPUT	; Display the message
+		$EXIT_S				; And exit
+;+
+;	Set it to PASTHRU mode
+;-
+50$:		BISL2		#TT2$M_PASTHRU, TERM_CHARS+8
+		$QIOW_S		CHAN=INPUT_CHAN,-
+				FUNC=#IO$_SETMODE,-
+				P1=TERM_CHARS, P2=#12
+		STATUS
+
+;+
+;	Load the magic code into nonpaged pool
+;-
+		$CMKRNL_S	ROUTIN=LOAD_CODE; Load the code and set hook
+		CMPL	R0, #SS$_IVDEVNAM	; Legal device to watch ?
+		BNEQ	60$			; Branch it okay so far
+		PUSHAL	NOT_SUPPORTED		; Push message dsc pointer
+		CALLS	#1, G^LIB$PUT_OUTPUT	; Display "non-supported" msg
+		$EXIT_S				; And just exit
+
+60$:		STATUS
+		BSBW	SETUP_TERM_AST		; Set up AST for terminal
+		$SETIMR_S	DAYTIM=WAIT,-	; Set up the flush timer
+				ASTADR=FLUSH
+		STATUS
+		CLRQ	-(SP)			; At top of screen..
+		CALLS	#2, G^SCR$ERASE_PAGE	; Erase it
+		STATUS
+;+
+;	Fall thru to begin reading the mailbox.
+;-
+
+		.SBTTL	MBX_READ - Read messages and echo
+;+
+;	Read and echo the mailbox message
+;-
+MBX_READ:	$QIOW_S		EFN=MBX_EF,-		; Read the mailbox
+				CHAN=MBX_CHAN,-
+				FUNC=#IO$_READVBLK,-
+				IOSB=MBX_IOSB,-
+				P1=MBX_BUF,P2=#2048
+		STATUS					; Check QIO Status
+		MOVZWL	MBX_IOSB, R0			; Check I/O status
+		STATUS
+		MOVZWL	MBX_IOSB+2, R1
+		$QIOW_S		EFN=TERM_EF,-		; Write the text
+				IOSB=TERM_IOSB,-
+				CHAN=INPUT_CHAN,-
+				FUNC=#IO$_WRITEVBLK,-
+				P1=MBX_BUF, P2=R1
+		STATUS
+		MOVZWL	TERM_IOSB, R0
+		STATUS
+		BRW	MBX_READ			; Read another
+
+;+
+; Get the user's UCB address
+;-
+		.ENTRY GET_USER_UCB^M<R2>
+		MOVL	INPUT_CHAN, R0		; Get channel number
+		JSB	G^IOC$VERIFYCHAN	; Get UCB address
+		BLBC	R0, 10$			; Branch on error
+		MOVL	CCB$L_UCB(R1), R2	; Get the UCB address
+		MOVL	UCB$L_TL_PHYUCB(R2),USER_UCB ; Get the physical ucb
+10$:		RET
+
+
+;+
+;	Exit handler setup
+;-
+		.ENTRY	SET_EXIT,^M<>
+		$DCLEXH_S	DESBLK=EXIT_BLOCK ; Declare exit handler
+		RET		
+
+		.SBTTL	EXIT_HANDLER, Exit reset handler
+		.ENTRY	EXIT_HANDLER,^M<>
+		$QIOW_S		CHAN=INPUT_CHAN,-	; Reset the term
+				FUNC=#IO$_SETMODE,-
+				P1=ORIG_CHARS,-
+				P2=#12
+		$QIOW_S		EFN=TERM_EF,-		; Write the text
+				CHAN=INPUT_CHAN,-
+				FUNC=#IO$_WRITEVBLK,-
+				P1=EXIT_MESSAGE, P2=#EXIT_SIZE
+		MOVL	CODE_PTR, R0
+		BEQL	10$
+		MOVAL	RESET-KERNEL_CODE(R0), R0
+		$CMKRNL_S	ROUTIN=(R0)		; Call fixup
+		BLBC	R0, 20$
+		$CMKRNL_S	ROUTIN=FREE_POOL	; Free pool
+		BLBC	R0, 20$
+10$:		MOVL	#SS$_NORMAL, R0
+20$:		RET
+EXIT_MESSAGE:	.ASCII	/Exiting.../
+EXIT_SIZE = .-EXIT_MESSAGE
+
+		.SBTTL	FLUSH - Flush the ring
+		.ENTRY	FLUSH, ^M<>
+		$SETIMR_S	DAYTIM=WAIT,-
+				ASTADR=FLUSH
+		STATUS
+		MOVL	CODE_PTR, R0
+		MOVAL	FLUSH_RING-KERNEL_CODE(R0), R0
+		$CMKRNL_S	ROUTIN=(R0)		; Call the flusher
+		STATUS
+		RET
+
+		.SBTTL	FIND_UCB - Locate the device UCB
+;
+;	This routine finds the address of the UCB for a specified
+;	device.
+;
+;	Arguments:
+;	DESCR	Address of device name descriptor
+;	UCB	Return pointer to [virtual] UCB
+;	PUCB	Return pointer to [physical] UCB, zero if none.
+;
+;	This routine executes in Kernel mode at elevated IPL
+;
+		.ENTRY	FIND_UCB,^M<R2,R3,R4,R5>
+		CLRQ	8(AP)			; Clear UCB pointers
+		MOVL	G^ctl$GL_PCB, R4	; Get current PCB pointer
+		JSB	G^SCH$IOLOCKR		; Lock I/O database for read
+		MOVL	4(AP), R1		; Point to device descr
+		JSB	G^IOC$SEARCHDEV		; Search for device
+		BLBC	R0, 10$			; Exit on failure
+		MOVL	UCB$L_TL_PHYUCB(R1),12(AP) ; Return physical UCB
+		MOVL	R1, 8(AP)		; Return UCB
+		BBC	#DEV$V_DET, UCB$L_DEVCHAR2(R1),-
+			10$			; Skip if not detached
+		MOVL	#SS$_DEVOFFLINE, R0	; Say it's offline
+10$:		PUSHL	R0			; Save status
+		JSB	G^SCH$IOUNLOCK		; Unlock the I/O database
+		POPL	R0
+		RET				; And return
+
+		.SBTTL	LOAD_CODE - Load hook code into pool
+
+		.ENTRY	LOAD_CODE,^M<R2,R3,R4,R5>
+		DSBINT	#IPL$_ASTDEL		; Stop ast delivery
+		MOVL	#KERN_SIZE, R1		; Size of pool to get
+		JSB	G^EXE$ALONONPAGED	; Get the pool
+		BLBS	R0, 10$			; Skip if OK
+		ENBINT
+		RET				; Can't get it!
+10$:		MOVW	R1, CODE_SIZE		; Store size
+		MOVL	R2, CODE_PTR		; Store pointer
+		MOVC3	#KERN_SIZE,-
+			KERNEL_CODE,-
+			(R2)			; Store the code in the block
+		MOVL	CODE_PTR, R0		; Point to code block
+		MOVAL	SETUP-KERNEL_CODE(R0), R0 ; Get SETUP address
+		JSB	(R0)			; Go to it
+		ENBINT
+		RET
+
+		.SBTTL SETUP_TERM_AST - Setup the terminal mailbox AST
+SETUP_TERM_AST:	$QIOW_S	CHAN=USER_MBX,-		; Using user's terminal mailbox
+			FUNC=#IO$_SETMODE!IO$M_WRTATTN,- ; Write attention AST
+			P1=TERM_AST		; AST routine
+		STATUS
+		RSB
+
+		.ENTRY	TERM_AST, ^M<R2,R3>
+		$QIOW_S		CHAN=USER_MBX,-
+				IOSB=USER_IOSB,-
+				FUNC=#IO$_READVBLK,-
+				P1=INPUT_MBX_BUF,P2=#512
+		STATUS
+LOOP:		$QIOW_S	CHAN=INPUT_CHAN,-
+			EFN=INPUT_EF,-
+			FUNC=#IO$_READVBLK!IO$M_TIMED!IO$M_NOECHO,-
+			IOSB=INPUT_IOSB,-
+			P1=INPUT_BUF,-
+			P2=#80,-
+			P3=#0			; Zero second timeout
+		STATUS
+		MOVZWL	INPUT_IOSB, R0		; Check status
+		CMPW	R0, #SS$_TIMEOUT	; Timed out?
+		BEQL	10$			; Yup, that's OK.
+		STATUS
+10$:		MOVW	INPUT_IOSB+2, R2	; Get offset to terminator
+		ADDW	INPUT_IOSB+6, R2	; Plus terminator size
+		BNEQ	20$			; Something there
+		BSBW	SETUP_TERM_AST		; Reset the AST
+		RET				; Nothing there
+20$:		MOVZWL	R2, R2			; Extend to word
+		MOVAL	INPUT_BUF, R3		; And buffer pointer
+30$:		MOVZBL	(R3)+, SEND_CHAR	; Get character
+;		BRB	60$
+		CMPB	SEND_CHAR,#^A/\/-^A/@/	; ^\?
+		BNEQ	50$			; Not the flag char
+		BLBS	FLAGS, 40$		; If was set, clear it
+		BISB	#1, FLAGS		; Set the flag
+		PUSHAL	ENABLED			; Say input is enabled
+		CALLS	#1,G^LIB$PUT_OUTPUT
+		BRB	60$			; Try next char
+40$:		BICB	#1, FLAGS		; Clear the input flag
+		PUSHAL	DISABLED
+		CALLS	#1,G^LIB$PUT_OUTPUT	; Say input disabled
+50$:		BLBC	FLAGS, 60$		; Input mode disabled
+		$CMKRNL_S	ROUTIN=SEND_ONE,ARGLST=SEND_ARGS
+		STATUS
+		BRB	70$			; Done character
+60$:		CMPB	SEND_CHAR,#^A/Z/-^A/@/	; Control-Z?
+		BNEQ	70$			; Nope, ignore it.
+		$EXIT_S	#SS$_NORMAL		; Exit now.
+70$:		SOBGTR	R2, 30$			; Loop back
+		BRW	LOOP			; Any more input?
+80$:		RET
+
+		.SBTTL	SEND_ONE - Send a character to user terminal
+		.ENTRY	SEND_ONE, ^M<R2, R3, R4, R5>
+		MOVL	CODE_PTR, R0		; Point to code block
+		MOVAL	SEND_IT-KERNEL_CODE(R0), R0 ; Get SEND CHARACTER address
+		JSB	(R0)			; Call it
+		RET
+
+		.SBTTL	KERNEL_CODE
+		.PSECT	LOADED	RD, WRT, PIC, NOSHR, EXE, PAGE
+KERNEL_CODE:
+FKB_LIST:	.BLKQ	1			; Fork block list
+CODE_SIZE:	.BLKW	1			; Size
+		.WORD	DYN$C_FRK		; Type
+CODE_PTR:	.LONG	0			; Pointer to loaded code
+TERM_UCB:	.LONG	0			; Terminal UCB
+MBX_UCB:	.LONG	0			; Mailbox UCB
+PORT_TABLE:	.BLKB	PORT_LENGTH		; Copied/munged port vector
+CLASS_LENGTH = CLASSS_CLASS_DEF			; Hack since it's not there..
+CLASS_TABLE:	.BLKB	CLASS_LENGTH		; Copied/munged class vector
+PORT_START_VEC:	.LONG	0			; Gets original UCB PORT STARTIO
+PORT_DS_VEC:	.LONG	0			; Gets original UCB PORT modem 
+CLASS_GETNXT_VEC:.LONG	0			; Gets original UCB Class GETNXT
+CLASS_PUTNXT_VEC:.LONG	0			; ... class driver put char
+CLASS_DS_VEC:	.LONG	0			; ... class driver dataset trans
+PORT_DIS_VEC:	.LONG	0			; ... port driver disconnect
+CLASS_DIS_VEC:	.LONG	0			; ... class driver disconnect
+SAVED_PORT:	.LONG	0			; Saved port driver pointer
+SAVED_CLASS:	.LONG	0			; Saved class driver pointer
+		.ALIGN	QUAD
+FKB_COUNT = 20
+FKB_1:
+		.REPT	40
+		.BLKQ	1			; Flink/Blink
+		.WORD	FKB$K_LENGTH		; Size
+		.BYTE	DYN$C_FRK		; Type
+		.BYTE	6			; Fork IPL
+		.BLKL	3			; FPC/FR3/FR4
+		.ENDR
+RING_SIZE = 1024				; Size of buffer
+BUF_2:		.BLKB	RING_SIZE		; Fork level buffer
+RING_BUFFER:	.BLKB	RING_SIZE		; Buffer for mailbox
+RING_PTR:	.BLKL	1			; Pointer to data storage
+RING_FREE:	.LONG	RING_SIZE		; Free in mailbox
+WRITE_SIZE:	.BLKL	1			; Characters in alt buffer
+
+		.SBTTL	SETUP - Set up hook
+SETUP:		MOVAL	RING_BUFFER, RING_PTR	; Set up pointer to buffer
+		MOVAL	FKB_LIST, FKB_LIST	; Set up queue header
+		MOVL	FKB_LIST, FKB_LIST+4
+		MOVAL	FKB_1, R0		; Set up FKB queue
+		MOVL	#FKB_COUNT, R1		; Number of fork blocks
+10$:		INSQUE	(R0), @FKB_LIST+4	; Insert onto queue at tail
+		MOVAL	FKB$K_LENGTH(R0), R0	; Point to next
+		SOBGTR	R1, 10$			; Do next
+
+		MOVL	TERM_UCB, R2		; Get UCB pointer
+		MOVL	UCB$L_TT_PORT(R2), R0	; Point to port vectors
+		MOVL	R0, SAVED_PORT		; Save port vector pointer
+		BLSS	20$			; Branch if legal system VA
+		MOVL	#SS$_IVDEVNAM, R0	; Indicate an invalid device
+		RSB				; And return
+
+20$:		MOVAL	PORT_TABLE, R1		; Point to internal table
+		PUSHR	#^M<R0,R1,R2,R3,R4,R5>	; Save across MOVC
+		MOVC3	#PORT_LENGTH, (R0),(R1)	; Copy port vector to internal
+		POPR	#^M<R0,R1,R2,R3,R4,R5>
+		MOVL	PORT_STARTIO(R1),-	;
+			PORT_START_VEC		; Save old port startio
+		MOVAL	GRAB_STARTIO,-		;
+			PORT_STARTIO(R1)	; Point to hook code
+		MOVL	PORT_DS_SET(R0),-	;
+			PORT_DS_VEC		; Save old port dataset vector
+		MOVAL	GRAB_PORT_DS,-		;
+			PORT_DS_SET(R1)		; Set new dataset transition
+		MOVL	PORT_DISCONNECT(R0),-	; Save old port disconnect
+			PORT_DIS_VEC		;
+		MOVAL	GRAB_PORT_DIS,-		;
+			PORT_DISCONNECT(R1)	;
+		MOVL	UCB$L_TT_CLASS(R2), R0	; Point to class vectors
+		MOVL	R0, SAVED_CLASS		; Save class table pointer
+		BLSS	30$			; Branch if legal system VA
+		MOVL	#SS$_IVDEVNAM, R0	; Indicate an invalid device
+		RSB				; And return
+
+30$:		MOVAL	CLASS_TABLE, R1		; Point to saved table
+		PUSHR	#^M<R0,R1,R2,R3,R4,R5>	; Save registers
+		MOVC3	#CLASS_LENGTH, (R0),(R1); Copy class vector
+		POPR	#^M<R0,R1,R2,R3,R4,R5>	; Restore regs
+		MOVL	CLASS_GETNXT(R0),-	; Save original getnxt vector
+			CLASS_GETNXT_VEC	;
+		MOVAL	GRAB_GETNXT,-		;
+			CLASS_GETNXT(R1)	; Point to hook code
+	DEVICELOCK -				; lock the device
+		LOCKADDR=UCB$L_DLCK(R2),-
+		SAVIPL=-(SP)
+
+		MOVAL	GRAB_GETNXT,-		; Plus point UCB
+			UCB$L_TT_GETNXT(R2)	;
+		MOVL	CLASS_PUTNXT(R0),-
+			CLASS_PUTNXT_VEC	; Save original PUTNXT vector
+		MOVAL	GRAB_PUTNXT,-		; Set up copied class vector
+			CLASS_PUTNXT(R1)
+		MOVAL	GRAB_PUTNXT,-		; Plus device UCB
+			UCB$L_TT_PUTNXT(R2)
+	DEVICEUNLOCK -
+		LOCKADDR=UCB$L_DLCK(R2),-
+		NEWIPL=(SP)+,-
+		CONDITION=RESTORE,-
+		PRESERVE=YES
+		MOVL	CLASS_DS_TRAN(R0),-	; Save original dataset trans
+			CLASS_DS_VEC		;
+		MOVAL	GRAB_CLASS_DS,-		; Point to hook code
+			CLASS_DS_TRAN(R1)	;
+		MOVL	CLASS_DISCONNECT(R0),-	; Save class disconect
+			CLASS_DIS_VEC		;
+		MOVAL	GRAB_CLASS_DIS,-	; Point to hook code
+			CLASS_DISCONNECT(R1)	;
+	DEVICELOCK -
+		LOCKADDR=UCB$L_DLCK(R2),-
+		SAVIPL=-(SP)
+		MOVAL	CLASS_TABLE,-		;;; Point UCB to my class
+			UCB$L_TT_CLASS(R2)	;;;   table copy
+		MOVAL	PORT_TABLE,-		;;; Plus point to my port
+			UCB$L_TT_PORT(R2)	;;;   table copy
+	DEVICEUNLOCK -
+		LOCKADDR=UCB$L_DLCK(R2),-
+		NEWIPL=(SP)+,-
+		CONDITION=RESTORE,-
+		PRESERVE=YES
+		MOVZBL	#SS$_NORMAL, R0		; Set normal status
+		RSB				; All done
+
+		.SBTTL	GRAB_CLASS_DS - Hook to notice dataset hangups
+GRAB_CLASS_DS:	BSBB	RESET_IT		;;; Remove hooks
+		JMP	@CLASS_DS_VEC		;;; Call the class driver
+
+		.SBTTL	GRAB_PORT_DS - Hook to notice dataset hangups
+GRAB_PORT_DS:	BSBB	RESET_IT		;;; Remove hooks
+		JMP	@PORT_DS_VEC		;;; Call the port driver
+
+		.SBTTL	GRAB_PORT_DIS - Hook to notice disconnects
+GRAB_PORT_DIS:	BSBB	RESET_IT		;;; Reset device
+		JMP	@PORT_DIS_VEC		;;; Call port driver
+
+		.SBTTL	GRAB_CLASS_DIS - Hook to notice disconnects
+GRAB_CLASS_DIS:	BSBB	RESET_IT		;;; Reset device
+		JMP	@CLASS_DIS_VEC		;;; Call class driver
+
+RESET_IT:	MOVQ	R0, -(SP)		;;; Save registers
+		CALLS	#0, RESET		;;; Reset terminal
+		MOVQ	(SP)+, R0		;;; Restore...
+		RSB				;;; And return
+
+		.SBTTL	GRAB_STARTIO - Hook to send data to mbx
+;+
+;	This routine is called at device IPL to send
+;	the data to the port driver. The value in R3 contains
+;	the data; either a character or a pointer to a burst string.
+;	(r2 contains the size.) An IPL 6 fork is created to send the data
+;	to the mailbox.
+;-
+GRAB_STARTIO:	TSTL	R3			;;; Any work to do?
+		BEQL	10$			;;; Nope, tell the startio.
+		PUSHR	#^M<R0,R1,R2,R3,R4,R5>	;;; Store volatile regs
+		BSBB	GET_DATA		;;; Get terminal data
+		POPR	#^M<R0,R1,R2,R3,R4,R5>	;;; Restore registers
+		TSTL	R3			;;; Reset condition codes
+10$:		JMP	@PORT_START_VEC		;;; Call port routine
+
+		.SBTTL	GRAB_GETNXT - Hook to send data to mbx
+;+
+;	This routine is called at device IPL to send
+;	the data to the port driver. The value in R3 contains
+;	the data; either a character or a pointer to a burst string.
+;	(r2 contains the size.) An IPL 6 fork is created to send the data
+;	to the mailbox.
+;-
+		.ENABLE LSB
+GRAB_GETNXT:	JSB	@CLASS_GETNXT_VEC	;;; Call the class driver
+10$:		TSTB	UCB$B_TT_OUTYPE(R5)	;;; Any work to do?
+		BEQL	20$			;;; Nope.
+		PUSHR	#^M<R0,R1,R2,R3,R4,R5>	;;; Store volatile regs
+		BSBB	GET_DATA		;;; Check for data type...
+		POPR	#^M<R0,R1,R2,R3,R4,R5>	;;; Restore regs
+		TSTB	UCB$B_TT_OUTYPE(R5)	;;; Reset cond codes
+20$:		RSB				;;; Return to caller
+
+		.SBTTL	GRAB_PUTNXT
+;+
+;	This routine is used to grab echoes of input characters
+;-
+GRAB_PUTNXT:	JSB	@CLASS_PUTNXT_VEC	;;; Call the class driver
+		BRB	10$			;;; Common code.
+		.DISABLE LSB
+
+		.SBTTL GET_DATA - Copy the output data to the buffer
+;+
+;	This routine copies the output data to the buffer.
+;	When the buffer is full, DUMP_BUFFER is called
+;	to output it to the mailbox.
+;-
+GET_DATA:	TSTL	R3			;;; Character or pointer?
+		BLSS	20$			;;; Pointer
+		MOVB	R3, @RING_PTR		;;; Copy to buffer
+		INCL	RING_PTR		;;; And bump it
+		DECL	RING_FREE		;;; Less this much free
+		BGTR	10$			;;; Still room left
+		BSBW	DUMP_BUFFER		;;; Dump the buffer
+10$:		RSB				;;; Done sending message
+;
+;	Handle multi-byte messages
+;
+20$:		MOVZWL	R2, R2			;;; Size of message
+		CMPL	R2, #RING_SIZE		;;; Is it too big?
+		BLSS	30$			;;; Skip if not
+		MOVL	#RING_SIZE, R2		;;; Limit to this size
+30$:		CMPL	R2, RING_FREE		;;; Room for this one?
+		BLEQ	40$			;;; Yup, add it in.
+		MOVQ	R2,-(SP)		;;; Save R2 and R3
+		BSBW	DUMP_BUFFER		;;; First, dump the buffer
+		MOVQ	(SP)+, R2		;;; Restore R2 and R3
+40$:		PUSHR	#^M<R0,R1,R2,R3,R4,R5>	;;; Store registers
+		MOVC3	R2, (R3), @RING_PTR	;;; Move to buffer
+		POPR	#^M<R0,R1,R2,R3,R4,R5>	;;; Restore registers
+		ADDL	R2, RING_PTR		;;; Point to next byte
+		SUBL	R2, RING_FREE		;;; Drop free counter
+		RSB
+
+		.SBTTL DUMP_BUFFER - Dump buffer to mailbox
+;+
+;	Routine to write the buffer to the mailbox.
+;	First calls EXE$FORK to wait for IPL 6 interrupt;
+;	Returns to caller to proceed until IPL drops.
+;	Fork routine takes the text and writes it to the mailbox.
+;-
+DUMP_BUFFER:	SUBL3	RING_FREE, #RING_SIZE,-	;;; Free-original gives..
+			WRITE_SIZE		;;;  Size to move
+		MOVAL	RING_BUFFER, RING_PTR	;;; Reset pointer
+		MOVL	#RING_SIZE,RING_FREE	;;; And free
+		TSTL	WRITE_SIZE		;;; Anything to write?
+		BLEQ	10$			;;; Nothing to do
+		REMQUE	@FKB_LIST, R5		;;; Get a FKB to use
+		BVS	10$			;;; No entry to get
+		PUSHR	#^M<R0,R1,R2,R3,R4,R5>	;;; Save regs cross MOVC
+		MOVC3	WRITE_SIZE, RING_BUFFER,-;;; Move # calculated from buffer
+			BUF_2			;;; Move to mailbox write buffer
+		POPR	#^M<R0,R1,R2,R3,R4,R5>	;;; Restore regs
+		JSB	G^EXE$FORK		;;; Fork down
+						;;; Return to caller at DIPL
+;+
+;	Following executed at FIPL (IPL 6) whenever things get
+;	around to it
+;-
+		PUSHR	#^M<R0,R1,R2,R3,R4,R5>	; Save registers
+		MOVAL	BUF_2, R4		; Address of buffer
+		MOVL	WRITE_SIZE, R3		; Size of buffer
+		MOVL	MBX_UCB, R5		; Get UCB Pointer
+		JSB	G^EXE$WRTMAILBOX	; Write to mailbox
+		POPR	#^M<R0,R1,R2,R3,R4,R5>	; Restore registers
+		INSQUE	(R5), @FKB_LIST+4	; Insert back onto queue
+10$:		RSB				; All done
+		.SBTTL	RESET - Reset terminal UCB
+		.ENTRY	RESET,^M<R2>
+		MOVL	TERM_UCB, R2		; Point to terminal UCB
+		BEQL	10$			; Skip if UCB gone
+	DEVICELOCK -
+		LOCKADDR=UCB$L_DLCK(R2),-
+		SAVIPL=-(SP)
+		TSTL	SAVED_PORT		;;; Is there a saved port vector
+		BEQL	1$			;;; Skip if not there
+		MOVL	SAVED_PORT,-		;;; Restore port pointer
+			UCB$L_TT_PORT(R2)	;;;   back to driver
+1$:		TSTL	SAVED_CLASS		;;; Test saved class address
+		BEQL	2$			;;; Skip null restores
+		MOVL	SAVED_CLASS,-		;;; Restore class pointer
+			UCB$L_TT_CLASS(R2)	;;;   back to driver
+2$:		TSTL	CLASS_GETNXT_VEC	;;; Test for null
+		BEQL	3$			;;; Skip nulls
+		MOVL	CLASS_GETNXT_VEC,-	;;; Restore UCB
+			UCB$L_TT_GETNXT(R2)	;;;  getnxt pointer
+3$:		TSTL	CLASS_PUTNXT_VEC	;;; Test for null
+		BEQL	4$			;;; Skip if null
+		MOVL	CLASS_PUTNXT_VEC,-	;;;  putnxt pointer
+			UCB$L_TT_PUTNXT(R2)	;;;
+4$:		
+	DEVICEUNLOCK -
+		LOCKADDR=UCB$L_DLCK(R2),-
+		NEWIPL=(SP)+,-
+		CONDITION=RESTORE,-
+		PRESERVE=YES
+
+		CLRL	TERM_UCB		; Clear UCB pointer
+		MOVL	#SS$_NORMAL, R0		; All OK!
+10$:		RET				; All done so far
+
+		.SBTTL	FREE_POOL - Free nonpaged pool block
+		.ENTRY	FREE_POOL,^M<R2,R3>
+		DSBINT	#IPL$_ASTDEL		; Lock out delivery of asts
+		MOVL	CODE_PTR, R0		; Point to code
+		JSB	G^EXE$DEANONPAGED	; Deallocate it
+		ENBINT
+		RET		
+
+		.SBTTL FLUSH_RING - Kernel routine to flush ring buffer
+		.ENTRY	FLUSH_RING, ^M<R2,R3,R4,R5>
+		MOVL	#SS$_HANGUP, R0		; Assume hung up
+		TSTL	TERM_UCB		; UCB There?
+		BEQL	10$			; Nope, quit now.
+		DSBINT	#21			;; Lock down interrupts
+		BSBW	DUMP_BUFFER		;;; Dump the buffer
+		ENBINT				;;; Re-enable interrupts
+		MOVL	#SS$_NORMAL, R0		; It's OK...
+10$:		RET				; And return
+
+		.SBTTL	SEND_IT - Send a character routine
+SEND_IT:	MOVL	#SS$_HANGUP, R0		; Assume hung up
+		MOVL	TERM_UCB, R5		; Get UCB pointer
+		BEQL	30$			; Quit if none
+		MOVL	4(AP), R3		; Get character
+	DEVICELOCK -
+		LOCKADDR=UCB$L_DLCK(R5),-
+		SAVIPL=-(SP)
+		JSB	@CLASS_PUTNXT_VEC	;;; Call putnext routine
+		TSTB	UCB$B_TT_OUTYPE(R5)	;;; Check output type
+		BEQL	10$			;;; None to do
+		BSBW	GRAB_STARTIO		;;; Call the start I/O routine
+10$:		
+	DEVICEUNLOCK -
+		LOCKADDR=UCB$L_DLCK(R5),-
+		NEWIPL=(SP)+,-
+		CONDITION=RESTORE,-
+		PRESERVE=YES
+
+		MOVL	#SS$_NORMAL, R0		; Normal exit
+30$:		RSB				; Done!
+
+		KERN_SIZE = .-KERNEL_CODE	; Size of code to load
+		.END	WATCH

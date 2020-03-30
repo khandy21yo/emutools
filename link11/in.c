@@ -24,9 +24,10 @@ static int	No_code = 0;	/* flag set if a code section was attempted to
 
 static int testtype(int newmod, int type)
 {
+	printf("Test: testtype newmod=%d, type=%d\n", newmod, type);
 	if (newmod == HEADER)
 	{
-		if (type == 1 || type == 2)
+		if (type == 1)
 		{
 			return 1;
 		}
@@ -37,7 +38,7 @@ static int testtype(int newmod, int type)
 	}
 	if (newmod == CODE)
 	{
-		if (type == 3)
+		if (type == 4)
 		{
 			return 1;
 		}
@@ -48,7 +49,7 @@ static int testtype(int newmod, int type)
 	}
 	if (newmod == SYMBOLS)
 	{
-		if (type == 4)
+		if (type == 5)
 		{
 			return 1;
 		}
@@ -81,7 +82,7 @@ printf("Test: chinput fname=%s, newfile=%s\n", Fname, newfile);
 	}
 printf("Test: ch_input newmod=%d, Type=%d\n", newmod, Type);
 
-	if (testtype(newmod, Type))			/* if not right module type already */
+//	if (testtype(newmod, Type))			/* if not right module type already */
 		while (testtype(newmod, read_mod()) == 0)	/* read until correct module type */
 		{
 printf("Test: readmod newmod=%d, Type=%d\n", newmod, Type);
