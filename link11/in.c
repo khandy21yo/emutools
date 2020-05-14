@@ -3,7 +3,7 @@
 # include "link.h"
 
 /* define maximum size of checksum contents */
-# define	MAXSIZE		400
+# define	MAXSIZE		800
 
 static int getb();
 static int read_mod();
@@ -16,11 +16,50 @@ static char	Buff[MAXSIZE];	/* buffer for current checksum module */
 static char	*Next;		/* next byte to be popped from buffer */
 static int	Count;		/* number of bytes left */
 static int	Type;		/* type of checksum module */
-static char	No_code = 0;	/* flag set if a code section was attempted to
+static int	No_code = 0;	/* flag set if a code section was attempted to
 				** be found but was not there */
 
 
 /***************************  ch_input  ************************************/
+
+static int testtype(int newmod, int type)
+{
+	printf("Test: testtype newmod=%d, type=%d\n", newmod, type);
+	if (newmod == HEADER)
+	{
+		if (type == 1)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	if (newmod == CODE)
+	{
+		if (type == 4)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	if (newmod == SYMBOLS)
+	{
+		if (type == 5)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	return 0;
+}
 
 
 void ch_input(	/* change input checksum buffer contents */
@@ -28,6 +67,8 @@ void ch_input(	/* change input checksum buffer contents */
 	int	newmod)
 
 {
+printf("Test: chinput fname=%s, newfile=%s\n", Fname, newfile);
+
 	if (Fname == NULL || strcmp(Fname, newfile))	/* new file is
 							** different */
 	{
@@ -37,13 +78,14 @@ void ch_input(	/* change input checksum buffer contents */
 		if ((Fp = fopen(Fname, "r")) == NULL)
 			inerror("not found");
 		Type = 0;
-
-//		getb();	// kth: RSX object format
-//		getb();
+		No_code = 0;
 	}
-	if (newmod != Type)			/* if not right module type already */
-		while (newmod != read_mod())	/* read until correct module type */
+printf("Test: ch_input newmod=%d, Type=%d\n", newmod, Type);
+
+//	if (testtype(newmod, Type))			/* if not right module type already */
+		while (testtype(newmod, read_mod()) == 0)	/* read until correct module type */
 		{
+printf("Test: readmod newmod=%d, Type=%d\n", newmod, Type);
 			/* check for missing code section */
 			if ( newmod == CODE && Type == SYMBOLS)
 			{
@@ -70,6 +112,7 @@ int morebytes()	/* returns 1 if there are unread bytes of the current */
 {
 	int	temptype;
 
+printf("Test: morebytes No_code=%d Count=%d\n", No_code, Count);
 	if (No_code)	/* if no code section, return 0 and reset */
 	{
 		No_code = 0;

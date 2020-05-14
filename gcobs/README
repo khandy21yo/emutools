@@ -1,0 +1,8 @@
+This is a VMS program I found on an old GCC distribution a long time
+ago. It allows one to spy/take over another terminal.
+
+You need to set up a command to use it (in login.com or at dcl) similar to
+the following (modify to point at the right location)
+
+$ SPY :== "$dev:[prog]GCOBS"
+

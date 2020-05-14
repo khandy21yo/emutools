@@ -202,6 +202,7 @@ void pass2 (void)		/* translate code and write local symbols */
 {
 	struct objfile	*obj;	/* which object file */
 
+printf("Test: Start pass2\n");
 	obj = File_root;
 	while (obj != NULL)
 	{
@@ -225,11 +226,13 @@ static void transcode (		/* translate code */
 	int		vrd;		/* possible virtual register directive */
 	static struct outword	wbuff;
 
+printf("Test: Start transcode/CODE %s\n", obj->fname);
 
 	ch_input(obj->fname, CODE);
 	while (morebytes())	/* continue reading code section until
 				** empty */
 	{
+printf("Test: morebytes\n");
 	    switch (drctv = getbyte())
 	    {
 		case 000:
