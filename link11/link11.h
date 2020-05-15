@@ -5,13 +5,14 @@
 //! The format of the object files is described in the
 //! "RT-11 Volume and File Formats Manual", chapter 2.
 //!
-//!\author Kevin Handy, Mar 2020
+//!\author Kevin Handy, Apr 2020
 //!
 #ifndef _link11_h_
 #define _link11_h_
 
 #include <iostream>
 #include <fstream>
+#include <list>
 
 //!\brief enum defining error code
 //
@@ -22,6 +23,10 @@ enum ErrorCodes
 	ERROR_BADDATA		//!< Bad data read from object file
 };
 
+
+//**********************************************************************
+// link11read.cc
+//**********************************************************************
 
 //! \brief Class to handle blocks of data from an object file
 //!
@@ -47,7 +52,31 @@ public:
 		block = 0;
 		checksum = 0;
 	}
+	//!\brief destructor
+	//
+	inline ~ObjectBlock()
+	{
+		if (block)
+		{
+			delete[] block;
+		}
+	}
 	int ReadBlock(std::ifstream &in);
+	void Dump(int detail);
+};
+
+
+//!\brief class to hold an entire object file
+//!
+//! Stores all of the blocks read from one object file.
+//!
+class ObjectFile : public std::list<ObjectBlock>
+{
+public:
+	std::string file;		//!< Name of file
+
+public:
+	int ReadFile(std::string &filename);
 	void Dump(int detail);
 };
 

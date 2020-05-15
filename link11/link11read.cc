@@ -5,7 +5,7 @@
 //! The format of the object files is described in the
 //! "RT-11 Volume and File Formats Manual", chapter 2.
 //!
-//!\author Kevin Handy, Mar 2020
+//!\author Kevin Handy, Apr 2020
 //!
 
 #include <iostream>
@@ -58,7 +58,12 @@ int ObjectBlock::ReadBlock(std::ifstream &in)
 	// Type of block
 	//
 	type = in.get();
-	in.get();
+	byte2 = in.get();
+	if (byte2 != 0)
+	{
+		std::cout << "Errer, byte2 = " << byte2 << std::endl;
+		exit(0);
+	}
 
 	//
 	// Read data block
@@ -99,3 +104,38 @@ void ObjectBlock::Dump(int detail)
 	std::cout << std::endl;
 	std::cout << "   Checksum: " << checksum << std::endl;
 }
+
+//**********************************************************************
+// ObjectFile
+//**********************************************************************
+
+iint ReadFile(std::string &filename)
+{
+	file = filename;
+
+	//
+	// Try to open file
+	//
+	std::ifstream fin(filename.c_str(), std::ios_base::binary);
+	if (fin)
+	{
+		std::cout << "Open ok" << std::endl;
+	}
+	else
+	{
+		std::cout << "Open failed" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+}
+
+void Dump(int detail)
+{
+	std::cout << "ObjectFile: " << file << std::endl;
+
+	for (auto loop = begin(); loop != end(); loop++)
+	{
+		(*loop).Dump();
+	}
+}
+
