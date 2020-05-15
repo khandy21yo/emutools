@@ -14,6 +14,20 @@
 #include <fstream>
 #include <list>
 
+//!\brief enum for block types
+//!
+enum BlockTypes
+{
+	BLOCK_GSD = 1,		//!< GSD Global Symbol Directory
+	BLOCK_ENDGSD = 2,	//!< End of GSD
+	BLOCK_TXT = 3,		//!< Holds the actual binary of the program
+	BLOCK_RLD = 4,		//!< RLD Relocation Directory
+	BLOCK_ISD = 5,		//< ISD Internal Symbol Directory (not used by RT11)
+	BLOCK_ENDMOD = 6,	//!< ENDMOD end of object module
+	BLOCK_LIB = 7,		//!< LIB start of library
+	BLOCK_ENDLIB = 8	//!< ENDLIB end of library
+};
+
 //!\brief enum defining error code
 //
 enum ErrorCodes

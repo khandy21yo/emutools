@@ -100,6 +100,7 @@ void ObjectBlock::Dump(int detail)
 			std::cout << std::endl << "             ";
 		}
 		std::cout << (int) block[loop] << " ";
+		count++;
 	}
 	std::cout << std::endl;
 	std::cout << "   Checksum: " << checksum << std::endl;
@@ -119,12 +120,12 @@ int ObjectFile::ReadFile(const std::string &filename)
 	std::ifstream fin(filename.c_str(), std::ios_base::binary);
 	if (fin)
 	{
-		std::cout << "Open ok" << std::endl;
+//		std::cout << "Open ok" << std::endl;
 	}
 	else
 	{
-		std::cout << "Open failed" << std::endl;
-		exit(EXIT_FAILURE);
+//		std::cout << "Open failed" << std::endl;
+		return ERROR_EOF;
 	}
 
 	//
@@ -134,10 +135,9 @@ int ObjectFile::ReadFile(const std::string &filename)
 	do
 	{
 		working = &(*emplace(end()));
-
 		working->ReadBlock(fin);
 	}
-	while (working->type != 6);
+	while (working->type != BLOCK_ENDMOD);
 
 	return ERROR_OK;
 }
