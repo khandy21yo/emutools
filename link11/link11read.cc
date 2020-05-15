@@ -39,7 +39,8 @@ int ObjectBlock::ReadBlock(std::ifstream &in)
 	//
 	byte1 = in.get();
 	byte2 = in.get();
-	one = byte1 + byte2 << 8;
+//std::cout << "Testget " << (int)byte1 << "," << (int)byte2 << std::endl;
+	one = byte1 + (byte2 << 8);
 	if (one != 1)
 	{
 		return ERROR_BADDATA;
@@ -50,13 +51,17 @@ int ObjectBlock::ReadBlock(std::ifstream &in)
 	//
 	byte1 = in.get();
 	byte2 = in.get();
-	length = byte1 + byte2 << 8;
+//std::cout << "Testget " << (int)byte1 << "," << (int)byte2 << std::endl;
+	length = byte1 + (byte2 << 8);
 
 	//
 	// Read data block
 	//
-	block = new char[length - 5];
-	in.read(block, length - 5);
+	block = new unsigned char[length - 5];
+	for (int loop = 0; loop < length - 5; loop++)
+	{
+		block[loop] = in.get();
+	}
 
 	//
 	// Read checksum
@@ -73,5 +78,17 @@ void ObjectBlock::Dump(int detail)
 	std::cout << "ObjectBlock" << std::endl;
 	std::cout << "   One:      " << one << std::endl;
 	std::cout << "   Length:   " << length << std::endl;
+	std::cout << "   Data:     ";
+	int count = 0;
+	for (int loop = 0; loop < length; loop++)
+	{
+		if (count == 16)
+		{
+			count = 0;
+			std::cout << std::endl << "             ";
+		}
+		std::cout << (int) block[loop] << " ";
+	}
+	std::cout << std::endl;
 	std::cout << "   Checksum: " << checksum << std::endl;
 }

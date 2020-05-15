@@ -32,7 +32,7 @@ class ObjectBlock
 public:
 	int one;		//!< Two bytes, should be 1 if read is Ok
 	int length;		//!< Block length.
-	char* block;		//!< 8-bit byte block containing data
+	unsigned char* block;	//!< 8-bit byte block containing data
 	int checksum;		//!< Checksum.
 
 public:
