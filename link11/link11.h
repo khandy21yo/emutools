@@ -76,7 +76,7 @@ public:
 	std::string file;		//!< Name of file
 
 public:
-	int ReadFile(std::string &filename);
+	int ReadFile(const std::string &filename);
 	void Dump(int detail);
 };
 

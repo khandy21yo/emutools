@@ -109,7 +109,7 @@ void ObjectBlock::Dump(int detail)
 // ObjectFile
 //**********************************************************************
 
-iint ReadFile(std::string &filename)
+int ObjectFile::ReadFile(const std::string &filename)
 {
 	file = filename;
 
@@ -127,15 +127,16 @@ iint ReadFile(std::string &filename)
 		exit(EXIT_FAILURE);
 	}
 
+	return ERROR_OK;
 }
 
-void Dump(int detail)
+void ObjectFile::Dump(int detail)
 {
 	std::cout << "ObjectFile: " << file << std::endl;
 
 	for (auto loop = begin(); loop != end(); loop++)
 	{
-		(*loop).Dump();
+		(*loop).Dump(detail);
 	}
 }
 
