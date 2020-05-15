@@ -127,6 +127,18 @@ int ObjectFile::ReadFile(const std::string &filename)
 		exit(EXIT_FAILURE);
 	}
 
+	//
+	// Loop through all blocks of object file
+	//
+	ObjectBlock *working;
+	do
+	{
+		working = &(*emplace(end()));
+
+		working->ReadBlock(fin);
+	}
+	while (working->type != 6);
+
 	return ERROR_OK;
 }
 
