@@ -55,10 +55,16 @@ int ObjectBlock::ReadBlock(std::ifstream &in)
 	length = byte1 + (byte2 << 8);
 
 	//
+	// Type of block
+	//
+	type = in.get();
+	in.get();
+
+	//
 	// Read data block
 	//
-	block = new unsigned char[length - 5];
-	for (int loop = 0; loop < length - 5; loop++)
+	block = new unsigned char[length - 6];
+	for (int loop = 0; loop < (length - 6); loop++)
 	{
 		block[loop] = in.get();
 	}
@@ -78,9 +84,10 @@ void ObjectBlock::Dump(int detail)
 	std::cout << "ObjectBlock" << std::endl;
 	std::cout << "   One:      " << one << std::endl;
 	std::cout << "   Length:   " << length << std::endl;
+	std::cout << "   Type:     " << type << std::endl;
 	std::cout << "   Data:     ";
 	int count = 0;
-	for (int loop = 0; loop < length; loop++)
+	for (int loop = 0; loop < length - 6; loop++)
 	{
 		if (count == 16)
 		{
