@@ -28,6 +28,20 @@ enum BlockTypes
 	BLOCK_ENDLIB = 8	//!< ENDLIB end of library
 };
 
+//!\brief enum describibg GSD types
+//!
+enum GSDTypes
+{
+	GSD_MODNAM = 0,		//!< Module Name
+	GSD_CSECT = 1,		//!< c-sect
+	GSD_ISN = 2,		//!< ISN Internal symbol name
+	GSD_TA = 3,		//!< Transfer address
+	GSD_GSN = 4,		//!< Global symbol name
+	GSD_PSECT = 5,		//!< p-sect (prograam section)
+	GSD_IDENT = 6,		//!< Program version Identification
+	GSD_VSECT = 7		//!< vsect (Mapped array declaration)
+};
+
 //!\brief enum defining error code
 //
 enum ErrorCodes
@@ -77,6 +91,7 @@ public:
 	}
 	int ReadBlock(std::ifstream &in);
 	void Dump(int detail);
+	void DumpGSD(int detail);
 };
 
 
@@ -93,5 +108,11 @@ public:
 	int ReadFile(const std::string &filename);
 	void Dump(int detail);
 };
+
+//**********************************************************************
+// link11util.cc
+//**********************************************************************
+
+std::string derad50(int x);
 
 #endif

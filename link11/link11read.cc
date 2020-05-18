@@ -23,6 +23,8 @@
 //! It does not try to interpret the data,
 //! it just reads in the raw blocks.
 //!
+//!\todo Handle RSX format object files.
+//
 int ObjectBlock::ReadBlock(std::ifstream &in)
 {
 	unsigned char byte1;	// 1st character read
@@ -103,7 +105,87 @@ void ObjectBlock::Dump(int detail)
 		count++;
 	}
 	std::cout << std::endl;
+
+	switch(type)
+	{
+	case BLOCK_GSD:
+		DumpGSD(detail);
+		break;
+
+	}
 	std::cout << "   Checksum: " << checksum << std::endl;
+}
+
+//!\brief Dump GSD data
+//
+void ObjectBlock::DumpGSD(int detail)
+{
+	for (int loop = 0; loop < length - 6; loop += 8)
+	{
+		std::cout << "      GSD ";
+		switch(block[loop + 5])
+		{
+		case GSD_MODNAM:
+			std::cout << "module ";
+			break;
+		case GSD_CSECT:
+			std::cout << "csect  ";
+			break;
+		case GSD_ISN:
+			std::cout << "syngol ";
+			break;
+		case GSD_TA:
+			std::cout << "tran   ";
+			break;
+		case GSD_GSN:
+			std::cout << "global ";
+			break;
+		case GSD_PSECT:
+			std::cout << "psect  ";
+			break;
+		case GSD_IDENT:
+			std::cout << "ident  ";
+			break;
+		case GSD_VSECT:
+			std::cout << "vsect  ";
+			break;
+		default:
+			std::cout << "????   ";
+			break;
+		}
+		std::cout <<
+			derad50(block[loop + 0]  + (block[loop + 1] << 8)) <<
+			derad50(block[loop + 2]  + (block[loop + 3] << 8)) <<
+			"  ";
+
+		int attr = block[loop + 4];
+
+		if (attr & 001)
+			std::cout <<  "shr ";
+		else
+			std::cout <<  "prv ";
+		if (attr & 002)
+			std::cout <<  "ins ";
+		else if (attr & 004)
+			std::cout <<  "bss ";
+		else
+			std::cout <<  "dat ";
+		if (attr & 020)
+			std::cout <<  "ovr ";
+		else
+			std::cout <<  "cat ";
+		if (attr & 040)
+			std::cout <<  "rel ";
+		else
+			std::cout <<  "abs ";
+		if (attr & 0100)
+			std::cout <<  "gbl";
+		else
+			std::cout <<  "loc";
+	
+		std::cout << " " << block[loop + 6] + (block[loop + 7] << 8);
+		std::cout << std::endl;
+	}
 }
 
 //**********************************************************************

@@ -7,7 +7,7 @@ project (link11 VERSION 0.2
 
 add_executable(l11 in.c link.c pass2.c sup.c)
 add_executable(obint obint.c in.c sup.c)
-add_executable(link11 link11main.cc link11read.cc)
+add_executable(link11 link11main.cc link11read.cc link11util.cc)
 
 install(TARGETS l11 obint
     COMPONENT linapp
@@ -16,7 +16,7 @@ install(TARGETS l11 obint
     DESTINATION "/usr/local/bin"
 )
 
-set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
 set(CPACK_SOURCE_IGNORE_FILES

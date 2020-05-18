@@ -80,28 +80,6 @@ install/local/fast: preinstall/fast
 	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 .PHONY : install/local/fast
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
-.PHONY : edit_cache
-
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
-
-.PHONY : edit_cache/fast
-
-# Special rule for the target package_source
-package_source:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
-	/usr/bin/cpack --config ./CPackSourceConfig.cmake /home/kevin/emutools/link11/CPackSourceConfig.cmake
-.PHONY : package_source
-
-# Special rule for the target package_source
-package_source/fast: package_source
-
-.PHONY : package_source/fast
-
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
@@ -135,6 +113,17 @@ rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
 
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+.PHONY : edit_cache
+
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
+
+.PHONY : edit_cache/fast
+
 # Special rule for the target package
 package: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool..."
@@ -145,6 +134,17 @@ package: preinstall
 package/fast: package
 
 .PHONY : package/fast
+
+# Special rule for the target package_source
+package_source:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
+	/usr/bin/cpack --config ./CPackSourceConfig.cmake /home/kevin/emutools/link11/CPackSourceConfig.cmake
+.PHONY : package_source
+
+# Special rule for the target package_source
+package_source/fast: package_source
+
+.PHONY : package_source/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -179,19 +179,6 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named link11
-
-# Build rule for target.
-link11: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 link11
-.PHONY : link11
-
-# fast build rule for target.
-link11/fast:
-	$(MAKE) -f CMakeFiles/link11.dir/build.make CMakeFiles/link11.dir/build
-.PHONY : link11/fast
-
-#=============================================================================
 # Target rules for targets named obint
 
 # Build rule for target.
@@ -216,6 +203,19 @@ l11: cmake_check_build_system
 l11/fast:
 	$(MAKE) -f CMakeFiles/l11.dir/build.make CMakeFiles/l11.dir/build
 .PHONY : l11/fast
+
+#=============================================================================
+# Target rules for targets named link11
+
+# Build rule for target.
+link11: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 link11
+.PHONY : link11
+
+# fast build rule for target.
+link11/fast:
+	$(MAKE) -f CMakeFiles/link11.dir/build.make CMakeFiles/link11.dir/build
+.PHONY : link11/fast
 
 in.o: in.c.o
 
@@ -328,6 +328,33 @@ link11read.cc.s:
 	$(MAKE) -f CMakeFiles/link11.dir/build.make CMakeFiles/link11.dir/link11read.cc.s
 .PHONY : link11read.cc.s
 
+link11util.o: link11util.cc.o
+
+.PHONY : link11util.o
+
+# target to build an object file
+link11util.cc.o:
+	$(MAKE) -f CMakeFiles/link11.dir/build.make CMakeFiles/link11.dir/link11util.cc.o
+.PHONY : link11util.cc.o
+
+link11util.i: link11util.cc.i
+
+.PHONY : link11util.i
+
+# target to preprocess a source file
+link11util.cc.i:
+	$(MAKE) -f CMakeFiles/link11.dir/build.make CMakeFiles/link11.dir/link11util.cc.i
+.PHONY : link11util.cc.i
+
+link11util.s: link11util.cc.s
+
+.PHONY : link11util.s
+
+# target to generate assembly for a file
+link11util.cc.s:
+	$(MAKE) -f CMakeFiles/link11.dir/build.make CMakeFiles/link11.dir/link11util.cc.s
+.PHONY : link11util.cc.s
+
 obint.o: obint.c.o
 
 .PHONY : obint.o
@@ -420,15 +447,15 @@ help:
 	@echo "... depend"
 	@echo "... install/strip"
 	@echo "... install/local"
-	@echo "... edit_cache"
-	@echo "... package_source"
 	@echo "... install"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
-	@echo "... package"
-	@echo "... link11"
+	@echo "... edit_cache"
 	@echo "... obint"
 	@echo "... l11"
+	@echo "... link11"
+	@echo "... package"
+	@echo "... package_source"
 	@echo "... in.o"
 	@echo "... in.i"
 	@echo "... in.s"
@@ -441,6 +468,9 @@ help:
 	@echo "... link11read.o"
 	@echo "... link11read.i"
 	@echo "... link11read.s"
+	@echo "... link11util.o"
+	@echo "... link11util.i"
+	@echo "... link11util.s"
 	@echo "... obint.o"
 	@echo "... obint.i"
 	@echo "... obint.s"
