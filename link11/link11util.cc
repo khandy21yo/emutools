@@ -3,11 +3,17 @@
 
 #include "link11.h"
 
+//!\brief Decode an individual RAXIX50 character
+//
 //! return a character according to RAD50 coding
 //! scheme, called by derad50
-//~
+//!
+//! This code is based on  the Unix Archibe l11 project.
+//!
+//\returns a translated character
+//
 static int returnchar(
-	int k)
+	int k)		//!< RADIX 50 character to decode
 {
 	if (k >= 1 && k <= 26)
 		/* k represents a letter */
@@ -46,11 +52,15 @@ static int returnchar(
 //! decode a word in which 3 characters are coded by 
 //! the RAD50 scheme.
 //!
+//! This code is based on the Unix Archibe l11 project.
+//!
 //! Copied from l11 from the Unix Archive,
 //! and modified.
+//!
+//!\returns a 3 character decoded stribg
 //
 std::string derad50(
-	int x)
+	int x)		//!< 16 bit RADIX50 value to be decoded
 
 {
 	char s[4];

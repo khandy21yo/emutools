@@ -23,9 +23,12 @@
 //! It does not try to interpret the data,
 //! it just reads in the raw blocks.
 //!
+//!\returns ErrorCode
+//
 //!\todo Handle RSX format object files.
 //
-int ObjectBlock::ReadBlock(std::ifstream &in)
+int ObjectBlock::ReadBlock(
+	std::ifstream &in)	//!< Stream to read object file from
 {
 	unsigned char byte1;	// 1st character read
 	unsigned char byte2;	// 2nd character read
@@ -86,7 +89,8 @@ int ObjectBlock::ReadBlock(std::ifstream &in)
 
 //!\brief Dump ObjectBlocck data for debugging purposes
 //!
-void ObjectBlock::Dump(int detail)
+void ObjectBlock::Dump(
+	int detail)	//!< Level of detail to display
 {
 	std::cout << "ObjectBlock" << std::endl;
 	std::cout << "   One:      " << one << std::endl;
@@ -118,7 +122,8 @@ void ObjectBlock::Dump(int detail)
 
 //!\brief Dump GSD data
 //
-void ObjectBlock::DumpGSD(int detail)
+void ObjectBlock::DumpGSD(
+	int detail)		//!< Level of detail to display
 {
 	for (int loop = 0; loop < length - 6; loop += 8)
 	{
@@ -212,7 +217,12 @@ void ObjectBlock::DumpGSD(int detail)
 // ObjectFile
 //**********************************************************************
 
-int ObjectFile::ReadFile(const std::string &filename)
+//!\brief Load ObjectFile from an RT-11 obcevt file given its name
+//!
+//!\returns ErrorCode
+//!
+int ObjectFile::ReadFile(
+	const std::string &filename)	//!< Name of file to process
 {
 	file = filename;
 
@@ -244,7 +254,10 @@ int ObjectFile::ReadFile(const std::string &filename)
 	return ERROR_OK;
 }
 
-void ObjectFile::Dump(int detail)
+//!\brief Dump out an entire ObjectFile
+//
+void ObjectFile::Dump(
+	int detail)	//!< Level of detail to display
 {
 	std::cout << "ObjectFile: " << file << std::endl;
 

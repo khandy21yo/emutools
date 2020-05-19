@@ -44,7 +44,7 @@ enum GSDTypes
 
 //!\brief enum defining error code
 //
-enum ErrorCodes
+enum ErrorCode
 {
 	ERROR_OK = 0,		//!< No error
 	ERROR_EOF = 1,		//!< End of file reached
@@ -138,7 +138,7 @@ class LinkPsectList : public std::list<LinkPsect>
 class Link
 {
 public:
-	LinkPsectList psectilist;	//!< Program sections
+	LinkPsectList psectlist;	//!< Program sections
 
 public:
 	//!/brief Constructor
@@ -148,7 +148,10 @@ public:
 	int PassTxt(ObjectBlock &block);
 	//!\brief Process all blocks in one file through PassTxt
 	//!
-	inline int PassTxt(ObjectFile &block)
+	//!\returns an ErrorCode
+	//!
+	inline int PassTxt(
+		ObjectFile &block)	//!< File to be processed
 	{
 		int error = ERROR_OK;
 		for (auto loop = block.begin();

@@ -11,14 +11,15 @@
 // link11link.cc
 //**********************************************************************
 
-//!/brief Initial pass to strip off TXT blocks and global vars
+//!\brief Initial pass to strip off TXT blocks and global vars
 //!
 //! This pass is used to strip off the TXT psects, and the global
 //! variables, and jenerate the necessary tables.
 //!!
-//!\returns error code
+//!\returns ErrorCode
 //!
-int Link::PassTxt(ObjectBlock &block)
+int Link::PassTxt(
+	ObjectBlock &block)	//!< One block of code from an object file
 {
 	switch(block.type)
 	{
