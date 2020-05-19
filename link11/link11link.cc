@@ -30,7 +30,8 @@ int Link::PassTxt(ObjectBlock &block)
 	case BLOCK_ENDMOD:
 	case BLOCK_LIB:
 	case BLOCK_ENDLIB:
-		std::cout << "PassTxt: unhandled type " <<
+		// not yet implemented at all
+		std::cout << "PassTxt: unimplemented type " <<
 			block.type << std::endl;
 		break;
 	}

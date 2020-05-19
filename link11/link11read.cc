@@ -160,29 +160,49 @@ void ObjectBlock::DumpGSD(int detail)
 
 		int attr = block[loop + 4];
 
-		if (attr & 001)
-			std::cout <<  "shr ";
-		else
-			std::cout <<  "prv ";
-		if (attr & 002)
-			std::cout <<  "ins ";
-		else if (attr & 004)
-			std::cout <<  "bss ";
-		else
-			std::cout <<  "dat ";
-		if (attr & 020)
-			std::cout <<  "ovr ";
-		else
-			std::cout <<  "cat ";
-		if (attr & 040)
-			std::cout <<  "rel ";
-		else
-			std::cout <<  "abs ";
-		if (attr & 0100)
-			std::cout <<  "gbl";
-		else
-			std::cout <<  "loc";
+		switch(block[loop + 5])
+		{
+		case GSD_PSECT:
+			if (attr & 001)
+				std::cout <<  "shr ";
+			else
+				std::cout <<  "prv ";
+			if (attr & 002)
+				std::cout <<  "ins ";
+			else if (attr & 004)
+				std::cout <<  "bss ";
+			else
+				std::cout <<  "dat ";
+			if (attr & 020)
+				std::cout <<  "ovr ";
+			else
+				std::cout <<  "cat ";
+			if (attr & 040)
+				std::cout <<  "rel ";
+			else
+				std::cout <<  "abs ";
+			if (attr & 0100)
+				std::cout <<  "gbl";
+			else
+				std::cout <<  "loc";
 	
+			break;
+
+		case GSD_GSN:
+			if (attr & 001)
+				std::cout <<  "wek ";
+			else
+				std::cout <<  "str ";
+			if (attr & 010)
+				std::cout <<  "def ";
+			else
+				std::cout <<  "ref ";
+			if (attr & 040)
+				std::cout << "rel ";
+			else
+				std::cout << "abs ";
+			break;
+		}
 		std::cout << " " << block[loop + 6] + (block[loop + 7] << 8);
 		std::cout << std::endl;
 	}

@@ -112,6 +112,25 @@ public:
 //**********************************************************************
 // link11link.cc
 //**********************************************************************
+//!\brief program section class
+//!
+class LinkPsect
+{
+public:
+	unsigned char name[4];		//!< Name of psect
+	int flag;			//!< psect flags
+	int length;			//!< Sise of data allocated
+	int base;			//!< Base address
+	unsigned char *data;		//!< Code for this psect
+};
+
+//!\brief list of program sections
+//!
+class LinkPsectList : public std::list<LinkPsect>
+{
+};
+
+
 //!\brief Link class
 //!
 //! Does the heavy lifting of the link process
@@ -119,6 +138,7 @@ public:
 class Link
 {
 public:
+	LinkPsectList psectilist;	//!< Program sections
 
 public:
 	//!/brief Constructor
@@ -126,6 +146,8 @@ public:
 	{
 	}
 	int PassTxt(ObjectBlock &block);
+	//!\brief Process all blocks in one file through PassTxt
+	//!
 	inline int PassTxt(ObjectFile &block)
 	{
 		int error = ERROR_OK;
