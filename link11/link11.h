@@ -110,6 +110,36 @@ public:
 };
 
 //**********************************************************************
+// link11link.cc
+//**********************************************************************
+//!\brief Link class
+//!
+//! Does the heavy lifting of the link process
+//!
+class Link
+{
+public:
+
+public:
+	//!/brief Constructor
+	Link()
+	{
+	}
+	int PassTxt(ObjectBlock &block);
+	inline int PassTxt(ObjectFile &block)
+	{
+		int error = ERROR_OK;
+		for (auto loop = block.begin();
+			loop != block.end() && error == ERROR_OK;
+			loop++)
+		{
+			error = PassTxt(*loop);
+		}
+		return error;
+	}
+};
+
+//**********************************************************************
 // link11util.cc
 //**********************************************************************
 

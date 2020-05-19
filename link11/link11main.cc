@@ -24,5 +24,8 @@ int main(int argc, char **argv)
 
 	of.ReadFile(filename);
 	of.Dump(1);
+
+	Link passes;
+	passes.PassTxt(of);
 }
 

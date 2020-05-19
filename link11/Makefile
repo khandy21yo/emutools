@@ -274,6 +274,33 @@ link.c.s:
 	$(MAKE) -f CMakeFiles/l11.dir/build.make CMakeFiles/l11.dir/link.c.s
 .PHONY : link.c.s
 
+link11link.o: link11link.cc.o
+
+.PHONY : link11link.o
+
+# target to build an object file
+link11link.cc.o:
+	$(MAKE) -f CMakeFiles/link11.dir/build.make CMakeFiles/link11.dir/link11link.cc.o
+.PHONY : link11link.cc.o
+
+link11link.i: link11link.cc.i
+
+.PHONY : link11link.i
+
+# target to preprocess a source file
+link11link.cc.i:
+	$(MAKE) -f CMakeFiles/link11.dir/build.make CMakeFiles/link11.dir/link11link.cc.i
+.PHONY : link11link.cc.i
+
+link11link.s: link11link.cc.s
+
+.PHONY : link11link.s
+
+# target to generate assembly for a file
+link11link.cc.s:
+	$(MAKE) -f CMakeFiles/link11.dir/build.make CMakeFiles/link11.dir/link11link.cc.s
+.PHONY : link11link.cc.s
+
 link11main.o: link11main.cc.o
 
 .PHONY : link11main.o
@@ -462,6 +489,9 @@ help:
 	@echo "... link.o"
 	@echo "... link.i"
 	@echo "... link.s"
+	@echo "... link11link.o"
+	@echo "... link11link.i"
+	@echo "... link11link.s"
 	@echo "... link11main.o"
 	@echo "... link11main.i"
 	@echo "... link11main.s"
