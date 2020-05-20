@@ -115,6 +115,16 @@ void ObjectBlock::Dump(
 	case BLOCK_GSD:
 		DumpGSD(detail);
 		break;
+	case BLOCK_ENDGSD:
+		std::cout << "      GSD END" << std::endl;
+		break;
+	case BLOCK_TXT:
+		std::cout << "      TXT Load Address " <<
+			block[0] + (block[1] << 8) << std::endl;
+		break;
+	case BLOCK_RLD:
+		DumpRLD(detail);
+		break;
 
 	}
 	std::cout << "   Checksum: " << checksum << std::endl;
@@ -159,9 +169,7 @@ void ObjectBlock::DumpGSD(
 			break;
 		}
 		std::cout <<
-			derad50(block[loop + 0]  + (block[loop + 1] << 8)) <<
-			derad50(block[loop + 2]  + (block[loop + 3] << 8)) <<
-			"  ";
+			derad504b(block + loop) << "  ";
 
 		int attr = block[loop + 4];
 
@@ -211,6 +219,51 @@ void ObjectBlock::DumpGSD(
 		std::cout << " " << block[loop + 6] + (block[loop + 7] << 8);
 		std::cout << std::endl;
 	}
+}
+
+//!\brief Dump RLD data
+//
+void ObjectBlock::DumpRLD(
+	int detail)		//!< Level of detail to display
+{
+	for (int loop = 0; loop < length - 6;)
+	{
+		unsigned char command = block[loop++];
+		unsigned char displacement = block[loop++];
+		std::cout << "      RLD command " << (int)command <<
+			"  displacement = " << (int)displacement << std::endl;
+
+		switch (command & 077)
+		{
+			case 001:
+				std::cout << "      Constant " <<
+					block[loop++] + (block[loop++] << 8) <<
+					std::endl;
+				break;
+			case 002:
+				std::cout << "      Symbol " <<
+					derad504b(block +loop) << std::endl;
+				loop += 4;
+				break;
+			case 003:
+			case 004:
+			case 005:
+			case 006:
+			case 007:
+			case 010:
+			case 011:
+			case 012:
+			case 013:
+			case 014:
+			case 015:
+			case 016:
+			case 017:
+			default:
+				std::cout << "      *Unparsed command" << std::endl;
+				break;
+		}
+	}
+
 }
 
 //**********************************************************************

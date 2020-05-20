@@ -92,6 +92,7 @@ public:
 	int ReadBlock(std::ifstream &in);
 	void Dump(int detail);
 	void DumpGSD(int detail);
+	void DumpRLD(int detail);
 };
 
 
@@ -169,5 +170,31 @@ public:
 //**********************************************************************
 
 std::string derad50(int x);
+//!\brief convert 4 bytes to 6 radix50 characters.
+//!
+//! Common occurrence, so make it easier to code.
+//!
+//!]returns a 6 character string.
+//
+inline std::string derad504(
+	unsigned char a,
+	unsigned char b,
+	unsigned char c,
+	unsigned char d)
+{
+	return derad50(a + (b << 8)) + derad50(c + (d << 8));
+}
+
+//!\brief convert 4 bytes to 6 radix50 characters.
+//!
+//! Common occurrence, so make it easier to code.
+//!
+//!]returns a 6 character string.
+//
+inline std::string derad504b(
+	const unsigned char* a)
+{
+	return derad504(a[0], a[1], a[2], a[3]);
+}
 
 #endif
