@@ -236,28 +236,48 @@ void ObjectBlock::DumpRLD(
 		switch (command & 077)
 		{
 			case 001:
+			case 003:
+			case 010:
 				std::cout << "      Constant " <<
 					block[loop++] + (block[loop++] << 8) <<
 					std::endl;
 				break;
 			case 002:
+			case 004:
 				std::cout << "      Symbol " <<
 					derad504b(block +loop) << std::endl;
 				loop += 4;
 				break;
-			case 003:
-			case 004:
 			case 005:
 			case 006:
+				std::cout << "      Symbol " <<
+					derad504b(block +loop) << std::endl;
+				loop += 4;
+				std::cout << "      Constant " <<
+					block[loop++] + (block[loop++] << 8) <<
+					std::endl;
+				break;
 			case 007:
-			case 010:
-			case 011:
-			case 012:
-			case 013:
-			case 014:
 			case 015:
 			case 016:
+				std::cout << "      Section " <<
+					derad504b(block +loop) << std::endl;
+				loop += 4;
+				std::cout << "      Constant " <<
+					block[loop++] + (block[loop++] << 8) <<
+					std::endl;
+				break;
+			case 011:
+				break;
+			case 012:
+			case 014:
+				std::cout << "      Section " <<
+					derad504b(block +loop) << std::endl;
+				loop += 4;
+				break;
 			case 017:
+
+			case 013:
 			default:
 				std::cout << "      *Unparsed command" << std::endl;
 				break;
