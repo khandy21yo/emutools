@@ -118,11 +118,30 @@ public:
 class LinkPsect
 {
 public:
-	unsigned char name[4];		//!< Name of psect
+	unsigned char module[4];	//!< Name of module in radix50
+	unsigned char name[4];		//!< Name of psect in radix50
 	int flag;			//!< psect flags
 	int length;			//!< Sise of data allocated
-	int base;			//!< Base address
+	int base;			//!< Base address.
 	unsigned char *data;		//!< Code for this psect
+public:
+	//! \brief Constructor
+	//
+	LinkPsect()
+	{
+		flag = 0;
+		length = 0;
+		base = 0;
+		data = 0;
+	}
+	//!\brief Destructor
+	~LinkPsect()
+	{
+		if (data)
+		{
+			delete[] data;
+		}
+	}
 };
 
 //!\brief list of program sections
