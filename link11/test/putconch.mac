@@ -1,6 +1,9 @@
         .TITLE putconch: send a byte to the system console
         .IDENT "V01.00"
 
+; From the Wen Page
+; http://ancientbits.blogspot.com/2012/07/programming-barebones-pdp11.html
+
         .GLOBL putconch
 
         XCSR    = 0177564

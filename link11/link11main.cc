@@ -9,7 +9,7 @@
 //!
 //! Passes:
 //! 1. Load object file data.
-//! 2. Scan for all program sections and global variables.
+//! 2. Scan for all program sections and variables.
 //! 3. Set absolute addresses for all program sections.
 //! 4. Handle relocations.
 //! 5. Write our binary code.

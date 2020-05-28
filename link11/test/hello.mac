@@ -1,6 +1,9 @@
         .TITLE Say hello on console
         .IDENT "V00.00"
 
+; From the Web Page
+; http://ancientbits.blogspot.com/2012/07/programming-barebones-pdp11.html
+
         .GLOBL start
         .GLOBAL putconch
 
