@@ -113,6 +113,33 @@ public:
 //**********************************************************************
 // link11link.cc
 //**********************************************************************
+//
+class LinkPsect;	// Forwars reference.
+			// Defined later, but we need to be ablle to
+			// point at it before it is defined. (recursive)
+
+
+//!\brief Variables
+//!
+//! Contains definition of a single variable
+//!
+class Variable
+{
+public:
+	unsigned char name[4];		//!< Name of var in radix50
+	LinkPsect *psect;		//!< psect the var belongs to
+	int offset;			//!< offset address.
+					//! Base address is in *psect.
+	int absolute;			//!< Absolute address.
+
+};
+
+class VariableList : public std::list<Variable>
+{
+public:
+};
+
+//
 //!\brief program section class
 //!
 class LinkPsect
@@ -124,6 +151,8 @@ public:
 	int length;			//!< Sise of data allocated
 	int base;			//!< Base address.
 	unsigned char *data;		//!< Code for this psect
+	VariableList localvars;		//!< Local variables
+
 public:
 	//! \brief Constructor
 	//
@@ -159,6 +188,7 @@ class Link
 {
 public:
 	LinkPsectList psectlist;	//!< Program sections
+	VariableList globalvars;	//!< Global variables
 
 public:
 	//!/brief Constructor
