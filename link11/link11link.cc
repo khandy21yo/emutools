@@ -18,7 +18,7 @@
 //!!
 //!\returns ErrorCode
 //!
-int Link::PassTxt(
+int Link::Pass100(
 	ObjectBlock &block)	//!< One block of code from an object file
 {
 	switch(block.type)
@@ -76,7 +76,7 @@ int Link::PassTxt(
 	case BLOCK_LIB:
 	case BLOCK_ENDLIB:
 		// not yet implemented at all
-		std::cout << "PassTxt: unimplemented type " <<
+		std::cout << "Pass100: unimplemented type " <<
 			block.type << std::endl;
 		break;
 	}

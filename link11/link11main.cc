@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	of2.Dump(1);
 
 	Link passes;
-	passes.PassTxt(of);
-	passes.PassTxt(of2);
+	passes.Pass100(of);
+	passes.Pass100(of2);
 }
 

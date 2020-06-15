@@ -195,12 +195,12 @@ public:
 	Link()
 	{
 	}
-	int PassTxt(ObjectBlock &block);
-	//!\brief Process all blocks in one file through PassTxt
+	int Pass100(ObjectBlock &block);
+	//!\brief Process all blocks in one file through Pass100
 	//!
 	//!\returns an ErrorCode
 	//!
-	inline int PassTxt(
+	inline int Pass100(
 		ObjectFile &block)	//!< File to be processed
 	{
 		int error = ERROR_OK;
@@ -208,7 +208,7 @@ public:
 			loop != block.end() && error == ERROR_OK;
 			loop++)
 		{
-			error = PassTxt(*loop);
+			error = Pass100(*loop);
 		}
 		return error;
 	}
