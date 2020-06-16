@@ -6,15 +6,14 @@
 
 #include "link11.h"
 
-
 //**********************************************************************
 // link11link.cc
 //**********************************************************************
 
-//!\brief Initial pass to strip off TXT blocks and global vars
+//!\brief Pass to initialize psect tables
 //!
-//! This pass is used to strip off the TXT psects, and the global
-//! symbols, and jenerate the necessary tables.
+//! Pass to scan through all blocks of data and to set up LinkPsect
+//! structures.
 //!!
 //!\returns ErrorCode
 //!
@@ -39,6 +38,7 @@ int Link::Pass100(
 			{
 			case GSD_MODNAM:
 				std::cout << "module ";
+				memcpy(currentmodule, block.block, 6);
 				break;
 			case GSD_CSECT:
 				std::cout << "csect  ";

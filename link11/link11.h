@@ -13,6 +13,7 @@
 #include <iostream>
 #include <fstream>
 #include <list>
+#include <cstring>
 
 //!\brief enum for block types
 //!
@@ -187,16 +188,22 @@ class LinkPsectList : public std::list<LinkPsect>
 class Link
 {
 public:
-	LinkPsectList psectlist;	//!< Program sections
+	LinkPsectList psectlist;	//!< All Program sections
 	VariableList globalvars;	//!< Global variables
+
+	LinkPsect *currentpsect;	//!< Current psect being worked on
+	unsigned char currentmodule[6];	//!< Current module being worked on
 
 public:
 	//!/brief Constructor
 	Link()
 	{
+		currentpsect = 0;
+		memset(currentmodule, 0, 6);
 	}
 	int Pass100(ObjectBlock &block);
-	//!\brief Process all blocks in one file through Pass100
+
+	//!\brief Process all blocks in one file for Pass100.
 	//!
 	//!\returns an ErrorCode
 	//!
