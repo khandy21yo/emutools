@@ -147,9 +147,15 @@ int Link::Pass100Psect(
 	memcpy(psect->name, def, 4);
 	psect->flag = def[4];
 	psect->length = def[6] + (def[7] << 8);
+	psect->length += psect->length & 1;	// Force to word boundry size
 
 	if (psect->length != 0)
 	{
+		//
+		// Allocate space for psect.
+		// We may need to reallocate later if later psects fold
+		// into this one.
+		//
 		psect->data = new unsigned char[psect->length];
 	}
 
