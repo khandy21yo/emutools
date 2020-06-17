@@ -148,9 +148,9 @@ class LinkPsect
 public:
 	unsigned char module[4];	//!< Name of module in radix50
 	unsigned char name[4];		//!< Name of psect in radix50
-	int flag;			//!< psect flags
-	int length;			//!< Sise of data allocated
-	int base;			//!< Base address.
+	unsigned int flag;		//!< psect flags
+	unsigned int length;		//!< Sise of data allocated
+	unsigned int base;		//!< Base address.
 	unsigned char *data;		//!< Code for this psect
 	VariableList localvars;		//!< Local variables
 
@@ -192,7 +192,7 @@ public:
 	VariableList globalvars;	//!< Global variables
 
 	LinkPsect *currentpsect;	//!< Current psect being worked on
-	unsigned char currentmodule[6];	//!< Current module being worked on
+	unsigned char currentmodule[4];	//!< Current module being worked on
 
 public:
 	//!/brief Constructor
@@ -219,6 +219,7 @@ public:
 		}
 		return error;
 	}
+	int Pass100Psect(int type, const unsigned char *def);
 };
 
 //**********************************************************************

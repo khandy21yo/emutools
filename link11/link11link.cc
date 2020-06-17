@@ -31,17 +31,19 @@ int Link::Pass100(
 		{
 			int attr = block.block[loop + 4];
 
-			std::cout <<
-				derad504b(block.block + loop) << "  ";
+//			std::cout <<
+//				derad504b(block.block + loop) << "  ";
 
 			switch(block.block[loop + 5])
 			{
 			case GSD_MODNAM:
-				std::cout << "module ";
-				memcpy(currentmodule, block.block, 6);
+//				std::cout << "module ";
+				memcpy(currentmodule, block.block, 4);
 				break;
 			case GSD_CSECT:
-				std::cout << "csect  ";
+//				std::cout << "csect  ";
+				Pass100Psect(block.block[loop + 5],
+					block.block + loop);
 				break;
 			case GSD_ISN:
 				std::cout << "syngol ";
@@ -53,13 +55,17 @@ int Link::Pass100(
 				std::cout << "global ";
 				break;
 			case GSD_PSECT:
-				std::cout << "psect  ";
+//				std::cout << "psect  ";
+				Pass100Psect(block.block[loop + 5],
+					block.block + loop);
 				break;
 			case GSD_IDENT:
 				std::cout << "ident  ";
 				break;
 			case GSD_VSECT:
-				std::cout << "vsect  ";
+//				std::cout << "vsect  ";
+				Pass100Psect(block.block[loop + 5],
+					block.block + loop);
 				break;
 			default:
 				std::cout << "????   ";
@@ -68,6 +74,7 @@ int Link::Pass100(
 
 		}
 		break;
+
 	case BLOCK_ENDGSD:
 	case BLOCK_TXT:
 	case BLOCK_RLD:
@@ -82,5 +89,34 @@ int Link::Pass100(
 	}
 
 	return ERROR_OK;
+}
+
+//!\brief Handle setting up a psect/csect for Link::Pass100.
+//!
+//! Creates psect entries in the Link structure.
+//!
+//!\todo It should merge psects together with common names,
+//! but this first implementation just adds all psects as
+//! new.
+//
+int Link::Pass100Psect(
+	int type,			//!< type of section (pset. csrct)
+	const unsigned char *def)	//!< Pointer to definition in GSD
+{
+	LinkPsect *psect = 0;	//!< Pointer to this new psect
+
+	psect = &(*psectlist.emplace(psectlist.end()));
+
+	memcpy(psect->module, currentmodule, 4);
+	memcpy(psect->name, def, 4);
+	psect->flag = def[4];
+	psect->length = def[6] + (def[7] << 8);
+
+	if (psect->length != 0)
+	{
+		psect->data = new unsigned char[psect->length];
+	}
+
+	return 0;
 }
 
