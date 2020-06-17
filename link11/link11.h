@@ -172,12 +172,21 @@ public:
 			delete[] data;
 		}
 	}
+	void Dump(int level);
 };
 
 //!\brief list of program sections
 //!
 class LinkPsectList : public std::list<LinkPsect>
 {
+public:
+	void Dump(int level)
+	{
+		for (auto loop = begin(); loop != end(); loop++)
+		{
+			(*loop).Dump(level);
+		}
+	}
 };
 
 
@@ -201,6 +210,7 @@ public:
 		currentpsect = 0;
 		memset(currentmodule, 0, 6);
 	}
+	void Dump(int level);
 	int Pass100(ObjectBlock &block);
 
 	//!\brief Process all blocks in one file for Pass100.

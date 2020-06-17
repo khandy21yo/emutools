@@ -6,9 +6,45 @@
 
 #include "link11.h"
 
+
 //**********************************************************************
-// link11link.cc
+// LinkPsect
 //**********************************************************************
+
+//!\brief Dump data structures
+//!
+//! Debugging routine to display data stored in class
+//
+void LinkPsect::Dump(
+	int Level)	//!< Detail level
+{
+	std::cout <<
+		"  psect moduke: " <<
+		derad504b(module) << "  psect: " <<
+		derad504b(name) << "  flag: " <<
+		flag << "  length: " <<
+		length << "  base: " <<
+		base << std::endl;
+
+}
+
+//**********************************************************************
+// Link
+//**********************************************************************
+
+//!\brief Dump out data in structure
+//!
+//! Debugging routine to display data stored in the class.
+//!
+void Link::Dump(
+	int level)	//!< Level of detail
+{
+	std::cout << std::endl << "Link" << std::endl;
+	std::cout << " Current module: " <<
+		derad504b(currentmodule) <<
+		std::endl;
+	psectlist.Dump(level);
+}
 
 //!\brief Pass to initialize psect tables
 //!

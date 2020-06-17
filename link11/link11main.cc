@@ -35,18 +35,18 @@ int main(int argc, char **argv)
 {
 	ObjectFile of;
 	std::string filename = "test/hello.obj";
-
 	of.ReadFile(filename);
 	of.Dump(1);
 
 	ObjectFile of2;
 	std::string filename2 = "test/putconch.obj";
-
 	of2.ReadFile(filename2);
 	of2.Dump(1);
 
 	Link passes;
 	passes.Pass100(of);
 	passes.Pass100(of2);
+
+	passes.Dump(1);
 }
 
