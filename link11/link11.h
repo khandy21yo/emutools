@@ -230,6 +230,7 @@ public:
 		return error;
 	}
 	int Pass100Psect(int type, const unsigned char *def);
+	int Pass100Txt(ObjectBlock &block);
 };
 
 //**********************************************************************

@@ -44,6 +44,12 @@ void Link::Dump(
 		derad504b(currentmodule) <<
 		std::endl;
 	psectlist.Dump(level);
+
+	if (currentpsect)
+	{
+		std::cout << "  Current psect" << std::endl;
+		currentpsect->Dump(level);
+	}
 }
 
 //!\brief Pass to initialize psect tables
@@ -111,8 +117,11 @@ int Link::Pass100(
 		}
 		break;
 
-	case BLOCK_ENDGSD:
 	case BLOCK_TXT:
+		Pass100Txt(block);
+		break;
+
+	case BLOCK_ENDGSD:
 	case BLOCK_RLD:
 	case BLOCK_ISD:
 	case BLOCK_ENDMOD:
@@ -142,6 +151,7 @@ int Link::Pass100Psect(
 	LinkPsect *psect = 0;	//!< Pointer to this new psect
 
 	psect = &(*psectlist.emplace(psectlist.end()));
+	currentpsect = psect;
 
 	memcpy(psect->module, currentmodule, 4);
 	memcpy(psect->name, def, 4);
@@ -162,3 +172,22 @@ int Link::Pass100Psect(
 	return 0;
 }
 
+//!\brief Pas100 process a txt block
+//
+int Link::Pass100Txt(
+	ObjectBlock &block)	//!< One block of code from an object file
+{
+	//
+	// 1st 2 bytes contain load offset
+	//
+	unsigned int offset = block.block[0] + (block.block[1] << 8);
+
+	//
+	// The rest of it is object code
+	//
+	memcpy(currentpsect->data + offset,
+		block.block + 2,
+		block.length - 8);
+
+	return 0;
+}
