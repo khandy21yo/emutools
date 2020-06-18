@@ -238,17 +238,18 @@ public:
 //**********************************************************************
 
 std::string derad50(int x);
+
 //!\brief convert 4 bytes to 6 radix50 characters.
 //!
 //! Common occurrence, so make it easier to code.
 //!
-//!]returns a 6 character string.
+//!\returns a 6 character string.
 //
 inline std::string derad504(
-	unsigned char a,
-	unsigned char b,
-	unsigned char c,
-	unsigned char d)
+	unsigned char a,	//!< 1st vyte
+	unsigned char b,	//!< 2nd byte
+	unsigned char c,	//!< 3rd byte
+	unsigned char d)	//!< 4th byte
 {
 	return derad50(a + (b << 8)) + derad50(c + (d << 8));
 }
@@ -260,9 +261,36 @@ inline std::string derad504(
 //!]returns a 6 character string.
 //
 inline std::string derad504b(
-	const unsigned char* a)
+	const unsigned char* a)	//!< Pointer to 4 bytes of radix50 characters
 {
 	return derad504(a[0], a[1], a[2], a[3]);
+}
+
+//!\brief Read one word (two bytes) from the object file
+//!
+//! Reads one word of data (2 bytes) from an object wil,
+//! and handles the endianess of the data.
+//!
+//!\returns one word (16 bytes) integer.
+//!
+inline unsigned int deword(
+	const unsigned char *a)		//!< Pointer to two bytes of data
+{
+	return a[0] + (a[1] << 8);
+}
+
+//!\brief Read one word (two bytes) from the object file
+//!
+//! Reads one word of data (2 bytes) from an object wil,
+//! and handles the endianess of the data.
+//!
+//!\returns one word (16 bytes) integer.
+//!
+inline unsigned int deword(
+	const unsigned char a,		//!< 1st byte
+	const unsigned char b)		//!< 2nd byte
+{
+	return a + (b << 8);
 }
 
 #endif

@@ -45,7 +45,7 @@ int ObjectBlock::ReadBlock(
 	byte1 = in.get();
 	byte2 = in.get();
 //std::cout << "Testget " << (int)byte1 << "," << (int)byte2 << std::endl;
-	one = byte1 + (byte2 << 8);
+	one = deword(byte1, byte2);
 	if (one != 1)
 	{
 		return ERROR_BADDATA;
@@ -57,7 +57,7 @@ int ObjectBlock::ReadBlock(
 	byte1 = in.get();
 	byte2 = in.get();
 //std::cout << "Testget " << (int)byte1 << "," << (int)byte2 << std::endl;
-	length = byte1 + (byte2 << 8);
+	length = deword(byte1, byte2);
 
 	//
 	// Type of block
@@ -120,7 +120,7 @@ void ObjectBlock::Dump(
 		break;
 	case BLOCK_TXT:
 		std::cout << "      TXT Load Address " <<
-			block[0] + (block[1] << 8) << std::endl;
+			deword(block) << std::endl;
 		break;
 	case BLOCK_RLD:
 		DumpRLD(detail);
@@ -216,7 +216,7 @@ void ObjectBlock::DumpGSD(
 				std::cout << "abs ";
 			break;
 		}
-		std::cout << " " << block[loop + 6] + (block[loop + 7] << 8);
+		std::cout << " " << deword(block +loop + 6);
 		std::cout << std::endl;
 	}
 }
@@ -239,8 +239,9 @@ void ObjectBlock::DumpRLD(
 			case 003:
 			case 010:
 				std::cout << "      Constant " <<
-					block[loop++] + (block[loop++] << 8) <<
+					deword(block + loop) <<
 					std::endl;
+				loop += 2;
 				break;
 			case 002:
 			case 004:
@@ -254,8 +255,9 @@ void ObjectBlock::DumpRLD(
 					derad504b(block +loop) << std::endl;
 				loop += 4;
 				std::cout << "      Constant " <<
-					block[loop++] + (block[loop++] << 8) <<
+					deword(block + loop) <<
 					std::endl;
+				loop += 2;
 				break;
 			case 007:
 			case 015:
@@ -264,8 +266,9 @@ void ObjectBlock::DumpRLD(
 					derad504b(block +loop) << std::endl;
 				loop += 4;
 				std::cout << "      Constant " <<
-					block[loop++] + (block[loop++] << 8) <<
+					deword(block + loop) <<
 					std::endl;
+				loop += 2;
 				break;
 			case 011:
 				break;

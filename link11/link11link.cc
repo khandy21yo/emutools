@@ -156,7 +156,7 @@ int Link::Pass100Psect(
 	memcpy(psect->module, currentmodule, 4);
 	memcpy(psect->name, def, 4);
 	psect->flag = def[4];
-	psect->length = def[6] + (def[7] << 8);
+	psect->length = deword(def + 6);
 	psect->length += psect->length & 1;	// Force to word boundry size
 
 	if (psect->length != 0)
@@ -180,7 +180,7 @@ int Link::Pass100Txt(
 	//
 	// 1st 2 bytes contain load offset
 	//
-	unsigned int offset = block.block[0] + (block.block[1] << 8);
+	unsigned int offset = deword(block.block);
 
 	//
 	// The rest of it is object code
