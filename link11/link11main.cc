@@ -48,6 +48,8 @@ int main(int argc, char **argv)
 	passes.Pass100(of2);
 
 	passes.Pass200();
+	passes.WriteAbs("hello.abs");
+	passes.WriteAbs("hello.simh");
 
 	passes.Dump(1);
 }

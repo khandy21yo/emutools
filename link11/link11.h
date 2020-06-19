@@ -232,6 +232,8 @@ public:
 	}
 	int Pass100Psect(int type, const unsigned char *def);
 	int Pass100Txt(ObjectBlock &block);
+	int WriteAbs(const std::string &filename);
+	int WriteSimh(const std::string &filename);
 };
 
 //**********************************************************************
