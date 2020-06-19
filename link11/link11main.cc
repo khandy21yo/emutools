@@ -47,6 +47,8 @@ int main(int argc, char **argv)
 	passes.Pass100(of);
 	passes.Pass100(of2);
 
+	passes.Pass200();
+
 	passes.Dump(1);
 }
 

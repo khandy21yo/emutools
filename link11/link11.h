@@ -212,6 +212,7 @@ public:
 	}
 	void Dump(int level);
 	int Pass100(ObjectBlock &block);
+	int Pass200(void);
 
 	//!\brief Process all blocks in one file for Pass100.
 	//!

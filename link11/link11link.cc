@@ -52,7 +52,7 @@ void Link::Dump(
 	}
 }
 
-//!\brief Pass to initialize psect tables
+//!\brief Pass100 - initialize psect tables
 //!
 //! Pass to scan through all blocks of data and to set up LinkPsect
 //! structures.
@@ -188,6 +188,37 @@ int Link::Pass100Txt(
 	memcpy(currentpsect->data + offset,
 		block.block + 2,
 		block.length - 8);
+
+	return 0;
+}
+
+
+//!\brief Pass200 - Determine absolute addresses
+//!
+//! This pass assignes absolute addresses to psects, local and global
+//! variables.
+//!
+int Link::Pass200(void)
+{
+	unsigned int base = 01000;	//!< Beginning address for program
+
+
+	//
+	// Assign absolute addresses to psects that need it
+	//
+	for (auto loop = psectlist.begin();
+		loop != psectlist.end();
+		loop++)
+	{
+		//
+		// We only need to set up relative, not absolute, psects
+		//
+		if ((*loop).flag & 040)
+		{
+			(*loop).base = base;
+			base += (*loop).length;
+		}
+	}
 
 	return 0;
 }
