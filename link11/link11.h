@@ -203,12 +203,15 @@ public:
 	LinkPsect *currentpsect;	//!< Current psect being worked on
 	unsigned char currentmodule[4];	//!< Current module being worked on
 
+	unsigned int checksum;		//!< Used for checksum calculations
+
 public:
 	//!/brief Constructor
 	Link()
 	{
 		currentpsect = 0;
 		memset(currentmodule, 0, 6);
+		checksum = 0;
 	}
 	void Dump(int level);
 	int Pass100(ObjectBlock &block);
@@ -234,6 +237,47 @@ public:
 	int Pass100Txt(ObjectBlock &block);
 	int WriteAbs(const std::string &filename);
 	int WriteSimh(const std::string &filename);
+
+	//!\brief Write character to bin, calculating checksum
+	//!
+	void putbyte(
+		std::ofstream &fout,
+		unsigned char ch)
+	{
+		fout.put(ch);
+		checksum =- ch;
+	}
+	//!\brief Write a two byte word to binary file, tracking checksum
+	//!
+	void putword(
+		std::ofstream &fout, 
+		unsigned int wd)
+	{
+		putbyte(fout, wd & 0xff);
+		putbyte(fout, (wd >> 8) * 0xff);
+	}
+	//!\brief Write an array of characters to binary file, 
+	//!tracking checksum
+	//!
+	void putbytes(
+		std::ofstream &fout, 
+		const unsigned char *ch, 
+		unsigned int length)
+	{
+		while(length--)
+		{
+			putbyte(fout, *ch++);
+		}
+	}
+	//!\bried output checksum to binary file
+	//
+	void putchecksum(
+		std::ofstream &fout)
+	{
+		fout.put(checksum & 0xff);
+		checksum = 0;
+	}
+	
 };
 
 //**********************************************************************
