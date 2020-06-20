@@ -245,7 +245,7 @@ public:
 		unsigned char ch)
 	{
 		fout.put(ch);
-		checksum =- ch;
+		checksum -= ch;
 	}
 	//!\brief Write a two byte word to binary file, tracking checksum
 	//!
@@ -254,7 +254,7 @@ public:
 		unsigned int wd)
 	{
 		putbyte(fout, wd & 0xff);
-		putbyte(fout, (wd >> 8) * 0xff);
+		putbyte(fout, (wd >> 8) & 0xff);
 	}
 	//!\brief Write an array of characters to binary file, 
 	//!tracking checksum

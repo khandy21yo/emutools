@@ -51,12 +51,23 @@ int Link::WriteAbs(const std::string &filename)
 			checksum = 0;
 			putbyte(fout, 1);
 			putbyte(fout, 0);
-			putword(fout, (*loop).length);
+			putword(fout, (*loop).length + 6);
 			putword(fout, (*loop).base);
 			putbytes(fout, (*loop).data, (*loop).length);
 			putchecksum(fout);
 		}
 	}
+
+	//
+	// Final block.
+	// Loa address.
+	//
+	checksum = 0;
+	putbyte(fout, 1);
+	putbyte(fout, 0);
+	putword(fout, 6);
+	putword(fout, 01001);		// Start address
+	putchecksum(fout);
 
 	return 0;
 }
