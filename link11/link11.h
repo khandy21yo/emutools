@@ -52,6 +52,12 @@ enum ErrorCode
 	ERROR_BADDATA		//!< Bad data read from object file
 };
 
+enum GSNFlags
+{
+	GSN_WEAK = 001,
+	GSN_DEF = 010,
+	GSN_REL  = 040
+};
 
 //**********************************************************************
 // link11read.cc
@@ -129,10 +135,32 @@ class Variable
 public:
 	unsigned char name[4];		//!< Name of var in radix50
 	LinkPsect *psect;		//!< psect the var belongs to
-	int offset;			//!< offset address.
+	unsigned int offset;		//!< offset address.
+	unsigned int flags;		//!< flags
+					//! 1=weak, 8=def, 32=relative
 					//! Base address is in *psect.
-	int absolute;			//!< Absolute address.
+	unsigned int absolute;		//!< Absolute address.
 
+public:
+	//!\brief Constructor
+	//!
+	Variable()
+	{
+		memset(name, 0, 4);
+		psect = 0;
+		offset = 0;
+		flags = 0;
+		absolute = 0;
+	}
+	//!\brief Copy name over
+	//!
+	inline void setname(
+		unsigned char *cn)	//!< Name to copy
+	{
+		memcpy(name, cn, 4);
+	}
+	void Dump(int level);
+	void Reloc();
 };
 
 class VariableList : public std::list<Variable>
@@ -204,6 +232,8 @@ public:
 	unsigned char currentmodule[4];	//!< Current module being worked on
 
 	unsigned int checksum;		//!< Used for checksum calculations
+
+	Variable start;			//!< Starting address
 
 public:
 	//!/brief Constructor

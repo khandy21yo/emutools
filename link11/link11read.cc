@@ -202,21 +202,21 @@ void ObjectBlock::DumpGSD(
 			break;
 
 		case GSD_GSN:
-			if (attr & 001)
+			if (attr & GSN_WEAK)
 				std::cout <<  "wek ";
 			else
 				std::cout <<  "str ";
-			if (attr & 010)
+			if (attr & GSN_DEF)
 				std::cout <<  "def ";
 			else
 				std::cout <<  "ref ";
-			if (attr & 040)
+			if (attr & GSN_REL)
 				std::cout << "rel ";
 			else
 				std::cout << "abs ";
 			break;
 		}
-		std::cout << " " << deword(block +loop + 6);
+		std::cout << " " << deword(block + loop + 6);
 		std::cout << std::endl;
 	}
 }

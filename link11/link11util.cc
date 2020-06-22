@@ -3,6 +3,39 @@
 
 #include "link11.h"
 
+//**********************************************************************
+// class Variabble
+//**********************************************************************
+//!\brief Vebigging dump of variables
+//
+void Variable::Dump(
+	int level)
+{
+	std::cout << "    Symbol " <<
+		derad504b(name) << "  Offdrt: " <<
+		offset << " Flags: " <<
+		flags << " Abs: " <<
+		absolute << std::endl;
+}
+
+//!\brief Relocate variable base address
+//!
+void Variable::Reloc()
+{
+	if (flags & GSN_REL && psect != 0)
+	{
+		absolute = offset + psect->base;
+	}
+	else
+	{
+		absolute = offset;
+	}
+}
+
+//**********************************************************************
+// radix50
+//**********************************************************************
+
 //!\brief Decode an individual RAXIX50 character
 //
 //! return a character according to RAD50 coding

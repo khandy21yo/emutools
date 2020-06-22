@@ -40,9 +40,23 @@ void Link::Dump(
 	int level)	//!< Level of detail
 {
 	std::cout << std::endl << "Link" << std::endl;
+
+	//
+	// Last module being munged
+	//
 	std::cout << " Current module: " <<
 		derad504b(currentmodule) <<
 		std::endl;
+
+	//
+	// Display start address
+	//
+	std::cout << "  Start" << std::endl;
+	start.Dump(1);
+
+	//
+	// List all modules in list
+	//
 	psectlist.Dump(level);
 
 	if (currentpsect)
@@ -91,7 +105,12 @@ int Link::Pass100(
 				std::cout << "syngol ";
 				break;
 			case GSD_TA:
-				std::cout << "tran   ";
+//				std::cout << "tran   ";
+std::cout << std::endl << "tran   " << deword(block.block + loop + 6) << std::endl;
+				start.setname(block.block + loop);
+				start.offset = deword(block.block + loop + 6);
+				start.flags = GSN_DEF | GSN_REL;
+				start.psect = currentpsect;
 				break;
 			case GSD_GSN:
 				std::cout << "global ";
@@ -202,7 +221,6 @@ int Link::Pass200(void)
 {
 	unsigned int base = 01000;	//!< Beginning address for program
 
-
 	//
 	// Assign absolute addresses to psects that need it
 	//
@@ -219,6 +237,11 @@ int Link::Pass200(void)
 			base += (*loop).length;
 		}
 	}
+
+	//
+	// Relocate start address
+	//
+	start.Reloc();
 
 	return 0;
 }

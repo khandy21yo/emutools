@@ -60,13 +60,13 @@ int Link::WriteAbs(const std::string &filename)
 
 	//
 	// Final block.
-	// Loa address.
+	// Start address.
 	//
 	checksum = 0;
 	putbyte(fout, 1);
 	putbyte(fout, 0);
 	putword(fout, 6);
-	putword(fout, 01001);		// Start address
+	putword(fout, start.absolute);		// Start address
 	putchecksum(fout);
 
 	return 0;
