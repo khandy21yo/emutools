@@ -155,7 +155,7 @@ public:
 	//!\brief Copy name over
 	//!
 	inline void setname(
-		unsigned char *cn)	//!< Name to copy
+		const unsigned char *cn)	//!< Name to copy
 	{
 		memcpy(name, cn, 4);
 	}
@@ -166,6 +166,13 @@ public:
 class VariableList : public std::list<Variable>
 {
 public:
+	void Dump(int level)
+	{
+		for (auto loop = begin(); loop != end(); loop++)
+		{
+			(*loop).Dump(level);
+		}
+	}
 };
 
 //
@@ -265,6 +272,7 @@ public:
 	}
 	int Pass100Psect(int type, const unsigned char *def);
 	int Pass100Txt(ObjectBlock &block);
+	int Pass100Gsn(const unsigned char *def);
 	int WriteAbs(const std::string &filename);
 	int WriteSimh(const std::string &filename);
 

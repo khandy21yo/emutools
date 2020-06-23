@@ -64,6 +64,9 @@ void Link::Dump(
 		std::cout << "  Current psect" << std::endl;
 		currentpsect->Dump(level);
 	}
+
+	std::cout << "Globals" << std::endl;
+	globalvars.Dump(level);
 }
 
 //!\brief Pass100 - initialize psect tables
@@ -113,7 +116,8 @@ std::cout << std::endl << "tran   " << deword(block.block + loop + 6) << std::en
 				start.psect = currentpsect;
 				break;
 			case GSD_GSN:
-				std::cout << "global ";
+//				std::cout << "global ";
+				Pass100Gsn(block.block + loop);
 				break;
 			case GSD_PSECT:
 //				std::cout << "psect  ";
@@ -211,6 +215,22 @@ int Link::Pass100Txt(
 	return 0;
 }
 
+//!\brief Handle global symbols definitions
+//
+int Link::Pass100Gsn(
+	const unsigned char *def)	//!< Pointer to global symbol definition
+{
+	int attr = def[4];
+
+	auto var = &(*globalvars.emplace(globalvars.end()));
+
+	var->setname(def);
+	var->offset = deword(def + 6);
+	var->flags = attr;
+	var->psect = currentpsect;
+
+	return 0;
+}
 
 //!\brief Pass200 - Determine absolute addresses
 //!
@@ -242,6 +262,16 @@ int Link::Pass200(void)
 	// Relocate start address
 	//
 	start.Reloc();
+
+	//
+	// Relocate globals
+	//
+	for (auto loop2 = globalvars.begin();
+		loop2 != globalvars.end();
+		loop2++)
+	{
+		(*loop2).Reloc();
+	}
 
 	return 0;
 }
