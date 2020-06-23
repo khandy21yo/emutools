@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
 	passes.Pass200();
 	passes.WriteAbs("test/hello.lda");
-	passes.WriteAbs("test/hello.simh");
+	passes.WriteSimh("test/hello.simh");
 
 	passes.Dump(1);
 }

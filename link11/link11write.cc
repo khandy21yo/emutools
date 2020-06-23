@@ -74,9 +74,53 @@ int Link::WriteAbs(const std::string &filename)
 
 //!\brief Write out binary data in simh script format
 //!
-//! This writes the binary image in absolute format.
+//! This writes the binary image in simh DO format.
+//! Use the simh command 'DO <filename>" to load.
 //!
 int Link::WriteSimh(const std::string &filename)
 {
+	std::ofstream fout(filename.c_str());
+	if (fout)
+	{
+//		std::cout << "Open ok" << std::endl;
+	}
+	else
+	{
+//		std::cout << "Open failed" << std::endl;
+		return ERROR_EOF;
+	}
+
+	//
+	// Dump out all psects
+	//
+	for (auto loop = psectlist.begin();
+		loop != psectlist.end();
+		loop++)
+	{
+		//
+		// We don't need to write it out if there is no data
+		//
+		if ((*loop).length != 0)
+		{
+			for (int loop2 = 0; loop2 < (*loop).length; loop2 += 2)
+			{
+				fout << "d " <<
+					std::oct << std::showbase <<
+					(*loop).base + loop2 << " " <<
+					std::oct << std::showbase <<
+					deword((*loop).data + loop2) <<
+					std::endl;
+			}
+		}
+	}
+
+	//
+	// Final block.
+	// Start address.
+	//
+	fout << "d pc " <<
+		start.absolute <<
+		std::endl;		// Start address
+
 	return 0;
 }
