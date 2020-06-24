@@ -19,7 +19,7 @@ void LinkPsect::Dump(
 	int Level)	//!< Detail level
 {
 	std::cout <<
-		"  psect moduke: " <<
+		"  psect module: " <<
 		derad504b(module) << "  psect: " <<
 		derad504b(name) << "  flag: " <<
 		flag << "  length: " <<
@@ -222,8 +222,40 @@ int Link::Pass100Gsn(
 {
 	int attr = def[4];
 
-	auto var = &(*globalvars.emplace(globalvars.end()));
+	//
+	// Is this value already in the table
+	//
+	auto var = globalvars.Search(def);
 
+	//
+	// If it's already in the table,
+	// do we keep the original or replace it with this one?
+	//
+	if (var != 0 &&
+		(var->flags & GSN_DEF != 0) &&
+		(attr & GSN_DEF!= 0))
+	{
+		//
+		// Thid one is a ref, not a def,
+		// and the original is a def,
+		// so keep original
+		//
+		return 0;
+	}
+
+	//
+	// If var is non-zero, then we want to update with the
+	// new enter for better definition.
+	// iIf it's zero, we didn't find symbol in table, create new entry
+	//
+	if (var == 0)
+	{
+		var = &(*globalvars.emplace(globalvars.end()));
+	}
+
+	//
+	// Set up/update definition
+	//
 	var->setname(def);
 	var->offset = deword(def + 6);
 	var->flags = attr;

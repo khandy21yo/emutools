@@ -128,13 +128,13 @@ class LinkPsect;	// Forwars reference.
 
 //!\brief Variables
 //!
-//! Contains definition of a single variable
+//! Contains definition of a single symbol
 //!
 class Variable
 {
 public:
-	unsigned char name[4];		//!< Name of var in radix50
-	LinkPsect *psect;		//!< psect the var belongs to
+	unsigned char name[4];		//!< Name of symbol in radix50
+	LinkPsect *psect;		//!< psect the symbol belongs to
 	unsigned int offset;		//!< offset address.
 	unsigned int flags;		//!< flags
 					//! 1=weak, 8=def, 32=relative
@@ -166,12 +166,33 @@ public:
 class VariableList : public std::list<Variable>
 {
 public:
+	//!\brief Debugging dump of data
+	//
 	void Dump(int level)
 	{
 		for (auto loop = begin(); loop != end(); loop++)
 		{
 			(*loop).Dump(level);
 		}
+	}
+	//!/brief Search for symbol in list
+	//!
+	//\returns pointer to variable definition if found,
+	//! else returns 0.
+	//!
+	Variable *Search(
+		const unsigned char *name)	//!< Symbol name to search for
+	       					//!< in radix50
+	{
+		for (auto loop = begin(); loop != end(); loop++)
+		{
+			if (memcmp(name, (*loop).name, 4) == 0)
+			{
+				return &(*loop);
+			}
+		}
+
+		return 0;	// not found
 	}
 };
 
@@ -187,7 +208,6 @@ public:
 	unsigned int length;		//!< Sise of data allocated
 	unsigned int base;		//!< Base address.
 	unsigned char *data;		//!< Code for this psect
-	VariableList localvars;		//!< Local variables
 
 public:
 	//! \brief Constructor
@@ -233,7 +253,7 @@ class Link
 {
 public:
 	LinkPsectList psectlist;	//!< All Program sections
-	VariableList globalvars;	//!< Global variables
+	VariableList globalvars;	//!< Global symbols
 
 	LinkPsect *currentpsect;	//!< Current psect being worked on
 	unsigned char currentmodule[4];	//!< Current module being worked on
@@ -279,8 +299,8 @@ public:
 	//!\brief Write character to bin, calculating checksum
 	//!
 	void putbyte(
-		std::ofstream &fout,
-		unsigned char ch)
+		std::ofstream &fout,	//!< Binary stream to write to
+		unsigned char ch)	//!< Single character to write
 	{
 		fout.put(ch);
 		checksum -= ch;
@@ -288,34 +308,36 @@ public:
 	//!\brief Write a two byte word to binary file, tracking checksum
 	//!
 	void putword(
-		std::ofstream &fout, 
-		unsigned int wd)
+		std::ofstream &fout,	//!< Binary stream to write to
+		unsigned int wd)	//!< 16 bit word to write
 	{
 		putbyte(fout, wd & 0xff);
 		putbyte(fout, (wd >> 8) & 0xff);
 	}
-	//!\brief Write an array of characters to binary file, 
+	//!\brief Write an array of characters to binary file,
 	//!tracking checksum
 	//!
 	void putbytes(
-		std::ofstream &fout, 
-		const unsigned char *ch, 
-		unsigned int length)
+		std::ofstream &fout,		//!< Binary output stream
+		const unsigned char *ch,	//!< Pointer to first byte
+		unsigned int length)		//!< Number of bytes to write
 	{
 		while(length--)
 		{
 			putbyte(fout, *ch++);
 		}
 	}
+
 	//!\bried output checksum to binary file
 	//
 	void putchecksum(
-		std::ofstream &fout)
+		std::ofstream &fout)	//!< stream to write to open
+	       				//! in binary mode.
 	{
 		fout.put(checksum & 0xff);
 		checksum = 0;
 	}
-	
+
 };
 
 //**********************************************************************
@@ -328,7 +350,7 @@ std::string derad50(int x);
 //!
 //! Common occurrence, so make it easier to code.
 //!
-//!\returns a 6 character string.
+//!\returns a 6 character std::string.
 //
 inline std::string derad504(
 	unsigned char a,	//!< 1st vyte
@@ -343,7 +365,7 @@ inline std::string derad504(
 //!
 //! Common occurrence, so make it easier to code.
 //!
-//!]returns a 6 character string.
+//!]returns a 6 character std::string.
 //
 inline std::string derad504b(
 	const unsigned char* a)	//!< Pointer to 4 bytes of radix50 characters
