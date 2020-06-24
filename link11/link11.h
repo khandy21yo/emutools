@@ -246,6 +246,29 @@ public:
 	}
 };
 
+//!\brief Relocation class
+//!
+//! Used to save relocation nformation
+//
+class Reloc
+{
+public:
+	LinkPsect *psect;	//!< Psect allocated to
+	unsigned char* data;		//!< Relocation data
+
+public:
+	Reloc()
+	{
+		psect = 0;
+		data = 0;
+	}
+};
+
+//!\brief List of Relocs
+//!
+class RelocList : public std::list<Reloc>
+{
+};
 
 //!\brief Link class
 //!
@@ -256,7 +279,8 @@ class Link
 public:
 	LinkPsectList psectlist;	//!< All Program sections
 	VariableList globalvars;	//!< Global symbols
-
+	RelocList reloc;		//!< Relocations that still need
+       					//! to be handled
 	LinkPsect *currentpsect;	//!< Current psect being worked on
 	unsigned char currentmodule[4];	//!< Current module being worked on
 
@@ -295,6 +319,7 @@ public:
 	int Pass100Psect(int type, const unsigned char *def);
 	int Pass100Txt(ObjectBlock &block);
 	int Pass100Gsn(const unsigned char *def);
+	int Pass100Rld(ObjectBlock &block);
 	int WriteAbs(const std::string &filename);
 	int WriteSimh(const std::string &filename);
 

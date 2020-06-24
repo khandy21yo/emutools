@@ -109,7 +109,7 @@ int Link::Pass100(
 				break;
 			case GSD_TA:
 //				std::cout << "tran   ";
-std::cout << std::endl << "tran   " << deword(block.block + loop + 6) << std::endl;
+//std::cout << std::endl << "tran   " << deword(block.block + loop + 6) << std::endl;
 				start.setname(block.block + loop);
 				start.offset = deword(block.block + loop + 6);
 				start.flags = GSN_DEF | GSN_REL;
@@ -148,8 +148,13 @@ std::cout << std::endl << "tran   " << deword(block.block + loop + 6) << std::en
 		break;
 
 	case BLOCK_RLD:
-	case BLOCK_ISD:
+		Pass100Rld(block);
+		break;
+
 	case BLOCK_ENDMOD:
+		break;
+
+	case BLOCK_ISD:
 	case BLOCK_LIB:
 	case BLOCK_ENDLIB:
 		// not yet implemented at all
@@ -262,6 +267,88 @@ int Link::Pass100Gsn(
 	var->offset = deword(def + 6);
 	var->flags = attr;
 	var->psect = currentpsect;
+
+	return 0;
+}
+
+//!\brief Table defining the size of RLD relocation records.
+//!
+//! Only code 01-017(8) are defined in the file formats manual.
+//!
+const static int rldsize[] =
+{
+//	0	1	2	3	4	5	6	7
+	2,	4,	6,	4,	6,	8,	8,	8,
+
+//	10	11	12	13	14	15	16	17
+	4,	2,	6,	4,	6,	8,	8,	4
+};
+
+//!\brief Pas100 process a relocation block
+//!
+//! We handle as may relocations in this pass as we can,
+//! and save the rest for the next pass.
+//! The reason for delay s because of information that has
+//! not yet been established.
+//
+int Link::Pass100Rld(
+	ObjectBlock &object)	//!< One block of code from an object file
+{
+	for (int loop = 0; loop < object.length - 6;)
+	{
+		unsigned int command = object.block[loop];
+		unsigned int displacement = object.block[loop + 1];
+
+		switch (command & 077)
+		{
+		case 007:
+			//
+			//	0   |   7
+			//	section name
+			//	constant
+			//
+			// We should probably do something here.
+			// It shoud be setting currentpsect to the
+			// chosen psect, but just letting the GSD
+			// point at the last psect mentioned seems
+			// to work for now.
+			//
+			// Also, we probably need to do something with
+			// the constant.
+			// I think it is an offset into the psect for
+			// the relocations because they only have a 256
+			// byte range.
+			//
+			break;
+
+		case 001:
+		case 003:
+		case 010:
+		case 002:
+		case 004:
+		case 005:
+		case 006:
+		case 015:
+		case 016:
+		case 011:
+		case 012:
+		case 014:
+		case 017:
+		case 013:
+
+			Reloc rld = &(*reloclist.emplace(reloclist.end()));
+			rld.psect = current_psect;
+			rld.data = new unsigned char*(
+
+		default:
+std::cout << "      Unparsed RLD command " << command <<
+	"  displacement = " << displacement <<
+       "  size = " << rldsize[command] << std::endl;
+			break;
+		}
+
+		loop += rldsize[command];
+	}
 
 	return 0;
 }
