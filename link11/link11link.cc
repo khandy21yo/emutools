@@ -140,11 +140,13 @@ std::cout << std::endl << "tran   " << deword(block.block + loop + 6) << std::en
 		}
 		break;
 
+	case BLOCK_ENDGSD:
+		break;
+
 	case BLOCK_TXT:
 		Pass100Txt(block);
 		break;
 
-	case BLOCK_ENDGSD:
 	case BLOCK_RLD:
 	case BLOCK_ISD:
 	case BLOCK_ENDMOD:

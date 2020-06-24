@@ -144,7 +144,7 @@ public:
 public:
 	//!\brief Constructor
 	//!
-	Variable()
+	inline Variable()
 	{
 		memset(name, 0, 4);
 		psect = 0;
@@ -152,6 +152,7 @@ public:
 		flags = 0;
 		absolute = 0;
 	}
+
 	//!\brief Copy name over
 	//!
 	inline void setname(
@@ -168,19 +169,20 @@ class VariableList : public std::list<Variable>
 public:
 	//!\brief Debugging dump of data
 	//
-	void Dump(int level)
+	inline void Dump(int level)
 	{
 		for (auto loop = begin(); loop != end(); loop++)
 		{
 			(*loop).Dump(level);
 		}
 	}
+
 	//!/brief Search for symbol in list
 	//!
 	//\returns pointer to variable definition if found,
 	//! else returns 0.
 	//!
-	Variable *Search(
+	inline Variable *Search(
 		const unsigned char *name)	//!< Symbol name to search for
 	       					//!< in radix50
 	{
@@ -212,7 +214,7 @@ public:
 public:
 	//! \brief Constructor
 	//
-	LinkPsect()
+	inline LinkPsect()
 	{
 		flag = 0;
 		length = 0;
@@ -220,7 +222,7 @@ public:
 		data = 0;
 	}
 	//!\brief Destructor
-	~LinkPsect()
+	inline ~LinkPsect()
 	{
 		if (data)
 		{
@@ -235,7 +237,7 @@ public:
 class LinkPsectList : public std::list<LinkPsect>
 {
 public:
-	void Dump(int level)
+	inline void Dump(int level)
 	{
 		for (auto loop = begin(); loop != end(); loop++)
 		{
@@ -264,7 +266,7 @@ public:
 
 public:
 	//!/brief Constructor
-	Link()
+	inline Link()
 	{
 		currentpsect = 0;
 		memset(currentmodule, 0, 6);
@@ -298,7 +300,7 @@ public:
 
 	//!\brief Write character to bin, calculating checksum
 	//!
-	void putbyte(
+	inline void putbyte(
 		std::ofstream &fout,	//!< Binary stream to write to
 		unsigned char ch)	//!< Single character to write
 	{
@@ -307,7 +309,7 @@ public:
 	}
 	//!\brief Write a two byte word to binary file, tracking checksum
 	//!
-	void putword(
+	inline void putword(
 		std::ofstream &fout,	//!< Binary stream to write to
 		unsigned int wd)	//!< 16 bit word to write
 	{
@@ -317,7 +319,7 @@ public:
 	//!\brief Write an array of characters to binary file,
 	//!tracking checksum
 	//!
-	void putbytes(
+	inline void putbytes(
 		std::ofstream &fout,		//!< Binary output stream
 		const unsigned char *ch,	//!< Pointer to first byte
 		unsigned int length)		//!< Number of bytes to write
@@ -330,7 +332,7 @@ public:
 
 	//!\bried output checksum to binary file
 	//
-	void putchecksum(
+	inline void putchecksum(
 		std::ofstream &fout)	//!< stream to write to open
 	       				//! in binary mode.
 	{
