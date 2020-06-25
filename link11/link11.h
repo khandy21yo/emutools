@@ -237,6 +237,8 @@ public:
 class LinkPsectList : public std::list<LinkPsect>
 {
 public:
+	//!\brief Debugging dump of data
+	//
 	inline void Dump(int level)
 	{
 		for (auto loop = begin(); loop != end(); loop++)
@@ -257,17 +259,35 @@ public:
 	unsigned char* data;		//!< Relocation data
 
 public:
-	Reloc()
+	inline Reloc()
 	{
 		psect = 0;
 		data = 0;
 	}
+	inline ~Reloc()
+	{
+		if (data)
+		{
+			delete[] data;
+		}
+	}
+	void Dump(int Level);
 };
 
 //!\brief List of Relocs
 //!
 class RelocList : public std::list<Reloc>
 {
+public:
+	//!\brief Debugging dump of data
+	//
+	inline void Dump(int level)
+	{
+		for (auto loop = begin(); loop != end(); loop++)
+		{
+			(*loop).Dump(level);
+		}
+	}
 };
 
 //!\brief Link class
@@ -279,7 +299,7 @@ class Link
 public:
 	LinkPsectList psectlist;	//!< All Program sections
 	VariableList globalvars;	//!< Global symbols
-	RelocList reloc;		//!< Relocations that still need
+	RelocList reloclist;		//!< Relocations that still need
        					//! to be handled
 	LinkPsect *currentpsect;	//!< Current psect being worked on
 	unsigned char currentmodule[4];	//!< Current module being worked on

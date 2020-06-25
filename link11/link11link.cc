@@ -67,6 +67,7 @@ void Link::Dump(
 
 	std::cout << "Globals" << std::endl;
 	globalvars.Dump(level);
+	reloclist.Dump(level);
 }
 
 //!\brief Pass100 - initialize psect tables
@@ -294,6 +295,8 @@ const static int rldsize[] =
 int Link::Pass100Rld(
 	ObjectBlock &object)	//!< One block of code from an object file
 {
+	Reloc *rld;		//!< Pointer to reloc record
+
 	for (int loop = 0; loop < object.length - 6;)
 	{
 		unsigned int command = object.block[loop];
@@ -335,10 +338,17 @@ int Link::Pass100Rld(
 		case 014:
 		case 017:
 		case 013:
-
-			Reloc rld = &(*reloclist.emplace(reloclist.end()));
-			rld.psect = current_psect;
-			rld.data = new unsigned char*(
+			//
+			// We aren't ready to hsndle these yet, because the
+			// addresses haven't been finalized.
+			// Store them for later use.
+			//
+			rld = &(*reloclist.emplace(reloclist.end()));
+			rld->psect = currentpsect;
+			rld->data = new unsigned char[rldsize[command]];
+			memcpy(rld->data, object.block + loop,
+				rldsize[command]);
+			break;
 
 		default:
 std::cout << "      Unparsed RLD command " << command <<
@@ -395,4 +405,64 @@ int Link::Pass200(void)
 	}
 
 	return 0;
+}
+
+//!\brief Debug dump of reloc info
+//
+void Reloc::Dump(
+	int Level)
+{
+	std::cout << "  reloc psect " <<
+		derad504b(psect->name) << " ";
+
+	unsigned char command = data[0];
+	unsigned char displacement = data[1];
+	std::cout << "command " << (int)command <<
+		"  displacement " << (int)displacement << " ";
+
+	switch (command & 077)
+	{
+		case 001:
+		case 003:
+		case 010:
+			std::cout << "Constant " <<
+				deword(data + 2) <<
+				std::endl;
+			break;
+		case 002:
+		case 004:
+			std::cout << "Symbol " <<
+				derad504b(data + 2) << std::endl;
+			break;
+		case 005:
+		case 006:
+			std::cout << "Symbol " <<
+				derad504b(data + 2);
+			std::cout << " Constant " <<
+				deword(data + 6) <<
+				std::endl;
+			break;
+		case 007:
+		case 015:
+		case 016:
+			std::cout << "Section " <<
+				derad504b(data + 2);
+			std::cout << " Constant " <<
+				deword(data + 6) <<
+				std::endl;
+			break;
+		case 011:
+			break;
+		case 012:
+		case 014:
+			std::cout << "Section " <<
+				derad504b(data + 2) << std::endl;
+			break;
+		case 017:
+
+		case 013:
+		default:
+			std::cout << " *Unparsed command" << std::endl;
+			break;
+	}
 }
