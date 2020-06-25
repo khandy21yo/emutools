@@ -404,6 +404,22 @@ int Link::Pass200(void)
 		(*loop2).Reloc();
 	}
 
+	//
+	// Relocation pass
+	//
+	Pass200Rbl();
+
+	return 0;
+}
+
+int Link::Pass200Rbl(void)
+{
+	for (auto loop = reloclist.begin();
+		loop != reloclist.end();
+		loop++)
+	{
+	}
+
 	return 0;
 }
 

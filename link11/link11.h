@@ -318,7 +318,6 @@ public:
 	}
 	void Dump(int level);
 	int Pass100(ObjectBlock &block);
-	int Pass200(void);
 
 	//!\brief Process all blocks in one file for Pass100.
 	//!
@@ -340,6 +339,10 @@ public:
 	int Pass100Txt(ObjectBlock &block);
 	int Pass100Gsn(const unsigned char *def);
 	int Pass100Rld(ObjectBlock &block);
+
+	int Pass200(void);
+	int Pass200Rbl(void);
+
 	int WriteAbs(const std::string &filename);
 	int WriteSimh(const std::string &filename);
 
