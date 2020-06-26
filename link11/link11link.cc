@@ -414,10 +414,58 @@ int Link::Pass200(void)
 
 int Link::Pass200Rbl(void)
 {
+	unsigned char *sym;	//!< Pointer to radix50 symbol name
+	Variable *symptr;	//!< Pointer to symbol definition
+
+	unsigned int constant;
+
 	for (auto loop = reloclist.begin();
 		loop != reloclist.end();
 		loop++)
 	{
+		unsigned int command = (*loop).data[0];
+		unsigned int displacement = (*loop).data[1];
+
+		switch (command & 077)
+		{
+		case 007:
+			//
+			//Shoudn't occur.
+			//Should have been stripped off in Pass100R bl
+			//
+			break;
+
+		case 002:
+			//
+			// Global relocation
+			//
+			sym = (*loop).data + 2;
+			symptr = globalvars.Search(sym);
+			enword((*loop).data + displacement, symptr->absolute);
+			break;
+
+		//
+		// Not yet progeammed in
+		//
+		case 001:
+		case 003:
+		case 010:
+		case 004:
+		case 005:
+		case 006:
+		case 015:
+		case 016:
+		case 011:
+		case 012:
+		case 014:
+		case 017:
+		case 013:
+		default:
+std::cout << "      Unparsed RLD command " << command <<
+	"  displacement = " << displacement <<
+       "  size = " << rldsize[command] << std::endl;
+			break;
+		}
 	}
 
 	return 0;

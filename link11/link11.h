@@ -450,4 +450,12 @@ inline unsigned int deword(
 	return a + (b << 8);
 }
 
+//!\brief write word into pointer
+//
+inline void enword(unsigned char *ptr, unsigned int value)
+{
+	ptr[0] = value & 0xff;
+	ptr[1] = (value >> 8) & 0xff;
+}
+
 #endif
