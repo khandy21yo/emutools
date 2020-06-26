@@ -414,10 +414,10 @@ int Link::Pass200(void)
 
 int Link::Pass200Rbl(void)
 {
-	unsigned char *sym;	//!< Pointer to radix50 symbol name
-	Variable *symptr;	//!< Pointer to symbol definition
+	unsigned char *sym;		//!< Pointer to radix50 symbol name
+	Variable *symptr;		//!< Pointer to symbol definition
+	unsigned int constant;		//!< Constant value
 
-	unsigned int constant;
 
 	for (auto loop = reloclist.begin();
 		loop != reloclist.end();
@@ -444,13 +444,33 @@ int Link::Pass200Rbl(void)
 			enword((*loop).data + displacement, symptr->absolute);
 			break;
 
+		case 003:
+			//
+			// Internal Displaced Relocation
+			//
+			constant = deword((*loop).data + 2);
+			enword((*loop).data + displacement,
+				constant - ( (*loop).psect->base +
+				displacement + 2) );
+			break;
+
+		case 004:
+			//
+			// Global Displaced Relocation
+			//
+			sym = (*loop).data + 2;
+			symptr = globalvars.Search(sym);
+			constant = symptr->absolute;
+			enword((*loop).data + displacement,
+				constant - ( (*loop).psect->base +
+				displacement + 2) );
+			break;
+
 		//
 		// Not yet progeammed in
 		//
 		case 001:
-		case 003:
 		case 010:
-		case 004:
 		case 005:
 		case 006:
 		case 015:
