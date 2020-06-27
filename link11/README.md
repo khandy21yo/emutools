@@ -29,3 +29,7 @@ The initial code will be just enough to link the example program into
 a runnable application. After that is accomplished, only then will I
 attempt to accomplish more features.
 
+
+building in debug mode
+
+	cmake -DCMAKE_BUILD_TYPE=Debug .

@@ -418,11 +418,13 @@ int Link::Pass200Rbl(void)
 	Variable *symptr;		//!< Pointer to symbol definition
 	unsigned int constant;		//!< Constant value
 
+std::cout << "Pass200Rbl" << std::endl;
 
 	for (auto loop = reloclist.begin();
 		loop != reloclist.end();
 		loop++)
 	{
+(*loop).Dump(1);
 		unsigned int command = (*loop).data[0];
 		unsigned int displacement = (*loop).data[1];
 
@@ -441,7 +443,7 @@ int Link::Pass200Rbl(void)
 			//
 			sym = (*loop).data + 2;
 			symptr = globalvars.Search(sym);
-			enword((*loop).data + displacement, symptr->absolute);
+			enword((*loop).psect->data + displacement, symptr->absolute);
 			break;
 
 		case 003:
@@ -449,7 +451,10 @@ int Link::Pass200Rbl(void)
 			// Internal Displaced Relocation
 			//
 			constant = deword((*loop).data + 2);
-			enword((*loop).data + displacement,
+std::cout << "enword((*loop).data + " << displacement << "," <<
+constant - ( (*loop).psect->base +
+displacement + 2) << ")" << std::endl;
+			enword((*loop).psect->data + displacement,
 				constant - ( (*loop).psect->base +
 				displacement + 2) );
 			break;
@@ -461,7 +466,10 @@ int Link::Pass200Rbl(void)
 			sym = (*loop).data + 2;
 			symptr = globalvars.Search(sym);
 			constant = symptr->absolute;
-			enword((*loop).data + displacement,
+std::cout << "enword((*loop).data + " << displacement << "," <<
+constant - ( (*loop).psect->base +
+displacement + 2) << ")" << std::endl;
+			enword((*loop).psect->data + displacement,
 				constant - ( (*loop).psect->base +
 				displacement + 2) );
 			break;
