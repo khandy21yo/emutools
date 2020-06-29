@@ -5,11 +5,11 @@
 ; http://ancientbits.blogspot.com/2012/07/programming-barebones-pdp11.html
 
         .GLOBL start
-        .GLOBAL putconch
+        .GLOBL putconch
 
         STACK = 0x1000
 
-        .text
+;        .text
 start::
         mov     STACK, sp
         mov     hellom, r1
@@ -24,7 +24,7 @@ start::
 99$:    nop
         halt
 
-        .data
+;        .data
 hellom: .ascii  "Hello world!"
         helloc = . - hellom
 
