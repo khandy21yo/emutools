@@ -7,13 +7,13 @@
         .GLOBL start
         .GLOBL putconch
 
-        STACK = 0x1000
+;        STACK = 0x1000
+        STACK = 01000
 
-;        .text
 start::
-        mov     STACK, sp
-        mov     hellom, r1
-        mov     helloc, r2
+        mov     #STACK, sp
+        mov     #hellom, r1
+        mov     #helloc, r2
 10$:    movb    (r1), r0
         jsr     pc, putconch
         dec     r2
@@ -24,7 +24,6 @@ start::
 99$:    nop
         halt
 
-;        .data
 hellom: .ascii  "Hello world!"
         helloc = . - hellom
 
