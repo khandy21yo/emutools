@@ -427,7 +427,7 @@ std::cout << "Pass200Rbl" << std::endl;
 	{
 (*loop).Dump(1);
 		unsigned int command = (*loop).data[0];
-		unsigned int displacement = (*loop).data[1];
+		unsigned int displacement = (*loop).data[1] - 4;
 
 		switch (command & 077)
 		{
@@ -436,6 +436,15 @@ std::cout << "Pass200Rbl" << std::endl;
 			//Shoudn't occur.
 			//Should have been stripped off in Pass100R bl
 			//
+			break;
+
+		case 001:
+			//
+			// Internal Relocation Entry
+			//
+			constant = deword((*loop).data + 2);
+			enword((*loop).psect->data + displacement,
+				constant + (*loop).psect->base);
 			break;
 
 		case 002:
@@ -451,13 +460,13 @@ std::cout << "Pass200Rbl" << std::endl;
 			//
 			// Internal Displaced Relocation
 			//
-			constant = deword((*loop).data);
+			constant = deword((*loop).data + 2);
 std::cout << "enword((*loop).data + " << displacement << "," <<
 constant - ( (*loop).psect->base +
 displacement + 2) << ")" << std::endl;
 			enword((*loop).psect->data + displacement,
 				constant - ( (*loop).psect->base +
-				displacement) );
+				displacement + 2) );
 			break;
 
 		case 004:
@@ -469,16 +478,15 @@ displacement + 2) << ")" << std::endl;
 			constant = symptr->absolute;
 std::cout << "enword((*loop).data + " << displacement << "," <<
 constant - ( (*loop).psect->base +
-displacement) << ")" << std::endl;
+displacement + 2) << ")" << std::endl;
 			enword((*loop).psect->data + displacement,
 				constant - ( (*loop).psect->base +
-				displacement) );
+				displacement + 2) );
 			break;
 
 		//
 		// Not yet progeammed in
 		//
-		case 001:
 		case 010:
 		case 005:
 		case 006:

@@ -12,8 +12,6 @@
         TXRDY   = 0200
         NRETRY  = 5000
 
-;        .text
-
 putconch::
         mov     r1,-(sp)
         mov     r2,-(sp)
