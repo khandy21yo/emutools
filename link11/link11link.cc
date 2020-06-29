@@ -24,6 +24,7 @@ void LinkPsect::Dump(
 		derad504b(name) << "  flag: " <<
 		flag << "  length: " <<
 		length << "  base: " <<
+		std::oct << std::showbase <<
 		base << std::endl;
 
 }
@@ -450,13 +451,13 @@ std::cout << "Pass200Rbl" << std::endl;
 			//
 			// Internal Displaced Relocation
 			//
-			constant = deword((*loop).data + 2);
+			constant = deword((*loop).data);
 std::cout << "enword((*loop).data + " << displacement << "," <<
 constant - ( (*loop).psect->base +
 displacement + 2) << ")" << std::endl;
 			enword((*loop).psect->data + displacement,
 				constant - ( (*loop).psect->base +
-				displacement + 2) );
+				displacement) );
 			break;
 
 		case 004:
@@ -468,10 +469,10 @@ displacement + 2) << ")" << std::endl;
 			constant = symptr->absolute;
 std::cout << "enword((*loop).data + " << displacement << "," <<
 constant - ( (*loop).psect->base +
-displacement + 2) << ")" << std::endl;
+displacement) << ")" << std::endl;
 			enword((*loop).psect->data + displacement,
 				constant - ( (*loop).psect->base +
-				displacement + 2) );
+				displacement) );
 			break;
 
 		//
@@ -510,7 +511,8 @@ void Reloc::Dump(
 	unsigned char command = data[0];
 	unsigned char displacement = data[1];
 	std::cout << "command " << (int)command <<
-		"  displacement " << (int)displacement << " ";
+		"  displacement " << std::oct << std::showbase  <<
+		(int)displacement << " ";
 
 	switch (command & 077)
 	{
@@ -518,6 +520,7 @@ void Reloc::Dump(
 		case 003:
 		case 010:
 			std::cout << "Constant " <<
+				std::oct << std::showbase <<
 				deword(data + 2) <<
 				std::endl;
 			break;
@@ -531,6 +534,7 @@ void Reloc::Dump(
 			std::cout << "Symbol " <<
 				derad504b(data + 2);
 			std::cout << " Constant " <<
+				std::oct << std::showbase <<
 				deword(data + 6) <<
 				std::endl;
 			break;
@@ -540,6 +544,7 @@ void Reloc::Dump(
 			std::cout << "Section " <<
 				derad504b(data + 2);
 			std::cout << " Constant " <<
+				std::oct << std::showbase <<
 				deword(data + 6) <<
 				std::endl;
 			break;

@@ -94,7 +94,9 @@ void ObjectBlock::Dump(
 {
 	std::cout << "ObjectBlock" << std::endl;
 	std::cout << "   One:      " << one << std::endl;
-	std::cout << "   Length:   " << length << std::endl;
+	std::cout << "   Length:   " <<
+	       std::oct << std::showbase <<
+       	       length << std::endl;
 	std::cout << "   Type:     " << type << std::endl;
 	std::cout << "   Data:     ";
 	int count = 0;
@@ -231,7 +233,9 @@ void ObjectBlock::DumpRLD(
 		unsigned char command = block[loop++];
 		unsigned char displacement = block[loop++];
 		std::cout << "      RLD command " << (int)command <<
-			"  displacement = " << (int)displacement << std::endl;
+			"  displacement = " <<
+			std::oct << std::showbase <<
+			(int)displacement << std::endl;
 
 		switch (command & 077)
 		{
@@ -239,6 +243,7 @@ void ObjectBlock::DumpRLD(
 			case 003:
 			case 010:
 				std::cout << "      Constant " <<
+					std::oct << std::showbase <<
 					deword(block + loop) <<
 					std::endl;
 				loop += 2;
@@ -255,6 +260,7 @@ void ObjectBlock::DumpRLD(
 					derad504b(block +loop) << std::endl;
 				loop += 4;
 				std::cout << "      Constant " <<
+					std::oct << std::showbase <<
 					deword(block + loop) <<
 					std::endl;
 				loop += 2;
@@ -266,6 +272,7 @@ void ObjectBlock::DumpRLD(
 					derad504b(block +loop) << std::endl;
 				loop += 4;
 				std::cout << "      Constant " <<
+					std::oct << std::showbase <<
 					deword(block + loop) <<
 					std::endl;
 				loop += 2;
