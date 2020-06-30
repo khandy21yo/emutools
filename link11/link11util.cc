@@ -11,6 +11,11 @@
 void Variable::Dump(
 	int level)
 {
+	if (level == 0)
+	{
+		return;
+	}
+
 	std::cout << "    Symbol " <<
 		derad504b(name) << "  Offdrt: " <<
 		offset << " Flags: " <<

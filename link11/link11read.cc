@@ -90,8 +90,13 @@ int ObjectBlock::ReadBlock(
 //!\brief Dump ObjectBlocck data for debugging purposes
 //!
 void ObjectBlock::Dump(
-	int detail)	//!< Level of detail to display
+	int level)	//!< Level of detail to display
 {
+	if (level == 0)
+	{
+		return;
+	}
+
 	std::cout << "ObjectBlock" << std::endl;
 	std::cout << "   One:      " << one << std::endl;
 	std::cout << "   Length:   " <<
@@ -115,7 +120,7 @@ void ObjectBlock::Dump(
 	switch(type)
 	{
 	case BLOCK_GSD:
-		DumpGSD(detail);
+		DumpGSD(level);
 		break;
 	case BLOCK_ENDGSD:
 		std::cout << "      GSD END" << std::endl;
@@ -125,7 +130,7 @@ void ObjectBlock::Dump(
 			deword(block) << std::endl;
 		break;
 	case BLOCK_RLD:
-		DumpRLD(detail);
+		DumpRLD(level);
 		break;
 
 	}
@@ -135,8 +140,13 @@ void ObjectBlock::Dump(
 //!\brief Dump GSD data
 //
 void ObjectBlock::DumpGSD(
-	int detail)		//!< Level of detail to display
+	int level)		//!< Level of detail to display
 {
+	if (level == 0)
+	{
+		return;
+	}
+
 	for (int loop = 0; loop < length - 6; loop += 8)
 	{
 		std::cout << "      GSD ";
@@ -226,8 +236,13 @@ void ObjectBlock::DumpGSD(
 //!\brief Dump RLD data
 //
 void ObjectBlock::DumpRLD(
-	int detail)		//!< Level of detail to display
+	int level)		//!< Level of detail to display
 {
+	if (level == 0)
+	{
+		return;
+	}
+
 	for (int loop = 0; loop < length - 6;)
 	{
 		unsigned char command = block[loop++];
@@ -340,13 +355,18 @@ int ObjectFile::ReadFile(
 //!\brief Dump out an entire ObjectFile
 //
 void ObjectFile::Dump(
-	int detail)	//!< Level of detail to display
+	int level)	//!< Level of detail to display
 {
+	if (level == 0)
+	{
+		return;
+	}
+
 	std::cout << "ObjectFile: " << file << std::endl;
 
 	for (auto loop = begin(); loop != end(); loop++)
 	{
-		(*loop).Dump(detail);
+		(*loop).Dump(level);
 	}
 }
 

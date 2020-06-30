@@ -15,6 +15,11 @@
 #include <list>
 #include <cstring>
 
+//
+// Globals
+//
+extern int debug;
+
 //!\brief enum for block types
 //!
 enum BlockTypes

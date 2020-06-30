@@ -16,8 +16,13 @@
 //! Debugging routine to display data stored in class
 //
 void LinkPsect::Dump(
-	int Level)	//!< Detail level
+	int level)	//!< Detail level
 {
+	if (level == 0)
+	{
+		return;
+	}
+
 	std::cout <<
 		"  psect module: " <<
 		derad504b(module) << "  psect: " <<
@@ -40,6 +45,11 @@ void LinkPsect::Dump(
 void Link::Dump(
 	int level)	//!< Level of detail
 {
+	if (level == 0)
+	{
+		return;
+	}
+
 	std::cout << std::endl << "Link" << std::endl;
 
 	//
@@ -53,7 +63,7 @@ void Link::Dump(
 	// Display start address
 	//
 	std::cout << "  Start" << std::endl;
-	start.Dump(1);
+	start.Dump(level);
 
 	//
 	// List all modules in list
@@ -136,7 +146,7 @@ int Link::Pass100(
 					block.block + loop);
 				break;
 			case GSD_IDENT:
-				std::cout << "ident  ";
+//				std::cout << "ident  ";
 				break;
 			case GSD_VSECT:
 //				std::cout << "vsect  ";
@@ -428,13 +438,13 @@ int Link::Pass200Rbl(void)
 	Variable *symptr;		//!< Pointer to symbol definition
 	unsigned int constant;		//!< Constant value
 
-std::cout << "Pass200Rbl" << std::endl;
+//std::cout << "Pass200Rbl" << std::endl;
 
 	for (auto loop = reloclist.begin();
 		loop != reloclist.end();
 		loop++)
 	{
-(*loop).Dump(1);
+(*loop).Dump(debug);
 		unsigned int command = (*loop).data[0];
 		unsigned int displacement = (*loop).data[1] - 4;
 
@@ -470,9 +480,6 @@ std::cout << "Pass200Rbl" << std::endl;
 			// Internal Displaced Relocation
 			//
 			constant = deword((*loop).data + 2);
-std::cout << "enword((*loop).data + " << displacement << "," <<
-constant - ( (*loop).psect->base +
-displacement + 2) << ")" << std::endl;
 			enword((*loop).psect->data + displacement,
 				constant - ( (*loop).psect->base +
 				displacement + 2) );
@@ -485,9 +492,6 @@ displacement + 2) << ")" << std::endl;
 			sym = (*loop).data + 2;
 			symptr = globalvars.Search(sym);
 			constant = symptr->absolute;
-std::cout << "enword((*loop).data + " << displacement << "," <<
-constant - ( (*loop).psect->base +
-displacement + 2) << ")" << std::endl;
 			enword((*loop).psect->data + displacement,
 				constant - ( (*loop).psect->base +
 				displacement + 2) );
@@ -520,8 +524,13 @@ std::cout << "      Unparsed RLD command " << command <<
 //!\brief Debug dump of reloc info
 //
 void Reloc::Dump(
-	int Level)
+	int level)
 {
+	if (level == 0)
+	{
+		return;
+	}
+
 	std::cout << "  reloc psect " <<
 		derad504b(psect->name) << " ";
 

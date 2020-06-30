@@ -13,50 +13,73 @@
 //! 3. Set absolute addresses for all program sections.
 //! 4. Handle relocations.
 //! 5. Write our binary code.
-//!
 //! 
-//! Development states.
-//! 1. Get it to read data from object files correctly.
-//! initilly hard coded to the files "hello.obj" and "putconch.obj".
-//! 2. Dump the loaded data to bbe sure it is reading correctly.
-//! 3. Handle the indivifual passes.
-//! 4. Geerate a functional binary file.
-//! 5. Create a command line parser to allow  for other code to be linked.
-//!
 //!\author Kevin Handy, Apr 2020
 //
 
 #include "link11.h"
 
+//
+// Globals
+//
+int debug = 0;		//!< Debug printout flag
 
 //!\brief Main
 //!
 int main(int argc, char **argv)
 {
-	Link passes;
+	Link passes;		// Main linker class
+	int loop;		// Generic loop variable
+	std::list<std::string> objname;	// List of object files
+       					// to process
+	std::string ldaname;	// Name of .lda output file
+	std::string simhname;	// Name of .simh output file
 
+	for (loop = 1; loop < argc; loop++)
+	{
+		std::string ag = argv[loop];
+
+		if (ag == "-lda")
+		{
+			ldaname = argv[loop + 1];
+			loop++;
+		}
+		else if (ag == "-simh")
+		{
+			simhname = argv[loop + 1];
+			loop++;
+		}
+		else if (ag == "-debug")
+		{
+			debug = 1;
+		}
+		else
+		{
+			objname.push_back(ag);
+		}
+	}
+
+	for (auto loopo = objname.begin(); loopo != objname.end(); loopo++)
 	{
 		ObjectFile of;
-		std::string filename = "test/hello.obj";
-		of.ReadFile(filename);
-		of.Dump(1);
+		of.ReadFile(*loopo);
+		of.Dump(debug);
 
 		passes.Pass100(of);
 	}
 
-	{
-		ObjectFile of2;
-		std::string filename2 = "test/putconch.obj";
-		of2.ReadFile(filename2);
-		of2.Dump(1);
+	passes.Pass200();
 
-		passes.Pass100(of2);
+	if (ldaname != "")
+	{
+		passes.WriteAbs(ldaname);
+	}
+	if (simhname != "")
+	{
+		passes.WriteSimh(simhname);
 	}
 
-	passes.Pass200();
-	passes.WriteAbs("test/hello.lda");
-	passes.WriteSimh("test/hello.simh");
 
-	passes.Dump(1);
+	passes.Dump(debug);
 }
 
