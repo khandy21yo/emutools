@@ -80,7 +80,8 @@ void Link::Dump(
 //!
 int Link::Pass100(
 	ObjectBlock &block)	//!< One block of code from an object file
-{
+{	unsigned int constant;	//!< Value pulled out of block data
+
 	switch(block.type)
 	{
 	case BLOCK_GSD:
@@ -112,10 +113,18 @@ int Link::Pass100(
 			case GSD_TA:
 //				std::cout << "tran   ";
 //std::cout << std::endl << "tran   " << deword(block.block + loop + 6) << std::endl;
-				start.setname(block.block + loop);
-				start.offset = deword(block.block + loop + 6);
-				start.flags = GSN_DEF | GSN_REL;
-				start.psect = currentpsect;
+				constant = deword(block.block + loop + 6);
+				if ((constant & 1) == 0)
+				{
+					//
+					// It isn't a real transfer address
+					// unless it's even
+					//
+					start.setname(block.block + loop);
+					start.offset = constant;
+					start.flags = GSN_DEF | GSN_REL;
+					start.psect = currentpsect;
+				}
 				break;
 			case GSD_GSN:
 //				std::cout << "global ";
