@@ -8,7 +8,7 @@
         .GLOBL putconch
 
 ;        STACK = 0x1000
-        STACK = 01000
+        STACK = 010000
 
 start::
         mov     #STACK, sp
