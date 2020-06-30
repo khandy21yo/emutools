@@ -84,3 +84,6 @@ Command line
 Example
 	../link11 hello.obj putconch.obj -lda hello.lda -simh hello.simh
 
+To compile the /test applications, read the README.md file in the /test
+subdirectory.
+
