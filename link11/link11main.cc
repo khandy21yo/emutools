@@ -35,6 +35,20 @@ int main(int argc, char **argv)
 	std::string ldaname;	// Name of .lda output file
 	std::string simhname;	// Name of .simh output file
 
+	if (argc <= 1)
+	{
+		std::cout << "link11 <filenames> <options>" << std::endl;
+		std::cout << "   <filenames> is a list of pdp11 rt11 object files" <<
+			std::endl;
+		std::cout << "<options" << std::endl;
+		std::cout << "   -lda <filename>" << std::endl;
+		std::cout << "   -simh <filename>" << std::endl;
+		std::cout << "   -debug" << std::endl;
+		std::cout << std::endl;
+
+		exit(0);
+	}
+
 	for (loop = 1; loop < argc; loop++)
 	{
 		std::string ag = argv[loop];

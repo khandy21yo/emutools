@@ -5,12 +5,13 @@ project (link11 VERSION 0.2
 	LANGUAGES C CXX)
 
 
-add_executable(l11 in.c link.c pass2.c sup.c)
+#add_executable(l11 in.c link.c pass2.c sup.c)
 add_executable(obint obint.c in.c sup.c)
 add_executable(link11 link11main.cc link11read.cc link11link.cc link11util.cc link11write.cc)
 
-install(TARGETS l11 obint
-    COMPONENT linapp
+#install(TARGETS l11 obint link11
+install(TARGETS  obint link11
+    COMPONENT linkapp
     RUNTIME DESTINATION "/usr/local/bin/"
     LIBRARY DESTINATION "/usr/local/lib/"
     DESTINATION "/usr/local/bin"
