@@ -472,7 +472,8 @@ int Link::Pass200Rbl(void)
 			//
 			sym = (*loop).data + 2;
 			symptr = globalvars.Search(sym);
-			enword((*loop).psect->data + displacement, symptr->absolute);
+			enword((*loop).psect->data + displacement,
+				symptr->absolute);
 			break;
 
 		case 003:
@@ -497,12 +498,35 @@ int Link::Pass200Rbl(void)
 				displacement + 2) );
 			break;
 
+		case 005:
+			//
+			// Global Additave Relocation
+			//
+			sym = (*loop).data + 2;
+			symptr = globalvars.Search(sym);
+			constant = deword((*loop).data + 6) +
+				symptr->absolute;
+			enword((*loop).psect->data + displacement,
+				constant);
+			break;
+
+		case 006:
+			//
+			// Global Additave Displaced Relocation
+			//
+			sym = (*loop).data + 2;
+			symptr = globalvars.Search(sym);
+			constant = deword((*loop).data + 6) +
+				symptr->absolute;
+			enword((*loop).psect->data + displacement,
+				constant - ( (*loop).psect->base +
+				displacement + 2) );
+			break;
+
 		//
 		// Not yet progeammed in
 		//
 		case 010:
-		case 005:
-		case 006:
 		case 015:
 		case 016:
 		case 011:
