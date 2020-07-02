@@ -17,7 +17,7 @@ putconch::
         mov     r2,-(sp)
         mov     #NRETRY, r1
 10$:
-        mov     XCSR,r2
+        mov     @#XCSR,r2
         bit     r2, #TXRDY
         bne     20$
         dec     r1
@@ -25,9 +25,9 @@ putconch::
         mov     #2,r0
         jmp     999$
 
-20$:    movb    r0,XBUF
+20$:    movb    r0,@#XBUF
         mov     #NRETRY, r1
-30$:    mov     XCSR,r2
+30$:    mov     @#XCSR,r2
         bit     r2, #TXRDY
         bne     40$
         dec     r1
