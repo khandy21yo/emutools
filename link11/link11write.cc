@@ -124,3 +124,33 @@ int Link::WriteSimh(const std::string &filename)
 
 	return 0;
 }
+
+//!\brief Write out mapping information
+//!
+//! This writes  a /map type of listing file.
+//!
+int Link::WriteMap(const std::string &filename)
+{
+	std::ofstream fout(filename.c_str());
+	if (fout)
+	{
+//		std::cout << "Open ok" << std::endl;
+	}
+	else
+	{
+//		std::cout << "Open failed" << std::endl;
+		return ERROR_EOF;
+	}
+
+	//
+	// Dump out all psects
+	//
+	for (auto loop = psectlist.begin();
+		loop != psectlist.end();
+		loop++)
+	{
+	}
+
+	return 0;
+}
+

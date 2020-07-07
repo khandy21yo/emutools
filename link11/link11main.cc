@@ -34,6 +34,7 @@ int main(int argc, char **argv)
        					// to process
 	std::string ldaname;	// Name of .lda output file
 	std::string simhname;	// Name of .simh output file
+	std::string mapname;	// Name of map file
 
 	if (argc <= 1)
 	{
@@ -43,6 +44,7 @@ int main(int argc, char **argv)
 		std::cout << "<options" << std::endl;
 		std::cout << "   -lda <filename>" << std::endl;
 		std::cout << "   -simh <filename>" << std::endl;
+		std::cout << "   -map  <filename>" << std::endl;
 		std::cout << "   -debug" << std::endl;
 		std::cout << std::endl;
 
@@ -61,6 +63,11 @@ int main(int argc, char **argv)
 		else if (ag == "-simh")
 		{
 			simhname = argv[loop + 1];
+			loop++;
+		}
+		else if (ag == "-map")
+		{
+			mapname = argv[loop + 1];
 			loop++;
 		}
 		else if (ag == "-debug")
@@ -91,6 +98,10 @@ int main(int argc, char **argv)
 	if (simhname != "")
 	{
 		passes.WriteSimh(simhname);
+	}
+	if (mapname != "")
+	{
+		passes.WriteMap(mapname);
 	}
 
 
