@@ -113,3 +113,63 @@ std::string derad50(
 }
 
 
+//!\brief convert attribute to text string for psects
+//!
+//!\returns std::string describing the psect attributes
+//
+std::string psect_attr(
+	unsigned int attr)	//!< Attribute to parse
+{
+	std::string str;	// Returned string
+
+	if (attr & GSN_WEAK)
+		str +=  "wek ";
+	else
+		str +=  "str ";
+	if (attr & GSN_DEF)
+		str +=  "def ";
+	else
+		str +=  "ref ";
+	if (attr & GSN_REL)
+		str += "rel ";
+	else
+		str += "abs ";
+
+	return str;
+}
+
+//!\brief convert attribute to text string for symbols
+//!
+//!\returns std::string describing the symbol attributes
+//
+std::string symbol_attr(
+	unsigned int attr)	//!< Attribute to parse
+{
+	std::string str;	// Returned string
+
+	if (attr & 001)
+		str +=  "shr ";
+	else
+		str +=  "prv ";
+	if (attr & 002)
+		str +=  "ins ";
+	else if (attr & 004)
+		str +=  "bss ";
+	else
+		str +=  "dat ";
+	if (attr & 020)
+		str +=  "ovr ";
+	else
+		str +=  "cat ";
+	if (attr & 040)
+		str +=  "rel ";
+	else
+		str +=  "abs ";
+	if (attr & 0100)
+		str +=  "gbl";
+	else
+		str +=  "loc";
+
+	return str;
+}
+

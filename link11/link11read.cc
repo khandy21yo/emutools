@@ -188,44 +188,11 @@ void ObjectBlock::DumpGSD(
 		switch(block[loop + 5])
 		{
 		case GSD_PSECT:
-			if (attr & 001)
-				std::cout <<  "shr ";
-			else
-				std::cout <<  "prv ";
-			if (attr & 002)
-				std::cout <<  "ins ";
-			else if (attr & 004)
-				std::cout <<  "bss ";
-			else
-				std::cout <<  "dat ";
-			if (attr & 020)
-				std::cout <<  "ovr ";
-			else
-				std::cout <<  "cat ";
-			if (attr & 040)
-				std::cout <<  "rel ";
-			else
-				std::cout <<  "abs ";
-			if (attr & 0100)
-				std::cout <<  "gbl";
-			else
-				std::cout <<  "loc";
-	
+			std::cout << symbol_attr(attr);
 			break;
 
 		case GSD_GSN:
-			if (attr & GSN_WEAK)
-				std::cout <<  "wek ";
-			else
-				std::cout <<  "str ";
-			if (attr & GSN_DEF)
-				std::cout <<  "def ";
-			else
-				std::cout <<  "ref ";
-			if (attr & GSN_REL)
-				std::cout << "rel ";
-			else
-				std::cout << "abs ";
+			std::cout << psect_attr(attr);
 			break;
 		}
 		std::cout << " " << deword(block + loop + 6);

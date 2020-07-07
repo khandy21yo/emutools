@@ -464,4 +464,7 @@ inline void enword(unsigned char *ptr, unsigned int value)
 	ptr[1] = (value >> 8) & 0xff;
 }
 
+std::string psect_attr(unsigned int attr);
+std::string symbol_attr(unsigned int attr);
+
 #endif
