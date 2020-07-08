@@ -92,6 +92,11 @@ int Link::WriteSimh(const std::string &filename)
 		return ERROR_EOF;
 	}
 
+	fout <<
+		"#!/usr/bin/pdp11" << std::endl <<
+		"; simh script to load binary" <<
+		std::endl;
+
 	//
 	// Dump out all psects
 	//
@@ -104,6 +109,21 @@ int Link::WriteSimh(const std::string &filename)
 		//
 		if ((*loop).length != 0)
 		{
+			//
+			// Add a note to the script to show what is being loaded
+			//
+			fout <<
+				std::endl <<
+				"; psect " <<
+				derad504b((*loop).module) << " " <<
+				derad504b((*loop).name) << " " <<
+				std::oct << std::setw(6) << std::setfill('0') <<
+				(*loop).base << " " <<
+				std::oct << std::setw(6) << std::setfill('0') <<
+				(*loop).length << " " <<
+				psect_attr((*loop).flag) <<
+				std::endl;
+
 			for (int loop2 = 0; loop2 < (*loop).length; loop2 += 2)
 			{
 				fout << "d " <<
@@ -120,6 +140,8 @@ int Link::WriteSimh(const std::string &filename)
 	// Final block.
 	// Start address.
 	//
+	fout << std::endl <<
+	       "; Set start address" << std::endl;
 	fout << "d pc " <<
 		start.absolute <<
 		std::endl;		// Start address
@@ -145,8 +167,30 @@ int Link::WriteMap(const std::string &filename)
 	}
 
 	//
+	// File title
+	//
+	fout <<
+		filename <<
+		"    link11 map" <<
+		std::endl;
+
+	//
+	// Transfer address
+	//
+	fout <<
+		std::endl <<
+		"Transfer Address " <<
+		std::oct << std::setw(6) << std::setfill('0') <<
+			start.absolute <<
+		std::endl;		// Start address
+
+	//
 	// Dump out all psects
 	//
+	fout <<
+		std::endl <<
+		"    Module Psect   Start Length Attributes" << std::endl;
+
 	for (auto loop = psectlist.begin();
 		loop != psectlist.end();
 		loop++)
@@ -163,6 +207,15 @@ int Link::WriteMap(const std::string &filename)
 			std::endl;
 	}
 
+	//
+	// Global symbols
+	//
+	fout << std::endl <<
+		"    Symbol Addrss" <<
+		"    Symbol Addrss" <<
+		"    Symbol Addrss" <<
+		"    Symbol Addrss" <<
+		std::endl;
 	int vpos = 0;
 	for (auto loopv = globalvars.begin();
 		loopv != globalvars.end();
