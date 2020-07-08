@@ -8,6 +8,7 @@
 #include "link11.h"
 
 #include <iomanip>
+#include <ctime>
 
 //!\brief Write out binary data in ccc format
 //!
@@ -94,7 +95,7 @@ int Link::WriteSimh(const std::string &filename)
 
 	fout <<
 		"#!/usr/bin/pdp11" << std::endl <<
-		"; simh script to load binary" <<
+		"; " << filename << " simh script to load binary" <<
 		std::endl;
 
 	//
@@ -166,12 +167,31 @@ int Link::WriteMap(const std::string &filename)
 		return ERROR_EOF;
 	}
 
+	char outstr[200];
+	time_t t;
+	struct tm *tmp;
+
+	t = time(NULL);
+	tmp = localtime(&t);
+	if (tmp == NULL)
+	{
+		outstr[0] = 0;
+	}
+	else
+	{
+		if (strftime(outstr, sizeof(outstr), "%D %T", tmp) == 0)
+		{
+			outstr[0] = 0;
+		}
+	}
+
 	//
 	// File title
 	//
 	fout <<
 		filename <<
-		"    link11 map" <<
+		"    link11 map " <<
+		outstr <<
 		std::endl;
 
 	//
@@ -211,10 +231,10 @@ int Link::WriteMap(const std::string &filename)
 	// Global symbols
 	//
 	fout << std::endl <<
-		"    Symbol Addrss" <<
-		"    Symbol Addrss" <<
-		"    Symbol Addrss" <<
-		"    Symbol Addrss" <<
+		"    Symbol Value " <<
+		"    Symbol Value " <<
+		"    Symbol Value " <<
+		"    Symbol Value " <<
 		std::endl;
 	int vpos = 0;
 	for (auto loopv = globalvars.begin();

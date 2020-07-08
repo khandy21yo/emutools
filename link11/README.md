@@ -75,6 +75,9 @@ Command line
 			Output data structures during the run.
 			Not useful to anyone but developers of link11.
 
+		-map <filename>
+			Create a map listing.
+
 	<object files>
 		A list of the object files to be linked.
 
