@@ -98,6 +98,10 @@ int Link::WriteSimh(const std::string &filename)
 		"; " << filename << " simh script to load binary" <<
 		std::endl;
 
+	fout <<
+		"; Load in simh/pdp11 using 'do " << filename << "'" <<
+		std::endl;
+
 	//
 	// Dump out all psects
 	//

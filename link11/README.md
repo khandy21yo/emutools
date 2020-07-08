@@ -20,9 +20,8 @@ Missing features include
 	- Error messages for many operations
 	- object libraries
 	- psects larger than 256 bytes
-	- relocations other than 1,2,3, and 4.
+	- relocations other than 01-06.
 	- common psects (fortran /COMMON/ blocks for example)
-	- -map (list) option
 	- ability to read rsx object files
 	- and many more.
 
