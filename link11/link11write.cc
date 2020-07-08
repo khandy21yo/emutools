@@ -163,17 +163,26 @@ int Link::WriteMap(const std::string &filename)
 			std::endl;
 	}
 
+	int vpos = 0;
 	for (auto loopv = globalvars.begin();
 		loopv != globalvars.end();
 		loopv++)
 	{
+		if (vpos == 4)
+		{
+			vpos = 0;
+			fout << std::endl;
+		}
 		fout <<
 			"    " <<
 			derad504b((*loopv).name) << " " <<
 			std::oct << std::setw(6) << std::setfill('0') <<
 			(*loopv).absolute;
 	}
-	fout << std::endl;
+	if (vpos)
+	{
+		fout << std::endl;
+	}
 
 	return 0;
 }
