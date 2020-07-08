@@ -7,6 +7,8 @@
 
 #include "link11.h"
 
+#include <iomanip>
+
 //!\brief Write out binary data in ccc format
 //!
 //! This writes the binary image in absolute format.
@@ -149,7 +151,29 @@ int Link::WriteMap(const std::string &filename)
 		loop != psectlist.end();
 		loop++)
 	{
+		fout <<
+			"    " <<
+			derad504b((*loop).module) << " " <<
+			derad504b((*loop).name) << " " <<
+			std::oct << std::setw(6) << std::setfill('0') <<
+			(*loop).base << " " <<
+			std::oct << std::setw(6) << std::setfill('0') <<
+			(*loop).length << " " <<
+			psect_attr((*loop).flag) <<
+			std::endl;
 	}
+
+	for (auto loopv = globalvars.begin();
+		loopv != globalvars.end();
+		loopv++)
+	{
+		fout <<
+			"    " <<
+			derad504b((*loopv).name) << " " <<
+			std::oct << std::setw(6) << std::setfill('0') <<
+			(*loopv).absolute;
+	}
+	fout << std::endl;
 
 	return 0;
 }
