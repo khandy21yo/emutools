@@ -36,6 +36,9 @@ int main(int argc, char **argv)
 	std::string simhname;	// Name of .simh output file
 	std::string mapname;	// Name of map file
 
+	//
+	//Usage message
+	//
 	if (argc <= 1)
 	{
 		std::cout << "link11 <filenames> <options>" << std::endl;
@@ -51,22 +54,43 @@ int main(int argc, char **argv)
 		exit(0);
 	}
 
+	//
+	// Parse command line options
+	//
 	for (loop = 1; loop < argc; loop++)
 	{
 		std::string ag = argv[loop];
 
 		if (ag == "-lda")
 		{
+			if (ldaname != "")
+			{
+				std::cerr << "-lda specified more than once" <<
+					std::endl;
+				exit(1);
+			}
 			ldaname = argv[loop + 1];
 			loop++;
 		}
 		else if (ag == "-simh")
 		{
+			if (simhname != "")
+			{
+				std::cerr << "-simh specified more than once" <<
+					std::endl;
+				exit(1);
+			}
 			simhname = argv[loop + 1];
 			loop++;
 		}
 		else if (ag == "-map")
 		{
+			if (mapname != "")
+			{
+				std::cerr << "-map specified more than once" <<
+					std::endl;
+				exit(1);
+			}
 			mapname = argv[loop + 1];
 			loop++;
 		}
@@ -80,6 +104,16 @@ int main(int argc, char **argv)
 		}
 	}
 
+	if (objname.size() == 0)
+	{
+		std::cerr << "No object files specified" << std::endl;
+		exit(1);
+	}
+
+	//
+	// Read all object files
+	// Append psects to master psect list
+	//
 	for (auto loopo = objname.begin(); loopo != objname.end(); loopo++)
 	{
 		ObjectFile of;
@@ -89,8 +123,16 @@ int main(int argc, char **argv)
 		passes.Pass100(of);
 	}
 
+	//
+	// Relocate
+	//
 	passes.Pass200();
 
+	passes.Dump(debug);
+
+	//
+	// Generate output
+	//
 	if (ldaname != "")
 	{
 		passes.WriteAbs(ldaname);
@@ -104,7 +146,5 @@ int main(int argc, char **argv)
 		passes.WriteMap(mapname);
 	}
 
-
-	passes.Dump(debug);
 }
 

@@ -301,7 +301,8 @@ int ObjectFile::ReadFile(
 	}
 	else
 	{
-//		std::cout << "Open failed" << std::endl;
+		std::cout << "Unable to read " <<
+			filename << std::endl;
 		return ERROR_EOF;
 	}
 
