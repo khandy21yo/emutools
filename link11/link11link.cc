@@ -260,20 +260,23 @@ int Link::Pass100Gsn(
 	// do we keep the original or replace it with this one?
 	//
 	if (var != 0 &&
-		(var->flags & GSN_DEF != 0) &&
-		(attr & GSN_DEF!= 0))
+		((var->flags & GSN_DEF) != 0) &&
+		((attr & GSN_DEF) != 0))
 	{
 		//
-		// Thid one is a ref, not a def,
-		// and the original is a def,
-		// so keep original
+		// Two definitions of the same symbol
 		//
+		std::cerr << "Symbol '" <<
+			derad504b(def) <<
+			"' duplicate definition!" <<
+			std::endl;
+
 		return 0;
 	}
 
 	//
 	// If var is non-zero, then we want to update with the
-	// new enter for better definition.
+	// new data for better definition.
 	// iIf it's zero, we didn't find symbol in table, create new entry
 	//
 	if (var == 0)
@@ -282,7 +285,7 @@ int Link::Pass100Gsn(
 	}
 
 	//
-	// Set up/update definition
+	// Set/update symbol definition
 	//
 	var->setname(def);
 	var->offset = deword(def + 6);
@@ -371,7 +374,7 @@ int Link::Pass100Rld(
 			break;
 
 		default:
-std::cout << "      Unparsed RLD command " << command <<
+std::cerr << "      Unparsed RLD (relocation) command " << command <<
 	"  displacement = " << displacement <<
        "  size = " << rldsize[command] << std::endl;
 			break;
@@ -421,6 +424,14 @@ int Link::Pass200(void)
 		loop2 != globalvars.end();
 		loop2++)
 	{
+		if (((*loop2).flags & GSN_DEF) == 0)
+		{
+			std::cerr << "Symbol '" <<
+				derad504b((*loop2).name) <<
+				"' undefined" <<
+				std::endl;
+		}
+				;
 		(*loop2).Reloc();
 	}
 
