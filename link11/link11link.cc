@@ -417,6 +417,12 @@ int Link::Pass200(void)
 	//
 	start.Reloc();
 
+	if ((start.flags & GSN_DEF) == 0)
+	{
+		std::cerr << "No starting address specified" <<
+			std::endl;
+	}
+
 	//
 	// Relocate globals
 	//
