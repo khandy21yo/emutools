@@ -302,6 +302,10 @@ public:
 class Link
 {
 public:
+	unsigned int base;		//!< Starting address for psects
+	unsigned int current;		//!< Current address for psects
+					//!< Holds ending address after reloc
+
 	LinkPsectList psectlist;	//!< All Program sections
 	VariableList globalvars;	//!< Global symbols
 	RelocList reloclist;		//!< Relocations that still need
@@ -320,6 +324,7 @@ public:
 		currentpsect = 0;
 		memset(currentmodule, 0, 6);
 		checksum = 0;
+		base = 01000;
 	}
 	void Dump(int level);
 	int Pass100(ObjectBlock &block);

@@ -400,7 +400,7 @@ std::cerr << "      Unparsed RLD (relocation) command " << command <<
 //!
 int Link::Pass200(void)
 {
-	unsigned int base = 01000;	//!< Beginning address for program
+	current = base;
 
 	//
 	// Assign absolute addresses to psects that need it
@@ -414,8 +414,8 @@ int Link::Pass200(void)
 		//
 		if ((*loop).flag & 040)
 		{
-			(*loop).base = base;
-			base += (*loop).length;
+			(*loop).base = current;
+			current += (*loop).length;
 		}
 	}
 
@@ -547,13 +547,22 @@ int Link::Pass200Rbl(void)
 				displacement + 2) );
 			break;
 
+		case 011:
+			//
+			// .limit
+			//
+			enword((*loop).psect->data + displacement,
+				base);
+			enword((*loop).psect->data + displacement + 2,
+				current);
+			break;
+
 		//
 		// Not yet progeammed in
 		//
 		case 010:
 		case 015:
 		case 016:
-		case 011:
 		case 012:
 		case 014:
 		case 017:
