@@ -25,7 +25,8 @@
 //!	DATA	Data bytes (length bytes
 //!	CHK	Shecksum byte
 //!
-int Link::WriteAbs(const std::string &filename)
+int Link::WriteAbs(
+	const std::string &filename)	//!< Name of output file)
 {
 
 	std::ofstream fout(filename.c_str(), std::ios_base::binary);
@@ -80,7 +81,8 @@ int Link::WriteAbs(const std::string &filename)
 //! This writes the binary image in simh DO format.
 //! Use the simh command 'DO <filename>" to load.
 //!
-int Link::WriteSimh(const std::string &filename)
+int Link::WriteSimh(
+	const std::string &filename)	//!< Name of output file)
 {
 	std::ofstream fout(filename.c_str());
 	if (fout)
@@ -158,7 +160,8 @@ int Link::WriteSimh(const std::string &filename)
 //!
 //! This writes  a /map type of listing file.
 //!
-int Link::WriteMap(const std::string &filename)
+int Link::WriteMap(
+	const std::string &filename)	//!< Name of output file
 {
 	std::ofstream fout(filename.c_str());
 	if (fout)
@@ -203,10 +206,10 @@ int Link::WriteMap(const std::string &filename)
 	//
 	fout <<
 		std::endl <<
-		"Transfer Address " <<
-		std::oct << std::setw(6) << std::setfill('0') <<
-			start.absolute <<
-		std::endl;		// Start address
+		"Transfer Address ";
+	Link::WriteMapVar(fout, start);
+	fout <<
+		std::endl;
 
 	//
 	// Dump out all psects
@@ -252,9 +255,8 @@ int Link::WriteMap(const std::string &filename)
 		}
 		fout <<
 			"    " <<
-			derad504b((*loopv).name) << " " <<
-			std::oct << std::setw(6) << std::setfill('0') <<
-			(*loopv).absolute;
+			derad504b((*loopv).name) << " ";
+		Link::WriteMapVar(fout, (*loopv));
 	}
 	if (vpos)
 	{
@@ -264,3 +266,21 @@ int Link::WriteMap(const std::string &filename)
 	return 0;
 }
 
+//! \brief output symbol address
+//
+void Link::WriteMapVar(
+	std::ofstream &fout,	//!< Output stream
+	const Variable &var)	//!< Symbol
+{
+	if ((var.flags & GSN_DEF) != 0)
+	{
+		fout <<
+			std::oct << std::setw(6) << std::setfill('0') <<
+			var.absolute;
+	}
+	else
+	{
+		fout <<
+			"******";
+	}
+}

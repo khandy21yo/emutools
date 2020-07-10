@@ -351,6 +351,7 @@ public:
 	int WriteAbs(const std::string &filename);
 	int WriteSimh(const std::string &filename);
 	int WriteMap(const std::string &filename);
+	void WriteMapVar(std::ofstream &fout, const Variable &var);
 
 	//!\brief Write character to bin, calculating checksum
 	//!
