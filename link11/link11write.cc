@@ -212,6 +212,17 @@ int Link::WriteMap(
 		std::endl;
 
 	//
+	// Program limits
+	//
+	fout <<
+		std::endl <<
+		"Program limits " <<
+		std::oct << std::setw(6) << std::setfill('0') <<
+		base << " " <<
+		std::oct << std::setw(6) << std::setfill('0') <<
+		current << std::endl;
+
+	//
 	// Dump out all psects
 	//
 	fout <<

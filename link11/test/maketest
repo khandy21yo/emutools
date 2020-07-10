@@ -1,0 +1,21 @@
+#!/usr/bin/bash -x
+#
+# build harness for the macro11/link11 test examples
+#
+
+#
+# Adjust the PATH to poit at your copy of macro11
+#
+PATH="~/simhgit/macro11/:../:~/simhgit/simh/BIN/:$PATH"
+
+macro11 -rt11 hello.mac -o hello.obj -l hello.lst
+macro11 -rt11 putconch.mac -o putconch.obj -l putconch.lst
+link11 hello.obj putconch.obj -lda hello.lda -simh hello.simh -map hello.map
+
+# the following doesn't quite work, because pdp11 ignores the script
+# after it starts.
+
+#pdp11 hello.simh
+#go
+#quit
+
