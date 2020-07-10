@@ -126,6 +126,13 @@ int Link::Pass100(
 				constant = deword(block.block + loop + 6);
 				if ((constant & 1) == 0)
 				{
+					if 
+						(start.flags & GSN_DEF)
+						{
+							std::cerr <<
+								"Multiple start addresses defined" <<
+								std::endl;
+						}
 					//
 					// It isn't a real transfer address
 					// unless it's even
