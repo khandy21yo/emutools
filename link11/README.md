@@ -22,7 +22,6 @@ Missing features include
 	- psects larger than 256 bytes
 	- relocations other than 01-06.
 	- common psects (fortran /COMMON/ blocks for example)
-	- ability to read rsx object files
 	- and many more.
 
 NOTES:
@@ -70,6 +69,11 @@ Command line
 			Create a .simh command file.
 			This can be loaded using the simh command
 			'do <filename>'.
+		-rt11
+			All object files are in RT11 format.
+			This is the default.
+		-rsx
+			All object files are in RSX format.
 		-debug
 			Output data structures during the run.
 			Not useful to anyone but developers of link11.
