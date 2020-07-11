@@ -42,13 +42,20 @@ int ObjectBlock::ReadBlock(
 	// read in the start flag.
 	// This should always be 1.
 	//
-	byte1 = in.get();
-	byte2 = in.get();
-//std::cout << "Testget " << (int)byte1 << "," << (int)byte2 << std::endl;
-	one = deword(byte1, byte2);
-	if (one != 1)
+	if (rt11)
 	{
-		return ERROR_BADDATA;
+		//
+		// rt11 has a 0,1 leadin to eacj record.
+		// rsx does not have this.
+		//
+		byte1 = in.get();
+		byte2 = in.get();
+//std::cout << "Testget " << (int)byte1 << "," << (int)byte2 << std::endl;
+		one = deword(byte1, byte2);
+		if (one != 1)
+		{
+			return ERROR_BADDATA;
+		}
 	}
 
 	//
@@ -56,17 +63,26 @@ int ObjectBlock::ReadBlock(
 	//
 	byte1 = in.get();
 	byte2 = in.get();
-//std::cout << "Testget " << (int)byte1 << "," << (int)byte2 << std::endl;
+// std::cout << "Testget " << (int)byte1 << "," << (int)byte2 << std::endl;
 	length = deword(byte1, byte2);
+	if (rt11 == false)
+	{
+		//
+		// rsx doesn't count the length as part of the length,
+		// and it also lacks the 0,1 at the start of a record.
+		//
+		length += 4;
+	}
 
 	//
 	// Type of block
 	//
 	type = in.get();
 	byte2 = in.get();
+// std::cout << "Type " << (int)type << "," << (int)byte2 << std::endl;
 	if (byte2 != 0)
 	{
-		std::cout << "Errer, byte2 = " << byte2 << std::endl;
+		std::cout << "Errer, type2 = " << (int)byte2 << std::endl;
 		exit(0);
 	}
 
@@ -82,8 +98,24 @@ int ObjectBlock::ReadBlock(
 	//
 	// Read checksum
 	//
-	checksum = in.get();
-	
+	if (rt11)
+	{
+		//
+		// rt11 ends with a checksum.
+		//
+		checksum = in.get();
+	}
+	else
+	{
+		//
+		// rsx may need padding to an even length
+		//
+		if (length & 1)
+		{
+			checksum = in.get();
+		}
+	}
+
 	return ERROR_OK;
 }
 

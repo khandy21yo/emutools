@@ -12,6 +12,10 @@ macro11 -rt11 hello.mac -o hello.obj -l hello.lst
 macro11 -rt11 putconch.mac -o putconch.obj -l putconch.lst
 link11 hello.obj putconch.obj -lda hello.lda -simh hello.simh -map hello.map
 
+macro11 -rsx hello.mac -o hellorsx.obj -l hello.lst
+macro11 -rsx putconch.mac -o putconchrsx.obj -l putconch.lst
+link11 -rsx hellorsx.obj putconchrsx.obj -lda hellorsx.lda -simh hellorsx.simh -map hellorsx.map
+
 # the following doesn't quite work, because pdp11 ignores the script
 # after it starts.
 

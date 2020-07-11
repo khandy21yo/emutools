@@ -19,6 +19,7 @@
 // Globals
 //
 extern int debug;
+extern bool rt11;
 
 //!\brief enum for block types
 //!

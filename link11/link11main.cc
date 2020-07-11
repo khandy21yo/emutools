@@ -23,6 +23,7 @@
 // Globals
 //
 int debug = 0;		//!< Debug printout flag
+bool rt11 = true;	//!< rt11/rsx object format flag
 
 //!\brief Main
 //!
@@ -48,6 +49,8 @@ int main(int argc, char **argv)
 		std::cout << "   -lda <filename>" << std::endl;
 		std::cout << "   -simh <filename>" << std::endl;
 		std::cout << "   -map  <filename>" << std::endl;
+		std::cout << "   -rt11 (default)" << std::endl;
+		std::cout << "   -rsx" << std::endl;
 		std::cout << "   -debug" << std::endl;
 		std::cout << std::endl;
 
@@ -97,6 +100,14 @@ int main(int argc, char **argv)
 		else if (ag == "-debug")
 		{
 			debug = 1;
+		}
+		else if (ag == "-rt11")
+		{
+			rt11 = true;
+		}
+		else if (ag == "-rsx")
+		{
+			rt11 = false;
 		}
 		else
 		{
