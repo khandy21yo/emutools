@@ -86,6 +86,11 @@ int ObjectBlock::ReadBlock(
 		exit(0);
 	}
 
+	if (debug)
+	{
+		std::cout << "Reading block: length " << length <<
+			",  type " << type << std::endl;
+	}
 	//
 	// Read data block
 	//

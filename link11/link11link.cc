@@ -352,6 +352,13 @@ int Link::Pass100Rld(
 			// the relocations because they only have a 256
 			// byte range.
 			//
+			currentpsect = psectlist.Lookup(object.block + loop + 2);
+			if (currentpsect == 0)
+			{
+				std::cerr << "RLD type 7 failure" << std::endl;
+				exit(1);
+    			}
+
 			break;
 
 		case 001:

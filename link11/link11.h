@@ -252,6 +252,23 @@ public:
 			(*loop).Dump(level);
 		}
 	}
+
+	//!\brief scan for psect
+	//!
+	//! Looks for the LAST matching psect
+	LinkPsect *Lookup(const unsigned char *psect)
+	{
+		LinkPsect *result = 0;
+
+		for (auto loop = begin(); loop != end(); loop++)
+		{
+			if (memcmp((*loop).name, psect, 4) == 0)
+			{
+				result = &(*loop);
+			}
+		}
+		return result;
+	}
 };
 
 //!\brief Relocation class
