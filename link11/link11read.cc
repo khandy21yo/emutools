@@ -74,6 +74,12 @@ int ObjectBlock::ReadBlock(
 		length += 4;
 	}
 
+	if (length < 6)
+	{
+		std::cerr << "Bad length encountered " << length << std::endl;
+		exit(1);
+	}
+
 	//
 	// Type of block
 	//
@@ -327,6 +333,11 @@ int ObjectFile::ReadFile(
 	const std::string &filename)	//!< Name of file to process
 {
 	file = filename;
+
+	if (debug)
+	{
+		std::cout << "Starting " << file << std::endl;
+	}
 
 	//
 	// Try to open file
