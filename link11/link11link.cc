@@ -575,7 +575,8 @@ int Link::Pass200Rbl(void)
 		case 017:
 		case 013:
 		default:
-std::cout << "      Unparsed RLD command " << command <<
+std::cout << "      Unparsed RLD command " <<
+	std::oct << command <<
 	"  displacement = " << displacement <<
        "  size = " << rldsize[command] << std::endl;
 			break;
