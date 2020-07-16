@@ -555,6 +555,15 @@ int Link::Pass200Rbl(void)
 				displacement + 2) );
 			break;
 
+		case 010:
+			//
+			// Location Counter Modification
+			//
+			constant = deword((*loop).data + 2);
+			enword((*loop).psect->data + displacement,
+				constant + (*loop).psect->base);
+			break;
+
 		case 011:
 			//
 			// .limit
@@ -575,6 +584,18 @@ int Link::Pass200Rbl(void)
 				psectptr->base);
 			break;
 
+		case 014:
+			//
+			// Psect Displaces Relocation
+			//
+			sym = (*loop).data + 2;
+			psectptr = psectlist.Lookup((*loop).psect->module, sym);
+			constant = psectptr->base;
+			enword((*loop).psect->data + displacement,
+				constant - ( (*loop).psect->base +
+				displacement + 2) );
+			break;
+
 		case 015:
 			//
 			// Psect Additave Relocation
@@ -586,12 +607,21 @@ int Link::Pass200Rbl(void)
 				constant + psectptr->base);
 			break;
 
+		case 016:
+			//
+			// Psect Additave displaced Relocation
+			//
+			sym = (*loop).data + 2;
+			psectptr = psectlist.Lookup((*loop).psect->module, sym);
+			constant = deword((*loop).data + 6);
+			enword((*loop).psect->data + displacement,
+				constant + psectptr->base -
+				( (*loop).psect->base + displacement + 2) );
+			break;
+
 		//
 		// Not yet progeammed in
 		//
-		case 010:
-		case 016:
-		case 014:
 		case 017:
 		case 013:
 		default:
