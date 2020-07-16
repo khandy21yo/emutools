@@ -565,16 +565,25 @@ int Link::Pass200Rbl(void)
 				current);
 			break;
 
+		case 012:
+			//
+			// Psect Relocation
+			//
+			sym = (*loop).data + 2;
+			psectptr = psectlist.Lookup((*loop).psect->module, sym);
+			enword((*loop).psect->data + displacement,
+				psectptr->base);
+			break;
+
 		case 015:
 			//
 			// Psect Additave Relocation
 			//
 			sym = (*loop).data + 2;
 			psectptr = psectlist.Lookup((*loop).psect->module, sym);
-			constant = deword((*loop).data + 6) +
-				symptr->absolute;
+			constant = deword((*loop).data + 6);
 			enword((*loop).psect->data + displacement,
-				constant + displacement);
+				constant + psectptr->base);
 			break;
 
 		//
@@ -582,7 +591,6 @@ int Link::Pass200Rbl(void)
 		//
 		case 010:
 		case 016:
-		case 012:
 		case 014:
 		case 017:
 		case 013:
