@@ -467,6 +467,7 @@ int Link::Pass200Rbl(void)
 {
 	unsigned char *sym;		//!< Pointer to radix50 symbol name
 	Variable *symptr;		//!< Pointer to symbol definition
+	LinkPsect *psectptr;		//!< Pointer to a psect
 	unsigned int constant;		//!< Constant value
 
 //std::cout << "Pass200Rbl" << std::endl;
@@ -564,11 +565,22 @@ int Link::Pass200Rbl(void)
 				current);
 			break;
 
+		case 015:
+			//
+			// Psect Additave Relocation
+			//
+			sym = (*loop).data + 2;
+			psectptr = psectlist.Lookup((*loop).psect->module, sym);
+			constant = deword((*loop).data + 6) +
+				symptr->absolute;
+			enword((*loop).psect->data + displacement,
+				constant + displacement);
+			break;
+
 		//
 		// Not yet progeammed in
 		//
 		case 010:
-		case 015:
 		case 016:
 		case 012:
 		case 014:

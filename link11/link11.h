@@ -256,13 +256,34 @@ public:
 	//!\brief scan for psect
 	//!
 	//! Looks for the LAST matching psect
-	LinkPsect *Lookup(const unsigned char *psect)
+	LinkPsect *Lookup(
+		const unsigned char *psect)	//!< radix50 psect name
 	{
 		LinkPsect *result = 0;
 
 		for (auto loop = begin(); loop != end(); loop++)
 		{
 			if (memcmp((*loop).name, psect, 4) == 0)
+			{
+				result = &(*loop);
+			}
+		}
+		return result;
+	}
+
+	//!\brief scan for psect
+	//!
+	//! Looks for the LAST matching psect
+	LinkPsect *Lookup(
+		const unsigned char *module,	//!< radix50 module name
+		const unsigned char *psect)	//!< radix50 psect name
+	{
+		LinkPsect *result = 0;
+
+		for (auto loop = begin(); loop != end(); loop++)
+		{
+			if ((memcmp((*loop).module, module, 4) == 0) &&
+				(memcmp((*loop).name, psect, 4) == 0))
 			{
 				result = &(*loop);
 			}
