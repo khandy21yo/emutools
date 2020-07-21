@@ -391,6 +391,7 @@ public:
 
 	int Pass200(void);
 	int Pass200Rbl(void);
+	int Pass200Rbl017(const unsigned char *);
 
 	int WriteAbs(const std::string &filename);
 	int WriteSimh(const std::string &filename);

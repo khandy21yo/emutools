@@ -463,6 +463,11 @@ int Link::Pass200(void)
 	return 0;
 }
 
+//!\brief Reloc pass
+//!
+//! Does the relocations in the binary code based on the RBL
+//! data, the global symbol table, and the psect table.
+//
 int Link::Pass200Rbl(void)
 {
 	unsigned char *sym;		//!< Pointer to radix50 symbol name
@@ -683,10 +688,13 @@ int Link::Pass200Rbl(void)
 				( (*loop).psect->base + displacement + 2) );
 			break;
 
+		case 017:
+			Pass200Rbl017((*loop).data);
+			break;
+
 		//
 		// Not yet progeammed in
 		//
-		case 017:
 		case 013:
 		default:
 std::cout << "      Unparsed RLD command " <<
@@ -697,6 +705,18 @@ std::cout << "      Unparsed RLD command " <<
 		}
 	}
 
+	return 0;
+}
+
+//!\brief Reloc pass for RBL type 017
+//!
+//! Does the relocations in the binary code based on the RBL
+//! data, the global symbol table, and the psect table.
+//
+int Link::Pass200Rbl017(
+	const unsigned char *data)	//!< data containing 017 reloc
+{
+	std::cerr << "  Type 017 reloc not yet handled" << std::endl;
 	return 0;
 }
 
