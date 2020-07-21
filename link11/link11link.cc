@@ -504,6 +504,13 @@ int Link::Pass200Rbl(void)
 			//
 			sym = (*loop).data + 2;
 			symptr = globalvars.Search(sym);
+			if (symptr == 0)
+			{
+				std::cerr << "  Symbol " <<
+					derad504b(sym) <<
+					" not found" << std::endl;
+				break;
+			}
 			enword((*loop).psect->data + displacement,
 				symptr->absolute);
 			break;
@@ -524,6 +531,13 @@ int Link::Pass200Rbl(void)
 			//
 			sym = (*loop).data + 2;
 			symptr = globalvars.Search(sym);
+			if (symptr == 0)
+			{
+				std::cerr << "  Symbol " <<
+					derad504b(sym) <<
+					" not found" << std::endl;
+				break;
+			}
 			constant = symptr->absolute;
 			enword((*loop).psect->data + displacement,
 				constant - ( (*loop).psect->base +
@@ -536,6 +550,13 @@ int Link::Pass200Rbl(void)
 			//
 			sym = (*loop).data + 2;
 			symptr = globalvars.Search(sym);
+			if (symptr == 0)
+			{
+				std::cerr << "  Symbol " <<
+					derad504b(sym) <<
+					" not found" << std::endl;
+				break;
+			}
 			constant = deword((*loop).data + 6) +
 				symptr->absolute;
 			enword((*loop).psect->data + displacement,
@@ -548,6 +569,13 @@ int Link::Pass200Rbl(void)
 			//
 			sym = (*loop).data + 2;
 			symptr = globalvars.Search(sym);
+			if (symptr == 0)
+			{
+				std::cerr << "  Symbol " <<
+					derad504b(sym) <<
+					" not found" << std::endl;
+				break;
+			}
 			constant = deword((*loop).data + 6) +
 				symptr->absolute;
 			enword((*loop).psect->data + displacement,
@@ -580,6 +608,15 @@ int Link::Pass200Rbl(void)
 			//
 			sym = (*loop).data + 2;
 			psectptr = psectlist.Lookup((*loop).psect->module, sym);
+			if (psectptr == 0)
+			{
+				std::cerr << "  psect " <<
+					derad504b(sym) <<
+					" not found in module " <<
+					(*loop).psect->module <<
+					std::endl;
+				break;
+			}
 			enword((*loop).psect->data + displacement,
 				psectptr->base);
 			break;
@@ -590,6 +627,15 @@ int Link::Pass200Rbl(void)
 			//
 			sym = (*loop).data + 2;
 			psectptr = psectlist.Lookup((*loop).psect->module, sym);
+			if (psectptr == 0)
+			{
+				std::cerr << "  psect " <<
+					derad504b(sym) <<
+					" not found in module " <<
+					(*loop).psect->module <<
+					std::endl;
+				break;
+			}
 			constant = psectptr->base;
 			enword((*loop).psect->data + displacement,
 				constant - ( (*loop).psect->base +
@@ -602,6 +648,15 @@ int Link::Pass200Rbl(void)
 			//
 			sym = (*loop).data + 2;
 			psectptr = psectlist.Lookup((*loop).psect->module, sym);
+			if (psectptr == 0)
+			{
+				std::cerr << "  psect " <<
+					derad504b(sym) <<
+					" not found in module " <<
+					(*loop).psect->module <<
+					std::endl;
+				break;
+			}
 			constant = deword((*loop).data + 6);
 			enword((*loop).psect->data + displacement,
 				constant + psectptr->base);
@@ -613,6 +668,15 @@ int Link::Pass200Rbl(void)
 			//
 			sym = (*loop).data + 2;
 			psectptr = psectlist.Lookup((*loop).psect->module, sym);
+			if (psectptr == 0)
+			{
+				std::cerr << "  psect " <<
+					derad504b(sym) <<
+					" not found in module " <<
+					(*loop).psect->module <<
+					std::endl;
+				break;
+			}
 			constant = deword((*loop).data + 6);
 			enword((*loop).psect->data + displacement,
 				constant + psectptr->base -
