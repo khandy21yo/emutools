@@ -81,6 +81,10 @@ Command line
 		-map <filename>
 			Create a map listing.
 
+		-base <nnn>
+			Specify the base address for linking.
+			The default is 01000 (octal).
+
 	<object files>
 		A list of the object files to be linked.
 
@@ -88,7 +92,7 @@ Command line
 	then nothing will be created.
 
 Example
-	../link11 hello.obj putconch.obj -lda hello.lda -simh hello.simh
+	../link11 hello.obj putconch.obj -lda hello.lda -simh hello.simh -map hello.map
 
 To compile the /test applications, read the README.md file in the /test
 subdirectory.

@@ -24,6 +24,7 @@
 //
 int debug = 0;		//!< Debug printout flag
 bool rt11 = true;	//!< rt11/rsx object format flag
+unsigned int codebase = 01000;		//!< Base address to relocate program to.
 
 //!\brief Main
 //!
@@ -52,6 +53,7 @@ int main(int argc, char **argv)
 		std::cout << "   -rt11 (default)" << std::endl;
 		std::cout << "   -rsx" << std::endl;
 		std::cout << "   -debug" << std::endl;
+		std::cout << "   -base i<nnn>" << std::endl;
 		std::cout << std::endl;
 
 		exit(0);
@@ -109,6 +111,12 @@ int main(int argc, char **argv)
 		{
 			rt11 = false;
 		}
+		else if (ag == "-base")
+		{
+			codebase = std::stoi(argv[loop + 1], 0, 0);
+			loop++;
+		}
+
 		else
 		{
 			objname.push_back(ag);
@@ -120,6 +128,8 @@ int main(int argc, char **argv)
 		std::cerr << "No object files specified" << std::endl;
 		exit(1);
 	}
+
+	passes.base = codebase;
 
 	//
 	// Read all object files

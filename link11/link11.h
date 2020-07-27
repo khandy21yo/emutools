@@ -20,6 +20,8 @@
 //
 extern int debug;
 extern bool rt11;
+extern unsigned int codebase;
+
 
 //!\brief enum for block types
 //!
@@ -365,7 +367,7 @@ public:
 		currentpsect = 0;
 		memset(currentmodule, 0, 6);
 		checksum = 0;
-		base = 01000;
+		base = codebase;
 	}
 	void Dump(int level);
 	int Pass100(ObjectBlock &block);
