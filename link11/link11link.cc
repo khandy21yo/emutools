@@ -373,7 +373,6 @@ int Link::Pass100Rld(
 		case 011:
 		case 012:
 		case 014:
-		case 017:
 		case 013:
 			//
 			// We aren't ready to hsndle these yet, because the
@@ -382,9 +381,33 @@ int Link::Pass100Rld(
 			//
 			rld = &(*reloclist.emplace(reloclist.end()));
 			rld->psect = currentpsect;
+			rld->length = rldsize[command];
 			rld->data = new unsigned char[rldsize[command]];
 			memcpy(rld->data, object.block + loop,
 				rldsize[command]);
+			break;
+
+		case 017:
+			//
+			// Of course there has to be one odd one our.
+			// I am assuming from the documentation that this reloc is the
+			// only reloc in this block. If this isn't true, corrupted memory
+			// may result.
+			//
+			// We aren't ready to hsndle these yet, because the
+			// addresses haven't been finalized.
+			// Store them for later use.
+			//
+			rld = &(*reloclist.emplace(reloclist.end()));
+			rld->psect = currentpsect;
+			rld->length = object.length - 6;
+			rld->data = new unsigned char[rld->length];
+			memcpy(rld->data, object.block + loop,
+				rld->length);
+			//
+			// A little fudging here to let the later loop+= work correctly.
+			//
+			loop = loop - rldsize[command] + rld->length;
 			break;
 
 		default:

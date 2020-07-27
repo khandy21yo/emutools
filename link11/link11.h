@@ -299,7 +299,9 @@ public:
 class Reloc
 {
 public:
-	LinkPsect *psect;	//!< Psect allocated to
+	LinkPsect *psect;		//!< Psect allocated to
+	unsigned int length;		//!< Size of data.
+					//!< Probably only importamt for type 017.
 	unsigned char* data;		//!< Relocation data
 
 public:
