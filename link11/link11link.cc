@@ -712,7 +712,7 @@ int Link::Pass200Rbl(void)
 			break;
 
 		case 017:
-			Pass200Rbl017((*loop).data);
+			Pass200Rbl017((*loop).data, (*loop).psect->base + displacement + 2);
 			break;
 
 		//
@@ -737,7 +737,8 @@ std::cout << "      Unparsed RLD command " <<
 //! data, the global symbol table, and the psect table.
 //
 int Link::Pass200Rbl017(
-	const unsigned char *data)	//!< data containing 017 reloc
+	const unsigned char *data,	//!< data containing 017 reloc
+	unsigned int reloc)		//!< Relocation offset, if needed
 {
 	int stack[64];		// Stack for values read in
 	int stkptr = -1;	// Pointer to top item on stack
@@ -844,18 +845,43 @@ int Link::Pass200Rbl017(
 
 		case 012:
 			//
+			// If things are left on the stack, or the stack is completely empty,
+			// then something is really wrong.
+			//
+			if (stkptr <= 0)
+			{
+				std::cerr << "Comples reloc bad calculation" <<  std::endl;
+				stkptr = 0;
+			}
+			if (stkptr != 0)
+			{
+				std::cerr << "Comples reloc incomplete calculation" <<  std::endl;
+			}
+
+			//
 			// Return result
 			//
 			return stack[stkptr];
 
 		case 013:
 			//
+			// If things are left on the stack, or the stack is completely empty,
+			// then something is really wrong.
+			//
+			if (stkptr <= 0)
+			{
+				std::cerr << "Comples reloc bad calculation" <<  std::endl;
+				stkptr = 0;
+			}
+			if (stkptr != 0)
+			{
+				std::cerr << "Comples reloc incomplete calculation" <<  std::endl;
+			}
+
+			//
 			// Return result, with relocation
 			//
-			// Currently not doing relocation bit
-			//
-std::cerr << "Comples reloc, missing relocation bit" << std::endl;
-			return stack[stkptr];
+			return stack[stkptr] - reloc;
 
 		case 016:
 			sym = data + 1;
