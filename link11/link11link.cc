@@ -739,8 +739,174 @@ std::cout << "      Unparsed RLD command " <<
 int Link::Pass200Rbl017(
 	const unsigned char *data)	//!< data containing 017 reloc
 {
-	std::cerr << "  Type 017 reloc not yet handled" << std::endl;
-	return 0;
+	int stack[64];		// Stack for values read in
+	int stkptr = -1;	// Pointer to top item on stack
+	int dptr = 0;		// Pointer to current instruction in data
+	const unsigned char *sym;		//!< Pointer to radix50 symbol name
+	Variable *symptr;		//!< Pointer to symbol definition
+
+	while(1)
+	{
+		switch(data[dptr])
+		{
+		case 00:
+			//
+			// noop
+			//
+			//dptr++;
+			break;
+		case 01:
+			//
+			// Addition (+)
+			//
+			stack[stkptr - 1] += stack[stkptr];
+			stkptr--;
+			dptr++;
+			break;
+
+		case 02:
+			//
+			// Subtrction (-)
+			//
+			stack[stkptr - 1] -= stack[stkptr];
+			stkptr--;
+			dptr++;
+			break;
+
+		case 03:
+			//
+			// Multiplacation (*)
+			//
+			stack[stkptr - 1] *= stack[stkptr];
+			stkptr--;
+			dptr++;
+			break;
+
+		case 04:
+			//
+			// Division (/)
+			//
+			if (stack[stkptr] == 0)
+			{
+				stack[stkptr - 1] = 0;
+				std::cerr << "Complex reloc division by zero" << std::endl;
+			}
+			else
+			{
+				stack[stkptr - 1] *= stack[stkptr];
+			}
+			stkptr--;
+			dptr++;
+			break;
+
+		case 05:
+			//
+			// Logical and (&)
+			//
+			stack[stkptr - 1] &= stack[stkptr];
+			stkptr--;
+			dptr++;
+			break;
+
+		case 06:
+			//
+			// Logical or (|)
+			//
+			stack[stkptr - 1] |= stack[stkptr];
+			stkptr--;
+			dptr++;
+			break;
+
+		case 07:
+			//
+			// Exclusive or (|)
+			//
+			stack[stkptr - 1] ^= stack[stkptr];
+			stkptr--;
+			dptr++;
+			break;
+
+		case 010:
+			//
+			// Negation (-)
+			//
+			stack[stkptr] = -stack[stkptr];
+			dptr++;
+			break;
+
+		case 011:
+			//
+			// Complement (^)
+			//
+			stack[stkptr] = ~stack[stkptr];
+			dptr++;
+			break;
+
+		case 012:
+			//
+			// Return result
+			//
+			return stack[stkptr];
+
+		case 013:
+			//
+			// Return result, with relocation
+			//
+			// Currently not doing relocation bit
+			//
+std::cerr << "Comples reloc, missing relocation bit" << std::endl;
+			return stack[stkptr];
+
+		case 016:
+			sym = data + 1;
+			symptr = globalvars.Search(sym);
+			if (symptr == 0)
+			{
+				std::cerr << "  Symbol " <<
+					derad504b(sym) <<
+					" not found" << std::endl;
+				break;
+			}
+			stack[++stkptr] = symptr->absolute;
+			dptr += 5;
+			break;
+
+		case 017:
+std::cerr << "Comples reloc - Not implemented section nubers" << std::endl;
+			stack[++stkptr] = 0;
+			dptr += 4;
+			break;
+
+		case 020:
+			//
+			// Constant
+			//
+			stack[++stkptr] = deword(data + 1);
+			dptr += 3;
+			break;
+
+		default:
+			std::cerr << "Bad complex reloc" << std::endl;
+			dptr++;
+			return 0;
+		}
+	}
+
+	//
+	// If things are left on the stack, or the stack is completely empty,
+	// then something is really wrong.
+	//
+	if (stkptr <= 0)
+	{
+		std::cerr << "Comples reloc bad calculation" <<  std::endl;
+		stkptr = 0;
+	}
+	if (stkptr != 0)
+	{
+		std::cerr << "Comples reloc incomplete calculation" <<  std::endl;
+	}
+
+	return stack[stkptr];
 }
 
 //!\brief Debug dump of reloc info
