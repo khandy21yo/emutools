@@ -1,19 +1,43 @@
-https://fritzm.github.io/cpu-debug-5.html`
+.TITLE Rotate panel lights
+.IDENT "V00.00"
 
-The listing here is shown assembled at location 000000, but the program is relocatable and can be toggled in at any convenient address (000000, on top of the trap vectors, probably isn't the best choice!)
+; Copied from https://fritzm.github.io/cpu-debug-5.html`
+;
+; The listing here is shown assembled at location 000000, but the programi
+; is relocatable and can be toggled in at any convenient address (000000,
+; on top of the trap vectors, probably isn't the best choice!)
+;
+; Data display should be on "DISPLAY REGISTER" to see the chase.
+;
+;The front panel toggles are loaded into a counter to control the speed of
+; the chase. Without some of the most significant bits set the chase may go
+; too fast to see, especially on older 11's with incandescent indicators.
+; All toggles off is a special case: this will be the slowest chase, since
+; as written the counter wraps around when decremented before being checked
+; for zero. The video has toggles 15 and 14 up.
+;
+;If you look at the address lights in the video, you can see that I ran
+; this program from address 100000. This was because at the time I had a
+; fault in the first 16KW of memory on my MS11-L so I couldn't execute any
+; code at lower addresses.
+;
+; SIMH Note: the the 177570 reference will fail on some PDP11 models, with
+;  a "Trap stack push abort" due to the register not existing, so be sure to
+; 'SET CPU 11/70'i (or some model with this register defined) before
+; running code.
 
-Data display should be on "DISPLAY REGISTER" to see the chase.
+        .GLOBL START
 
 
-The front panel toggles are loaded into a counter to control the speed of the chase. Without some of the most significant bits set the chase may go too fast to see, especially on older 11's with incandescent indicators. All toggles off is a special case: this will be the slowest chase, since as written the counter wraps around when decremented before being checked for zero. The video has toggles 15 and 14 up.
 
-If you look at the address lights in the video, you can see that I ran this program from address 100000. This was because at the time I had a fault in the first 16KW of memory on my MS11-L so I couldn't execute any code at lower addresses.
+START::
+L0:     MOV     @#177570, R0    ;LOAD COUNT FROM SWITCH REGISTER
+L1:     DEC     R0              ;COUNT DOWN
+        BNE     L1              ;LOOP UNTIL ZERO
+        ASL     R1              ;SHIFT DISPLAY VALUE
+        BNE     L2              ;SKIP AHEAD IF NOT SHIFTED OUT
+        MOV     #1,R1           ;ELSE RELOAD
+ L2:    MOV     R1,@#177570     ;STORE TO DISPLAY REGISTER
+        BR      L0              ;REPEAT FROM THE TOP
 
-000000  013700  177570  L0:     MOV     @#177570, R0    ;LOAD COUNT FROM SWITCH REGISTER
-000004  005300          L1:     DEC     R0              ;COUNT DOWN
-000006  001376                  BNE     L1              ;LOOP UNTIL ZERO
-000010  006301                  ASL     R1              ;SHIFT DISPLAY VALUE
-000012  001002                  BNE     L2              ;SKIP AHEAD IF NOT SHIFTED OUT
-000014  012701  000001          MOV     #1,R1           ;ELSE RELOAD
-000020  010137  177570  L2:     MOV     R1,@#177570     ;STORE TO DISPLAY REGISTER
-000024  000765                  BR      L0              ;REPEAT FROM THE TOP
+	.end START
