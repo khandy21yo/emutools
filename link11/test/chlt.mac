@@ -1,0 +1,8 @@
+000000  013700  177570  L0:     MOV     @#177570, R0    ;LOAD COUNT FROM SWITCH REGISTER
+000004  005300          L1:     DEC     R0              ;COUNT DOWN
+000006  001376                  BNE     L1              ;LOOP UNTIL ZERO
+000010  006301                  ASL     R1              ;SHIFT DISPLAY VALUE
+000012  001002                  BNE     L2              ;SKIP AHEAD IF NOT SHIFTED OUT
+000014  012701  000001          MOV     #1,R1           ;ELSE RELOAD
+000020  010137  177570  L2:     MOV     R1,@#177570     ;STORE TO DISPLAY REGISTER
+000024  000765                  BR      L0              ;REPEAT FROM THE TOP
