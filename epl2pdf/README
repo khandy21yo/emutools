@@ -1,0 +1,47 @@
+epl2pdf
+
+DESCRIPTION
+
+This is a partia program to convert an epl2 file info a pdf file.
+It is, as yet, incomplete. It is still in development.
+But it is capable of handling some simple spl2 files.
+
+It used popt to handle parsing the command line.
+My versions of getopt were just broken when I started this long ago.
+
+It ises the podofo library to handle the PDF utput. This is a poorly
+documented package, but it seems to have several nede==cessary
+features missing from other libraries.
+
+It uses the zint library to generate the barcodes.
+This library containg most, if not all, of the needed barcode
+formats necessary to implement the epl2 requirements.
+
+What commands are implemented re only partial at the moment,
+missing features as rotation and reverse-image.
+
+Expect bugs, missing sommands, etc.
+It is only partiall at the moment.
+
+
+BUILDING
+
+This used the cmake package to build.
+I am using it because it does not seem to break as often as
+the autoconf/automake backage does.
+
+It is currently only been tested on Debian Linux.
+
+To Build, cd to the source directory and type
+
+	cmake .
+	make
+
+RUNNING
+
+While in the build directory, type
+
+	./epl2pdf myfile.epl2
+
+It generates a file '/tmp/spl2pdf.pdf'.
+
