@@ -1,5 +1,5 @@
 project(epl2pdf)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 
 # The following line enables static analys of the code.
 # It flags many things as warning that exit in the code, but are actually Ok.
@@ -10,9 +10,7 @@ cmake_minimum_required(VERSION 2.8)
 # useable file on the internet an am pointing at that.
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-find_package(PostgreSQL REQUIRED)	# Requires postgresql-server-dev-11
 find_package(POPT)
-find_package(Barcode)
 #find_package(PoDoFo)
 find_library(Zint zint)
 
