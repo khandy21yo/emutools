@@ -248,6 +248,7 @@ int main(int argc, const char **argv)
 			epl2.ofile = strdup("/tmp/epl2pdf.pdf");
 		} catch(const PdfError & eCode)
 		{
+std::cerr << "Open output fileL ";
 			eCode.PrintErrorMsg();
 			return eCode.GetError();
 		}

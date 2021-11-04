@@ -45,3 +45,15 @@ While in the build directory, type
 
 It generates a file '/tmp/spl2pdf.pdf'.
 
+
+KNOWN BUGS
+
+Output file is, by default /tmp/epl2pdf.pdf. If you run this under two different
+users, the program will fail due to no write access. Remove thsise file before
+running program under a new user.
+
+Minimal implmentation of commands. Only a few EPL2 commands are handled.
+
+Incomplete implementations. Many features of the implemented characters are not
+handled yet, such as rotation and reverse colors.
+
