@@ -22,10 +22,6 @@ int pdf_barcode::place_barcode(
 	float size
 )
 {
-	prepare_canvas(symbol->vector->width,
-		symbol->vector->height,
-		symbol->scale);
-
 	struct zint_vector_rect *rect;
 	rect = symbol->vector->rectangles;
 	while (rect)
@@ -73,14 +69,6 @@ int pdf_barcode::place_barcode(
 		circle = circle->next;
 	}
 
-	return 0;
-}
-
-int pdf_barcode::prepare_canvas(
-	float width,
-	float height,
-	float scale)
-{
 	return 0;
 }
 
@@ -139,7 +127,14 @@ int pdf_barcode::draw_string(
 	unsigned char *text,
 	float length)
 {
+	PdfFont* pFont;
+	pFont = document->CreateFont("Courier Prime");
+	if( !pFont )
+	{
+		PODOFO_RAISE_ERROR(ePdfError_InvalidHandle);
+	}
 	pFont->SetFontSize(fsize);
+	painter->SetFont(pFont);
 
 	painter->DrawText(
 		x,

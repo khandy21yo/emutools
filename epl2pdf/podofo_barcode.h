@@ -27,24 +27,15 @@ class pdf_barcode
 {
 private:
 	PdfDocument *document;
-	PdfPage *pPage;
 	PdfPainter *painter;
-	PdfFont *pFont;
 
 public:
-	pdf_barcode(			//!< Constructor
+	pdf_barcode(				//!< Constructor
 		PdfDocument *mydocument,	//!< Document pointer
-		PdfPage *mypPage)	//!< Page to parcode on
+		PdfPainter *mypainter)		//!< Painter to use
 	{
 		document = mydocument;
-		pPage = mypPage;
-		painter->SetPage( pPage );
-		pFont = document->CreateFont("Couriur");
-		if( !pFont )
-		{
-			PODOFO_RAISE_ERROR(ePdfError_InvalidHandle);
-		}
-
+		painter = mypainter;
 	};
 
 	int place_barcode(
@@ -56,10 +47,6 @@ public:
 	);
 
 private:
-	int prepare_canvas(
-		float width,
-		float height,
-		float scale);
 	int draw_rect(
 		float x,
 		float y,
