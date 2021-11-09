@@ -24,15 +24,27 @@ int pdf_barcode::DrawBarcode(
 	float size
 )
 {
+	struct zint_symbol *my_symbol;
+	my_symbol = ZBarcode_Create();
+
 	painter->Save();
 
 	// Set options
 
+
 	// Generate barcode
+//	ZBarcode_Encode(my_symbol, argv[1], 0);
+	ZBarcode_Buffer_Vector(my_symbol, /*rotate_angle*/ 0);
 
 	// Draw barcode
-	place_barcode(symbol, y, x);
 
+//	ZBarcode_Print(my_symbol, 0);
+	place_barcode(my_symbol, y, x);
+
+	//
+	// Finish, clean up
+	//
+	ZBarcode_Delete(my_symbol);
 	painter->Restore();
 
 	return 0;
