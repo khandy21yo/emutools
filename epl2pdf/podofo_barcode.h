@@ -38,12 +38,18 @@ public:
 		painter = mypainter;
 	};
 
-	int place_barcode(
+	int DrawBarcode(
 		struct zint_symbol *symbol ,
 		int y,
 		int x,
 		int barcode_style,
 		float size
+	);
+
+	int place_barcode(
+		struct zint_symbol *symbol ,
+		int y,
+		int x
 	);
 
 private:

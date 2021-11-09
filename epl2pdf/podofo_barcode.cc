@@ -8,18 +8,48 @@
 
 #include "podofo_barcode.h"
 
+//!\brief Draw a barcode on current page
 //!
-//! This code based on the example in the zint /docs/manual.txt
-//! And heavily modified for this application.
+//! This function will draw a specified barcode on the current page
 //!
-
-
-int pdf_barcode::place_barcode(
-	struct zint_symbol* symbol,
+//! Overall function to build and draw a barcode on the currenr painter object.
+//!
+//! \note currently does not work.
+//!
+int pdf_barcode::DrawBarcode(
+	struct zint_symbol *symbol ,
 	int y,
 	int x,
 	int barcode_style,
 	float size
+)
+{
+	painter->Save();
+
+	// Set options
+
+	// Generate barcode
+
+	// Draw barcode
+	place_barcode(symbol, y, x);
+
+	painter->Restore();
+
+	return 0;
+}
+
+//!\brief Last stage of building barcode
+//!
+//! Draws the rendered barcode onto the current painter object.
+//! Requires that the barcode has been rendered previous to being called.
+//!
+//! This code based on the example in the zint /docs/manual.txt
+//! And heavily modified for this application.
+//!
+int pdf_barcode::place_barcode(
+	struct zint_symbol* symbol,
+	int y,
+	int x
 )
 {
 	struct zint_vector_rect *rect;
