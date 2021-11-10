@@ -35,6 +35,7 @@ target_link_libraries(
 add_executable(
 	epl2pdf
 	epl2pdf.cc
+	podofo_barcode.cc
 )
 target_include_directories(
 	epl2pdf
@@ -44,4 +45,6 @@ target_link_libraries(
 	epl2pdf
 	-lpodofo
 	${POPT_LIBRARIES}
+	${PoDoFo_LIBRARIES}
+	zint
 )

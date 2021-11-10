@@ -17,10 +17,10 @@
 //! \note currently does not work.
 //!
 int pdf_barcode::DrawBarcode(
-	struct zint_symbol *symbol ,
-	int y,
-	int x,
+	float y,
+	float x,
 	int barcode_style,
+	std::string &text,
 	float size
 )
 {
@@ -33,7 +33,7 @@ int pdf_barcode::DrawBarcode(
 
 
 	// Generate barcode
-//	ZBarcode_Encode(my_symbol, argv[1], 0);
+	ZBarcode_Encode(my_symbol, (const unsigned char *)text.c_str(), 0);
 	ZBarcode_Buffer_Vector(my_symbol, /*rotate_angle*/ 0);
 
 	// Draw barcode

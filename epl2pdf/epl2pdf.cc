@@ -31,6 +31,7 @@
 using namespace PoDoFo;
 
 #include "epl2pdf.h"
+#include "podofo_barcode.h"
 
 //
 // Local variables
@@ -248,7 +249,6 @@ int main(int argc, const char **argv)
 			epl2.ofile = strdup("/tmp/epl2pdf.pdf");
 		} catch(const PdfError & eCode)
 		{
-std::cerr << "Open output fileL ";
 			eCode.PrintErrorMsg();
 			return eCode.GetError();
 		}
@@ -604,12 +604,16 @@ std::cerr << "Barcode1" << std::endl;
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		float p7 = cvt_pttopt(cvt_tofloat(thiscmd[7]));
+		std::string p8 = cvt_tostring(thiscmd[8]);
 
-painter.Rectangle(p1,	// Stand in
-	p2,
-	p7,
-	-p7);
-painter.Fill();
+	pdf_barcode pb(document, &painter);
+	pb.DrawBarcode(p1, p2, 0, p8, p7);
+
+//painter.Rectangle(p1,	// Stand in
+//	p2,
+//	p7,
+//	-p7);
+//painter.Fill();
 	}
 	else if (thiscmd[0] == "b")	// Barcode
 	{

@@ -39,10 +39,10 @@ public:
 	};
 
 	int DrawBarcode(
-		struct zint_symbol *symbol ,
-		int y,
-		int x,
+		float y,
+		float x,
 		int barcode_style,
+		std::string &text,
 		float size
 	);
 
