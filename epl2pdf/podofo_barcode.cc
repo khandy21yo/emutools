@@ -26,6 +26,8 @@ int pdf_barcode::DrawBarcode(
 {
 	struct zint_symbol *my_symbol;
 	my_symbol = ZBarcode_Create();
+	my_symbol->symbology = BARCODE_CODE39;
+//	my_symbol->symbology = barcode_style;
 
 //	painter->Save();
 
@@ -39,7 +41,7 @@ int pdf_barcode::DrawBarcode(
 	// Draw barcode
 
 //	ZBarcode_Print(my_symbol, 0);
-	place_barcode(my_symbol, y, x);
+	place_barcode(my_symbol, y - size, x);
 
 	//
 	// Finish, clean up
@@ -68,11 +70,17 @@ int pdf_barcode::place_barcode(
 	rect = symbol->vector->rectangles;
 	while (rect)
 	{
+std::cerr << "draw_rect: " <<
+x + rect->x << "," <<
+y + rect->y << "," <<
+-rect->height << "," <<
+rect->width << "," << std::endl;
+
 		draw_rect(
-			x + rect->x,
 			y + rect->y,
-			rect->width,
-			rect->height);
+			x + rect->x,
+			-rect->height,
+			rect->width);
 		painter->Fill();
 		rect = rect->next;
 	}
@@ -93,6 +101,13 @@ int pdf_barcode::place_barcode(
 	string = symbol->vector->strings;
 	while (string)
 	{
+std::cerr << "draw_string: " <<
+x + string->x << "," <<
+y + string->y << "," <<
+string->fsize << "," <<
+string->text << "," <<
+string->length << "," << std::endl;
+
 		draw_string(
 			x + string->x,
 			y + string->y,
@@ -123,7 +138,7 @@ int pdf_barcode::draw_rect(
 	float width,
 	float height)
 {
-	painter->Rectangle(y, x, height, width);
+	painter->Rectangle(y, x, -height, width);
 	painter->Fill();
 
 std::cerr << "Rect: " << y << "," << x << "," << width << "," << height << std::endl;

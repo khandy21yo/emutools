@@ -606,14 +606,20 @@ std::cerr << "Barcode1" << std::endl;
 		float p7 = cvt_pttopt(cvt_tofloat(thiscmd[7]));
 		std::string p8 = cvt_tostring(thiscmd[8]);
 
-	pdf_barcode pb(document, &painter);
-	pb.DrawBarcode(p1, p2, 0, p8, p7);
+std::cerr << "DrawBarcode: " << p1 << "," << p2 << "," << 0 << "," << p8 << "." << p7 << std::endl;
 
-//painter.Rectangle(p1,	// Stand in
-//	p2,
-//	p7,
-//	-p7);
-//painter.Fill();
+	pdf_barcode pb(document, &painter);
+	pb.DrawBarcode(p2, p1, 0, p8, p7);
+
+if (1)
+{
+painter.Rectangle(p1,	// Stand in
+	p2,
+	p7/2,
+	-p7/2);
+painter.Fill();
+std::cerr << "Rectangle: " << p1 << "," << p2 << "," << p7  << std::endl;
+}
 	}
 	else if (thiscmd[0] == "b")	// Barcode
 	{
