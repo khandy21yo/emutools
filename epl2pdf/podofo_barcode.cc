@@ -27,7 +27,7 @@ int pdf_barcode::DrawBarcode(
 	struct zint_symbol *my_symbol;
 	my_symbol = ZBarcode_Create();
 
-	painter->Save();
+//	painter->Save();
 
 	// Set options
 
@@ -45,7 +45,7 @@ int pdf_barcode::DrawBarcode(
 	// Finish, clean up
 	//
 	ZBarcode_Delete(my_symbol);
-	painter->Restore();
+//	painter->Restore();
 
 	return 0;
 }
@@ -69,10 +69,11 @@ int pdf_barcode::place_barcode(
 	while (rect)
 	{
 		draw_rect(
-			rect->x,
-			rect->y,
+			x + rect->x,
+			y + rect->y,
 			rect->width,
 			rect->height);
+		painter->Fill();
 		rect = rect->next;
 	}
 
@@ -81,9 +82,10 @@ int pdf_barcode::place_barcode(
 	while (hexagon)
 	{
 		draw_hexagon(
-			hexagon->x,
-			hexagon->y,
+			x + hexagon->x,
+			y + hexagon->y,
 			hexagon->diameter);
+		painter->Fill();
 		hexagon = hexagon->next;
 	}
 
@@ -92,8 +94,8 @@ int pdf_barcode::place_barcode(
 	while (string)
 	{
 		draw_string(
-			string->x,
-			string->y,
+			x + string->x,
+			y + string->y,
 			string->fsize,
 			string->text,
 			string->length);
@@ -105,9 +107,10 @@ int pdf_barcode::place_barcode(
 	while (circle)
 	{
 		draw_circle(
-			circle->x,
-			circle->y,
+			x + circle->x,
+			y + circle->y,
 			circle->diameter);
+		painter->Fill();
 		circle = circle->next;
 	}
 
@@ -120,9 +123,10 @@ int pdf_barcode::draw_rect(
 	float width,
 	float height)
 {
-	painter->Rectangle( x, y, width, height);
+	painter->Rectangle(y, x, height, width);
 	painter->Fill();
 
+std::cerr << "Rect: " << y << "," << x << "," << width << "," << height << std::endl;
 	return 0;
 }
 
