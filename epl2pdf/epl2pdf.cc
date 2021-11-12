@@ -537,42 +537,50 @@ void epl2_class::process_line(
 		std::string p8 = cvt_tostring(thiscmd[8]);
 
 		float fscale = p5 / p6 * 100.0;
+		float fsize = 10.0;
 
 		//	1=6pt, 2=7pt, 3=10pt, 4=12pt, 5=24pt, 6=9.5pt, 7=9.5pt
 		switch (thiscmd[4][0])
 		{
 		case '1':
-			pFont->SetFontSize(6.0 * p6);
+			fsize = 6.0;
+			pFont->SetFontSize(fsize * p6);
 			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '2':
-			pFont->SetFontSize(7.0 * p6);
+			fsize = 7.0;
+			pFont->SetFontSize(fsize * p6);
 			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '3':
-			pFont->SetFontSize(10.0 * p6);
+			fsize = 10.0;
+			pFont->SetFontSize(fsize * p6);
 			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '4':
-			pFont->SetFontSize(12.0 * p6);
+			fsize = 12.0;
+			pFont->SetFontSize(fsize * p6);
 			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '5':
-			pFont->SetFontSize(24.0 * p6);
+			fsize = 24.0;
+			pFont->SetFontSize(fsize * p6);
 			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '6':
-			pFont->SetFontSize(9.5 * p6);
+			fsize = 9.5;
+			pFont->SetFontSize(fsize * p6);
 			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '7':
-			pFont->SetFontSize(9.5 * p6);
+			fsize = 9.5;
+			pFont->SetFontSize(fsize * p6);
 			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
@@ -580,8 +588,11 @@ void epl2_class::process_line(
 
 std::cerr << "Text (" <<  p1 << ", " << p2 <<  ")" << std::endl;
 		painter.DrawText(p1,
-			p2,
+			p2 - fsize,
 			p8);
+//		painter.DrawText(p1,
+//			p2,
+//			p8);
 
 	}
 	else if (thiscmd[0] == "B")	// Barcode
@@ -609,9 +620,10 @@ std::cerr << "Barcode1" << std::endl;
 std::cerr << "DrawBarcode: " << p1 << "," << p2 << "," << 0 << "," << p8 << "." << p7 << std::endl;
 
 	pdf_barcode pb(document, &painter);
-	pb.DrawBarcode(p2, p1, 0, p8, p7);
+	pb.DrawBarcode(p2 - p7, p1, 0, p8, p7);
+//	pb.DrawBarcode(p2, p1, 0, p8, p7);
 
-if (1)
+if (0)
 {
 painter.Rectangle(p1,	// Stand in
 	p2,

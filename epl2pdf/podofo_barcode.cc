@@ -28,6 +28,8 @@ int pdf_barcode::DrawBarcode(
 	my_symbol = ZBarcode_Create();
 	my_symbol->symbology = BARCODE_CODE39;
 //	my_symbol->symbology = barcode_style;
+	my_symbol->height = size;
+	my_symbol->whitespace_height = size;
 
 //	painter->Save();
 
@@ -40,8 +42,7 @@ int pdf_barcode::DrawBarcode(
 
 	// Draw barcode
 
-//	ZBarcode_Print(my_symbol, 0);
-	place_barcode(my_symbol, y - size, x);
+	place_barcode(my_symbol, y, x);
 
 	//
 	// Finish, clean up
