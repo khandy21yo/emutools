@@ -26,12 +26,15 @@ int pdf_barcode::DrawBarcode(
 {
 	struct zint_symbol *my_symbol;
 	my_symbol = ZBarcode_Create();
-	my_symbol->symbology = BARCODE_CODE39;
-//	my_symbol->symbology = barcode_style;
+//	my_symbol->symbology = BARCODE_EXCODE39;
+	if (barcode_style != 0)
+	{
+		my_symbol->symbology = barcode_style;
+	}
 	my_symbol->height = size;
 	my_symbol->whitespace_height = size;
 
-//	painter->Save();
+	painter->Save();
 
 	// Set options
 
@@ -48,7 +51,7 @@ int pdf_barcode::DrawBarcode(
 	// Finish, clean up
 	//
 	ZBarcode_Delete(my_symbol);
-//	painter->Restore();
+	painter->Restore();
 
 	return 0;
 }

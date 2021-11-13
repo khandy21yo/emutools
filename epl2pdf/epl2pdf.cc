@@ -163,6 +163,51 @@ public:
 		//
 		return cvt_pttopt(p + href);
 	}
+	//!\brief Convert from EPl2 Barcode Style to ZINT style`
+	//!
+	inline float cvt_style(
+		std::string p)		//< Value to be converted
+	{
+		if (p == "" || p == "3")	// Code 39
+		{
+			return BARCODE_EXCODE39;
+		}
+		else if (p == "3C")		// Code 39 with check digit
+		{				// This isn't implemented yet
+			return BARCODE_EXCODE39;
+		}
+		else if (p == "9")		// Code 39 with check digit
+		{				// This isn't implemented yet
+			return BARCODE_CODE93;
+		}
+		else if (p == "0")		// Code 128 special shipping
+		{				//  container
+						// This isn't zint compatable
+
+			return BARCODE_CODE128;
+		}
+		else if (p == "1")		// Code 128 audo A,B,C
+		{
+			return BARCODE_CODE128;
+		}
+		else if (p == "1A")		// Code 128  A
+		{				// Not Zint Compatable
+			return BARCODE_CODE128;
+		}
+		else if (p == "1B")		// Code 128 B
+		{
+			return BARCODE_CODE128B;
+		}
+		else if (p == "1C")		// Code 128 C
+		{				// Not Zint Compatable
+			return BARCODE_CODE128;
+		}
+		else if (p == "K")		// Codabar
+		{
+			return BARCODE_CODABAR;
+		}
+		return BARCODE_EXCODE39;
+	}
 };
 
 //!
@@ -587,12 +632,15 @@ void epl2_class::process_line(
 		}
 
 std::cerr << "Text (" <<  p1 << ", " << p2 <<  ")" << std::endl;
+		//
+		// "p2-fsize": Since the epl2 points at the bottom of the
+		// characters to print, when we switch it over to PDF it
+		// is now pointing at the top, so we must shift it back
+		// down to the bottom.
+		//
 		painter.DrawText(p1,
 			p2 - fsize,
 			p8);
-//		painter.DrawText(p1,
-//			p2,
-//			p8);
 
 	}
 	else if (thiscmd[0] == "B")	// Barcode
@@ -610,18 +658,28 @@ std::cerr << "Text (" <<  p1 << ", " << p2 <<  ")" << std::endl;
 		//    B = Yes, N = No
 		// Data  Text to be encoded
 		//
-std::cerr << "Barcode1" << std::endl;
+		if (debug)
+		{
+			std::cerr << "Barcode1" << std::endl;
+		}
 		thiscmd.minsize(10);
+		int bstyle;
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
+		bstyle = cvt_style(thiscmd[4]);
 		float p7 = cvt_pttopt(cvt_tofloat(thiscmd[7]));
 		std::string p8 = cvt_tostring(thiscmd[8]);
 
 std::cerr << "DrawBarcode: " << p1 << "," << p2 << "," << 0 << "," << p8 << "." << p7 << std::endl;
 
 	pdf_barcode pb(document, &painter);
+		//
+		// "p2-f7": Since the epl2 points at the bottom of the
+		// barcode to print, when we switch it over to PDF it
+		// is now pointing at the top, so we must shift it back
+		// down to the bottom.
+		//
 	pb.DrawBarcode(p2 - p7, p1, 0, p8, p7);
-//	pb.DrawBarcode(p2, p1, 0, p8, p7);
 
 if (0)
 {
