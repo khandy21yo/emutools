@@ -34,6 +34,11 @@ int pdf_barcode::DrawBarcode(
 	my_symbol->height = size;
 	my_symbol->whitespace_height = size;
 
+	//
+	// Set a save marker,
+	// to make it easier to reset all parameters back to the origial
+	// state when we exit generating the barcode.
+	//
 	painter->Save();
 
 	// Set options
@@ -43,12 +48,13 @@ int pdf_barcode::DrawBarcode(
 	ZBarcode_Encode(my_symbol, (const unsigned char *)text.c_str(), 0);
 	ZBarcode_Buffer_Vector(my_symbol, /*rotate_angle*/ 0);
 
+	//
 	// Draw barcode
-
+	//
 	place_barcode(my_symbol, y, x);
 
 	//
-	// Finish, clean up
+	// Finish, clean up, Restore from Save.
 	//
 	ZBarcode_Delete(my_symbol);
 	painter->Restore();
