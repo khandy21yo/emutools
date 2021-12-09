@@ -674,7 +674,7 @@ std::cerr << "Text (" <<  p1 << ", " << p2 <<  ")" << std::endl;
 		// P1 Horozintal start position
 		// P2 Vertical start position
 		// P3 Rotation
-		//	0 = normal, 1 = 90, 2 = 180. 2 = 270
+		//	0 = normal, 1 = 90, 2 = 180. 3 = 270
 		// P4 Barcode Selection
 		// P5 Narrow Bar Width
 		// P6 Wide Bar Width
@@ -691,6 +691,7 @@ std::cerr << "Text (" <<  p1 << ", " << p2 <<  ")" << std::endl;
 		int bstyle;
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
+		char p3 = thiscmd[3][0];
 		bstyle = cvt_style(thiscmd[4]);
 		float p7 = cvt_pttopt(cvt_tofloat(thiscmd[7]));
 		std::string p8 = cvt_tostring(thiscmd[8]);
@@ -704,7 +705,7 @@ std::cerr << "DrawBarcode: " << p1 << "," << p2 << "," << 0 << "," << p8 << "." 
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-	pb.DrawBarcode(p2 - p7, p1, 0, p8, p7);
+	pb.DrawBarcode(p2 - p7, p1, 0, p8, p7, p3);
 
 if (0)
 {

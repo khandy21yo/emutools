@@ -17,11 +17,12 @@
 //! \note currently does not work.
 //!
 int pdf_barcode::DrawBarcode(
-	float y,
-	float x,
-	int barcode_style,
-	std::string &text,
-	float size
+	float y,		//!< y position of barcode
+	float x,		//!< x position of barcode
+	int barcode_style,	//!< Carcodre style (code39, code128, etc.)
+	std::string &text,	//!< Text of barcode
+	float size,		//!< sie of brcode
+	char rotation		//!< Rotation (0=0, 1=90, 2=180, 3=270)
 )
 {
 	struct zint_symbol *my_symbol;
@@ -41,12 +42,46 @@ int pdf_barcode::DrawBarcode(
 	//
 	painter->Save();
 
+	//
 	// Set options
+	//
+	float a=1, b=0, c=0, d=1, e=x, f=y;	// Transformationmatrix
 
+	switch(rotation)
+	{
+// [cos(x) sin(x) -sin(x) cos(x) 0 0]
+// 	Rotate image
+	case '0':	// 0 degrees
+		break;
+	case '1':	// 90 degrees
+		a = 0;
+		b = 1;
+		c = -1;
+		d = 0;
+		break;
+	case '2':	// 180 degrees
+		a = -1;
+		b = 0;
+		c = 0;
+		d = -1;
+		break;
+	case '3':	// 270 degrees
+		a = 0;
+		b = -1;
+		c = 1;
+		d = 0;
+		break;
+	};
+
+std::cerr << "Transform: " << a << "," << b << "," <<
+c << "," << d << "," << f << std::endl;
+	painter->SetTransformationMatrix(a, b, c, d, e, f);
 
 	// Generate barcode
 	ZBarcode_Encode(my_symbol, (const unsigned char *)text.c_str(), 0);
 	ZBarcode_Buffer_Vector(my_symbol, /*rotate_angle*/ 0);
+
+
 
 	//
 	// Draw barcode
@@ -71,9 +106,11 @@ int pdf_barcode::DrawBarcode(
 //! And heavily modified for this application.
 //!
 int pdf_barcode::place_barcode(
-	struct zint_symbol* symbol,
-	int y,
-	int x
+	struct zint_symbol* symbol,	//!< Aint symbol interfce
+	int y,				//!< y position (not used.
+					//!< Handled using transformationmatrix)
+	int x				//!< x position (not used.
+					//!< Handled using transformationmatrix)
 )
 {
 	struct zint_vector_rect *rect;
@@ -87,8 +124,8 @@ y + rect->y << "," <<
 rect->width << "," << std::endl;
 
 		draw_rect(
-			y + rect->y,
-			x + rect->x,
+			rect->y,
+			rect->x,
 			-rect->height,
 			rect->width);
 		painter->Fill();
@@ -100,8 +137,8 @@ rect->width << "," << std::endl;
 	while (hexagon)
 	{
 		draw_hexagon(
-			x + hexagon->x,
-			y + hexagon->y,
+			hexagon->x,
+			hexagon->y,
 			hexagon->diameter);
 		painter->Fill();
 		hexagon = hexagon->next;
@@ -119,8 +156,8 @@ string->text << "," <<
 string->length << "," << std::endl;
 
 		draw_string(
-			x + string->x,
-			y + string->y,
+			string->x,
+			string->y,
 			string->fsize,
 			string->text,
 			string->length);
@@ -132,8 +169,8 @@ string->length << "," << std::endl;
 	while (circle)
 	{
 		draw_circle(
-			x + circle->x,
-			y + circle->y,
+			circle->x,
+			circle->y,
 			circle->diameter);
 		painter->Fill();
 		circle = circle->next;
