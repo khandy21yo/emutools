@@ -584,7 +584,7 @@ void epl2_class::process_line(
 		// P1 Horozintal start position
 		// P2 Vertical start position
 		// P3 Rotation
-		//	0 = normal, 1 = 90, 2 = 180. 2 = 270
+		//	0 = normal, 1 = 90, 2 = 180. 3 = 270
 		// P4 Font
 		//	1=6pt, 2=7pt, 3=10pt, 4=12pt, 5=24pt, 6=9.5pt, 7=9.5pt
 		//	A-Z=soft fone, a-z=Soft Font
@@ -602,6 +602,7 @@ void epl2_class::process_line(
 		thiscmd.minsize(9);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
+		char p3 = thiscmd[3][0];
 		float p5 = std::max(1.0f, cvt_tofloat(thiscmd[5]));
 		float p6 = std::max(1.0f, cvt_tofloat(thiscmd[6]));
 		std::string p8 = cvt_tostring(thiscmd[8]);
@@ -663,9 +664,41 @@ std::cerr << "Text (" <<  p1 << ", " << p2 <<  ")" << std::endl;
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-		painter.DrawText(p1,
-			p2 - fsize,
+//		float a=1, b=0, c=0, d=1, e=p1, f=p2 - fsize;	// Transformationmatrix
+		float a=1, b=0, c=0, d=1, e=p1, f=p2;	// Transformationmatrix
+		switch(p3)
+		{
+// [cos(x) sin(x) -sin(x) cos(x) 0 0]
+// 	Rotate image
+		case '0':	// 0 degrees
+			break;
+		case '3':	// 90 degrees
+			a = 0;
+			b = 1;
+			c = -1;
+			d = 0;
+			break;
+		case '2':	// 180 degrees
+			a = -1;
+			b = 0;
+			c = 0;
+			d = -1;
+			break;
+		case '1':	// 270 degrees
+			a = 0;
+			b = -1;
+			c = 1;
+			d = 0;
+			break;
+		};
+std::cerr << "Transform: " << a << "," << b << "," <<
+c << "," << d << "," << e << "," << f << std::endl;
+		painter.Save();
+		painter.SetTransformationMatrix(a, b, c, d, e, f);
+		painter.DrawText(0.0,
+			0.0,
 			p8);
+		painter.Restore();
 
 	}
 	else if (thiscmd[0] == "B")	// Barcode
@@ -693,7 +726,7 @@ std::cerr << "Text (" <<  p1 << ", " << p2 <<  ")" << std::endl;
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		char p3 = thiscmd[3][0];
 		bstyle = cvt_style(thiscmd[4]);
-		float p7 = cvt_pttopt(cvt_tofloat(thiscmd[7]));
+		float p7 = cvt_pttopt(cvt_tofloat(thiscmd[7])) / 2.0;
 		std::string p8 = cvt_tostring(thiscmd[8]);
 
 std::cerr << "DrawBarcode: " << p1 << "," << p2 << "," << 0 << "," << p8 << "." << p7 << std::endl;
@@ -705,7 +738,8 @@ std::cerr << "DrawBarcode: " << p1 << "," << p2 << "," << 0 << "," << p8 << "." 
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-	pb.DrawBarcode(p2 - p7, p1, 0, p8, p7, p3);
+//	pb.DrawBarcode(p2 - p7, p1, 0, p8, p7, p3);
+	pb.DrawBarcode(p2, p1, 0, p8, p7, p3);
 
 if (0)
 {

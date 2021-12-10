@@ -53,7 +53,7 @@ int pdf_barcode::DrawBarcode(
 // 	Rotate image
 	case '0':	// 0 degrees
 		break;
-	case '1':	// 90 degrees
+	case '3':	// 90 degrees
 		a = 0;
 		b = 1;
 		c = -1;
@@ -65,7 +65,7 @@ int pdf_barcode::DrawBarcode(
 		c = 0;
 		d = -1;
 		break;
-	case '3':	// 270 degrees
+	case '1':	// 270 degrees
 		a = 0;
 		b = -1;
 		c = 1;
@@ -74,7 +74,7 @@ int pdf_barcode::DrawBarcode(
 	};
 
 std::cerr << "Transform: " << a << "," << b << "," <<
-c << "," << d << "," << f << std::endl;
+c << "," << d << "," << e << "," << f << std::endl;
 	painter->SetTransformationMatrix(a, b, c, d, e, f);
 
 	// Generate barcode
