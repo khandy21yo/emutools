@@ -45,7 +45,7 @@ int pdf_barcode::DrawBarcode(
 	//
 	// Set options
 	//
-	float a=1, b=0, c=0, d=1, e=x, f=y;	// Transformationmatrix
+	float a=1, b=0, c=0, d=1, e=x, f=y;	// Transformation matrix
 
 	switch(rotation)
 	{
@@ -156,8 +156,8 @@ string->text << "," <<
 string->length << "," << std::endl;
 
 		draw_string(
-			string->x,
 			string->y,
+			string->x,
 			string->fsize,
 			string->text,
 			string->length);

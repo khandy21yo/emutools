@@ -6,11 +6,11 @@ This is a partia program to convert an epl2 file info a pdf file.
 It is, as yet, incomplete. It is still in development.
 But it is capable of handling some simple spl2 files.
 
-It used popt to handle parsing the command line.
+It uses popt to handle parsing the command line.
 My versions of getopt were just broken when I started this long ago.
 
-It ises the podofo library to handle the PDF utput. This is a poorly
-documented package, but it seems to have several nede==cessary
+It uses the podofo library to handle the PDF utput. This is a poorly
+documented package, but it seems to have several necessary
 features missing from other libraries.
 
 It uses the zint library to generate the barcodes.
@@ -22,6 +22,23 @@ missing features as rotation and reverse-image.
 
 Expect bugs, missing sommands, etc.
 It is only partiall at the moment.
+
+WARNING
+
+Do not expect an exact match between the EPL2 output and the PDF
+output. There are many differences between them.
+
+EPL2 assumes that things are being created on a bitmap, which is
+different than PDFs vector format. Some things, like XORing the data
+is not handled easily.
+
+The program used specific fonts from PDF, and not the actual EPL2
+fonts, therefore the character shapes and sizes may be somewhat
+different.
+
+Converting from the EPL2 point dimensions to the PDF points can end up
+causing slight position and size issues. Objects can vary size and
+position by a pixel or two in the conversion.
 
 
 BUILDING
@@ -54,6 +71,9 @@ running program under a new user.
 
 Minimal implmentation of commands. Only a few EPL2 commands are handled.
 
-Incomplete implementations. Many features of the implemented characters are not
+Incomplete implementations. Many features of the implemented operations are not
 handled yet, such as rotation and reverse colors.
+
+epl2 and pdf seem to have very different ideas about positioning items, such as
+which point of an object is the corner.
 

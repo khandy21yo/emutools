@@ -727,9 +727,9 @@ c << "," << d << "," << e << "," << f << std::endl;
 		char p3 = thiscmd[3][0];
 		bstyle = cvt_style(thiscmd[4]);
 		float p7 = cvt_pttopt(cvt_tofloat(thiscmd[7])) / 2.0;
-		std::string p8 = cvt_tostring(thiscmd[8]);
+		std::string p9 = cvt_tostring(thiscmd[9]);
 
-std::cerr << "DrawBarcode: " << p1 << "," << p2 << "," << 0 << "," << p8 << "." << p7 << std::endl;
+std::cerr << "DrawBarcode: " << p1 << "," << p2 << "," << 0 << "," << p9 << "." << p7 << std::endl;
 
 	pdf_barcode pb(document, &painter);
 		//
@@ -739,7 +739,7 @@ std::cerr << "DrawBarcode: " << p1 << "," << p2 << "," << 0 << "," << p8 << "." 
 		// down to the bottom.
 		//
 //	pb.DrawBarcode(p2 - p7, p1, 0, p8, p7, p3);
-	pb.DrawBarcode(p2, p1, 0, p8, p7, p3);
+	pb.DrawBarcode(p2, p1, 0, p9, p7, p3);
 
 if (0)
 {
