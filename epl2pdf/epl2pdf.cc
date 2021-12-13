@@ -664,7 +664,6 @@ std::cerr << "Text (" <<  p1 << ", " << p2 <<  ")" << std::endl;
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-//		float a=1, b=0, c=0, d=1, e=p1, f=p2 - fsize;	// Transformationmatrix
 		float a=1, b=0, c=0, d=1, e=p1, f=p2;	// Transformationmatrix
 		switch(p3)
 		{
@@ -689,6 +688,7 @@ std::cerr << "Text (" <<  p1 << ", " << p2 <<  ")" << std::endl;
 			b = -1;
 			c = 1;
 			d = 0;
+			e -= fsize;	// fudge position. Why? I don't know.
 			break;
 		};
 std::cerr << "Transform: " << a << "," << b << "," <<
