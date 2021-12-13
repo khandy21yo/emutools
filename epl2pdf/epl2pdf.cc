@@ -757,8 +757,33 @@ std::cerr << "Rectangle: " << p1 << "," << p2 << "," << p7  << std::endl;
 std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "LE")	// Line draw XOR
+					// Don't know how to do xor in pdf,
+					// so it duplicates black bar.
 	{
-std::cerr << "LixeXor" << std::endl;
+		//
+		// p1 = Horizotal start position
+		// p2 = Vertical start position
+		// p3 = horizontal lengt n in dots
+		// p4 = vertical length in dots
+		//
+		if (debug)
+		{
+			std::cerr << "LineXor" << std::endl;
+		}
+		thiscmd.minsize(9);
+		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
+		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
+		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
+		float p4 = cvt_pttopt(cvt_tofloat(thiscmd[4]));
+
+//std::cerr << "Box (" <<  p1 << ", " << p2 << ", " <<
+// p3 << ", " << p4 << ")" << std::endl;
+
+		painter.Rectangle(p1,
+			p2,
+			p3,
+			-p4);
+		painter.Fill();
 	}
 	else if (thiscmd[0] == "LO")	// Line draw black
 	{
@@ -778,7 +803,8 @@ std::cerr << "LixeXor" << std::endl;
 		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
 		float p4 = cvt_pttopt(cvt_tofloat(thiscmd[4]));
 
-std::cerr << "Box (" <<  p1 << ", " << p2 << ", " << p3 << ", " << p4 << ")" << std::endl;
+//std::cerr << "Box (" <<  p1 << ", " << p2 << ", " << p3 <<
+//  ", " << p4 << ")" << std::endl;
 
 		painter.Rectangle(p1,
 			p2,
@@ -788,7 +814,30 @@ std::cerr << "Box (" <<  p1 << ", " << p2 << ", " << p3 << ", " << p4 << ")" << 
 	}
 	else if (thiscmd[0] == "LS")	// Line draw diagnol
 	{
-std::cerr << "LixeDia" << std::endl;
+		//
+		// p1 = Horizotal start position
+		// p2 = Vertical start position
+		// p3 = horizontal lengt n in dots
+		// p4 = vertical length in dots
+		//
+		if (debug)
+		{
+			std::cerr << "LineWhite" << std::endl;
+		}
+		thiscmd.minsize(9);
+		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
+		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
+		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
+		float p4 = cvt_pttopt(cvt_tofloat(thiscmd[4]));
+
+//std::cerr << "Box (" <<  p1 << ", " << p2 << ", " << p3 <<
+//  ", " << p4 << ")" << std::endl;
+
+		painter.Rectangle(p1,
+			p2,
+			p3,
+			-p4);
+		painter.Fill();
 	}
 	else if (thiscmd[0] == "LW")	// Line draw white
 	{
