@@ -670,6 +670,7 @@ std::cerr << "Text (" <<  p1 << ", " << p2 <<  ")" << std::endl;
 // [cos(x) sin(x) -sin(x) cos(x) 0 0]
 // 	Rotate image
 		case '0':	// 0 degrees
+			f -= fsize;	// fudge position. Why? I don't know.
 			break;
 		case '3':	// 90 degrees
 			a = 0;

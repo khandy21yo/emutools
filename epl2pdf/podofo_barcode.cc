@@ -33,7 +33,8 @@ int pdf_barcode::DrawBarcode(
 		my_symbol->symbology = barcode_style;
 	}
 	my_symbol->height = size;
-	my_symbol->whitespace_height = size;
+//	my_symbol->whitespace_height = size;
+	my_symbol->show_hrt = 0;		// Hide text
 
 	//
 	// Set a save marker,
@@ -70,6 +71,8 @@ int pdf_barcode::DrawBarcode(
 		b = -1;
 		c = 1;
 		d = 0;
+//		e -= size;	// fudge position of rotated barcode.
+	       			// Why? I don't know, but it's necessary.
 		break;
 	};
 
