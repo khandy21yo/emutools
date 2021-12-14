@@ -339,7 +339,10 @@ int main(int argc, const char **argv)
 	//
 	while (filename = poptGetArg(optCon))
 	{
-		std::cerr << "File: " << filename << std::endl;
+		if (debug)
+		{
+			std::cerr << "File: " << filename << std::endl;
+		}
 
 		if (strcmp(filename, "-") == 0)
 		{
@@ -565,7 +568,10 @@ void epl2_class::process_stream(
 void epl2_class::process_line(
 	const std::string &buffer)	//!< Line to process
 {
-	std::cerr << "Test Line: " << buffer << std::endl;
+	if (debug)
+	{
+		std::cerr << "Test Line: " << buffer << std::endl;
+	}
 	cmd_class thiscmd;
 
 	// Split command into parsed blocks
@@ -657,7 +663,11 @@ void epl2_class::process_line(
 			break;
 		}
 
-std::cerr << "Text (" <<  p1 << ", " << p2 <<  ")" << std::endl;
+		if (debug)
+		{
+			std::cerr << "Text (" <<  p1 << ", " << p2 <<
+			       	")" << std::endl;
+		}
 		//
 		// "p2-fsize": Since the epl2 points at the bottom of the
 		// characters to print, when we switch it over to PDF it
@@ -692,8 +702,11 @@ std::cerr << "Text (" <<  p1 << ", " << p2 <<  ")" << std::endl;
 			e -= fsize;	// fudge position. Why? I don't know.
 			break;
 		};
-std::cerr << "Transform: " << a << "," << b << "," <<
-c << "," << d << "," << e << "," << f << std::endl;
+		if (debug)
+		{
+			std::cerr << "Transform: " << a << "," << b << "," <<
+				c << "," << d << "," << e << "," << f << std::endl;
+		}
 		painter.Save();
 		painter.SetTransformationMatrix(a, b, c, d, e, f);
 		painter.DrawText(0.0,
@@ -730,7 +743,11 @@ c << "," << d << "," << e << "," << f << std::endl;
 		float p7 = cvt_pttopt(cvt_tofloat(thiscmd[7])) / 2.0;
 		std::string p9 = cvt_tostring(thiscmd[9]);
 
-std::cerr << "DrawBarcode: " << p1 << "," << p2 << "," << 0 << "," << p9 << "." << p7 << std::endl;
+		if (debug)
+		{
+			std::cerr << "DrawBarcode: " << p1 << "," <<
+				p2 << "," << 0 << "," << p9 << "." << p7 << std::endl;
+		}
 
 	pdf_barcode pb(document, &painter);
 		//
@@ -742,15 +759,6 @@ std::cerr << "DrawBarcode: " << p1 << "," << p2 << "," << 0 << "," << p9 << "." 
 //	pb.DrawBarcode(p2 - p7, p1, 0, p8, p7, p3);
 	pb.DrawBarcode(p2, p1, 0, p9, p7, p3);
 
-if (0)
-{
-painter.Rectangle(p1,	// Stand in
-	p2,
-	p7/2,
-	-p7/2);
-painter.Fill();
-std::cerr << "Rectangle: " << p1 << "," << p2 << "," << p7  << std::endl;
-}
 	}
 	else if (thiscmd[0] == "b")	// Barcode
 	{
@@ -776,8 +784,11 @@ std::cerr << "Barcode2" << std::endl;
 		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
 		float p4 = cvt_pttopt(cvt_tofloat(thiscmd[4]));
 
-//std::cerr << "Box (" <<  p1 << ", " << p2 << ", " <<
-// p3 << ", " << p4 << ")" << std::endl;
+		if (debug)
+		{
+			std::cerr << "Box (" <<  p1 << ", " << p2 << ", " <<
+			p3 << ", " << p4 << ")" << std::endl;
+		}
 
 		painter.Rectangle(p1,
 			p2,
@@ -803,8 +814,11 @@ std::cerr << "Barcode2" << std::endl;
 		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
 		float p4 = cvt_pttopt(cvt_tofloat(thiscmd[4]));
 
-//std::cerr << "Box (" <<  p1 << ", " << p2 << ", " << p3 <<
-//  ", " << p4 << ")" << std::endl;
+		if (debug)
+		{
+			std::cerr << "Box (" <<  p1 << ", " << p2 << ", " << p3 <<
+			", " << p4 << ")" << std::endl;
+		}
 
 		painter.Rectangle(p1,
 			p2,
@@ -830,8 +844,11 @@ std::cerr << "Barcode2" << std::endl;
 		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
 		float p4 = cvt_pttopt(cvt_tofloat(thiscmd[4]));
 
-//std::cerr << "Box (" <<  p1 << ", " << p2 << ", " << p3 <<
-//  ", " << p4 << ")" << std::endl;
+		if (debug)
+		{
+			std::cerr << "Box (" <<  p1 << ", " << p2 << ", " << p3 <<
+			", " << p4 << ")" << std::endl;
+		}
 
 		painter.Rectangle(p1,
 			p2,

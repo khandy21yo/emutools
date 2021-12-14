@@ -76,8 +76,8 @@ int pdf_barcode::DrawBarcode(
 		break;
 	};
 
-std::cerr << "Transform: " << a << "," << b << "," <<
-c << "," << d << "," << e << "," << f << std::endl;
+// std::cerr << "Transform: " << a << "," << b << "," <<
+// c << "," << d << "," << e << "," << f << std::endl;
 	painter->SetTransformationMatrix(a, b, c, d, e, f);
 
 	// Generate barcode
@@ -120,11 +120,11 @@ int pdf_barcode::place_barcode(
 	rect = symbol->vector->rectangles;
 	while (rect)
 	{
-std::cerr << "draw_rect: " <<
-x + rect->x << "," <<
-y + rect->y << "," <<
--rect->height << "," <<
-rect->width << "," << std::endl;
+// std::cerr << "draw_rect: " <<
+// x + rect->x << "," <<
+// y + rect->y << "," <<
+// -rect->height << "," <<
+// rect->width << "," << std::endl;
 
 		draw_rect(
 			rect->y,
@@ -151,12 +151,12 @@ rect->width << "," << std::endl;
 	string = symbol->vector->strings;
 	while (string)
 	{
-std::cerr << "draw_string: " <<
-x + string->x << "," <<
-y + string->y << "," <<
-string->fsize << "," <<
-string->text << "," <<
-string->length << "," << std::endl;
+// std::cerr << "draw_string: " <<
+// x + string->x << "," <<
+// y + string->y << "," <<
+// string->fsize << "," <<
+// string->text << "," <<
+// string->length << "," << std::endl;
 
 		draw_string(
 			string->y,
@@ -191,7 +191,7 @@ int pdf_barcode::draw_rect(
 	painter->Rectangle(y, x, -height, width);
 	painter->Fill();
 
-std::cerr << "Rect: " << y << "," << x << "," << width << "," << height << std::endl;
+// std::cerr << "Rect: " << y << "," << x << "," << width << "," << height << std::endl;
 	return 0;
 }
 
