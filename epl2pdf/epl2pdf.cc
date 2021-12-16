@@ -112,6 +112,10 @@ public:
 	PdfPainter painter;		//!< podofo painter object
 	PdfFont* pFont;			//!< podofo font.
 					//!<  Name is currently hardcoded.
+	std::vector<std::string> history;
+					//!< Instruction history for this page.
+	int lock_history;		//!< Lock history during reuse to avoid
+					//!< endless loop
 
 public:
 	//! \brief constructor
@@ -122,9 +126,33 @@ public:
 		ofile = 0;		// Not yet parsed
 		href = 0.0;		// Reference point
 		vref = 0.0;		// Reference point
+		pFont = 0;		// Font
 	}
 	void process_stream(std::istream &in);
 	void process_line(const std::string &buffer);
+	//!\brief process a list of commands
+	//!
+	inline void process_list(
+		const std::vector<std::string> &buffer)	//!< List of EPL2 commands
+	{
+		for (auto item = buffer.begin(); item != buffer.end(); item++)
+		{
+			process_line(*item);
+		}
+	}
+	//! \brief add command line to instruction history
+	//!
+	void push_history(std::string command)
+	{
+		if (lock_history == 0)
+		{
+			history.push_back(command);
+		}
+	}
+	void clear_history()
+	{
+		history.clear();
+	}
 
 public:
 	//!\brief Convert a std::string value to a float
@@ -145,6 +173,26 @@ public:
 		else
 		{
 			return std::stof(p);
+		}
+	}
+	//!\brief Convert a std::string value to a integer
+	//!
+	//! If the string is blank, returns a default value,
+	//! otherwise it converts the string to a float value.
+	//! If the string contans non-numeric characters,
+	//! they will halt the conversion without causing an error.
+	//!
+	inline float cvt_toint(
+		std::string &p,			//!< String to convert
+		int def = 0)		//!< Default value
+	{
+		if (p == "")
+		{
+			return def;
+		}
+		else
+		{
+			return std::stoi(p);
 		}
 	}
 	std::string cvt_tostring(
@@ -282,7 +330,7 @@ int main(int argc, const char **argv)
 			 "dots per inch", "BPS" },
 		{ "output", 'o', POPT_ARG_STRING, &epl2.ofile, 0,
 			 "utput file name", "filename" },
-		{ "debug", 'L', POPT_ARG_NONE, 0, 'd',
+		{ "debug", 'd', POPT_ARG_NONE, 0, 'd',
 			 "debugging messages", "" },
 		POPT_AUTOHELP
 		{ nullptr, 0, 0, nullptr, 0 }
@@ -339,7 +387,7 @@ int main(int argc, const char **argv)
 	//
 	while (filename = poptGetArg(optCon))
 	{
-		if (debug)
+//		if (debug)
 		{
 			std::cerr << "File: " << filename << std::endl;
 		}
@@ -586,6 +634,7 @@ void epl2_class::process_line(
 	}
 	else if (thiscmd[0] == "A")	// ASCII text
 	{
+		push_history(buffer);
 		//
 		// P1 Horozintal start position
 		// P2 Vertical start position
@@ -632,7 +681,7 @@ void epl2_class::process_line(
 			painter.SetFont(pFont);
 			break;
 		case '3':
-			fsize = 10.0;
+			fsize = 9.0;
 			pFont->SetFontSize(fsize * p6);
 			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
@@ -707,6 +756,7 @@ void epl2_class::process_line(
 			std::cerr << "Transform: " << a << "," << b << "," <<
 				c << "," << d << "," << e << "," << f << std::endl;
 		}
+
 		painter.Save();
 		painter.SetTransformationMatrix(a, b, c, d, e, f);
 		painter.DrawText(0.0,
@@ -717,6 +767,7 @@ void epl2_class::process_line(
 	}
 	else if (thiscmd[0] == "B")	// Barcode
 	{
+		push_history(buffer);
 		//
 		// P1 Horozintal start position
 		// P2 Vertical start position
@@ -762,12 +813,14 @@ void epl2_class::process_line(
 	}
 	else if (thiscmd[0] == "b")	// Barcode
 	{
+		push_history(buffer);
 std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "LE")	// Line draw XOR
 					// Don't know how to do xor in pdf,
 					// so it duplicates black bar.
 	{
+		push_history(buffer);
 		//
 		// p1 = Horizotal start position
 		// p2 = Vertical start position
@@ -798,6 +851,7 @@ std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "LO")	// Line draw black
 	{
+		push_history(buffer);
 		//
 		// p1 = Horizotal start position
 		// p2 = Vertical start position
@@ -820,14 +874,18 @@ std::cerr << "Barcode2" << std::endl;
 			", " << p4 << ")" << std::endl;
 		}
 
+		painter.Save();				// Save current settings
+		painter.SetColor(1.0, 1.0, 1.0);	// White
 		painter.Rectangle(p1,
 			p2,
 			p3,
 			-p4);
 		painter.Fill();
+		painter.Restore();			// Restore settings
 	}
 	else if (thiscmd[0] == "LS")	// Line draw diagnol
 	{
+		push_history(buffer);
 		//
 		// p1 = Horizotal start position
 		// p2 = Vertical start position
@@ -858,11 +916,13 @@ std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "LW")	// Line draw white
 	{
+		push_history(buffer);
 std::cerr << "LixeWhite" << std::endl;
 	}
 	else if (thiscmd[0] == "N")	// New Page
 	{
 std::cerr << "New Page" << std::endl;
+		clear_history();
 	}
 	else if (thiscmd[0] == "P")	// Page
 	{
@@ -873,6 +933,7 @@ std::cerr << "New Page" << std::endl;
 		// Both parameters are currently igbored
 		//
 std::cerr << "Page" << std::endl;
+		int p1 = cvt_toint(thiscmd[1]);
 		//
 		// Close current page
 		//
@@ -888,9 +949,40 @@ std::cerr << "Page" << std::endl;
 			PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
 		}
 		painter.SetPage(pPage);
+		//
+		// Handle additional pages
+		//
+		for (int loop = 2; loop <= p1; loop++)
+		{
+			//
+			// Repaint data
+			//
+			lock_history = 1;
+			process_list(history);
+			lock_history = 0;
+
+#if 1
+			//
+			// Close current page
+			//
+			epl2.painter.FinishPage();
+
+			//
+			// Create new page
+			//
+			pPage = document->CreatePage(
+				PdfPage::CreateStandardPageSize(ePdfPageSize_A4));
+			if( !pPage ) 
+			{
+				PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
+			}
+			painter.SetPage(pPage);
+#endif
+		}
 	}
 	else if (thiscmd[0] == "R")	// Set reference Point
 	{
+		push_history(buffer);
 		//
 		// P1 Horozintal reference point
 		// P2 Vertical reference point
@@ -905,6 +997,7 @@ std::cerr << "Page" << std::endl;
 	}
 	else if (thiscmd[0] == "X")	// Box draw
 	{
+		push_history(buffer);
 std::cerr << "BoxDraw" << std::endl;
 	}
 	else if (thiscmd[0] == ";")	// Comment

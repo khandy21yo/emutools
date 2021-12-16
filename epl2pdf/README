@@ -23,6 +23,23 @@ missing features as rotation and reverse-image.
 Expect bugs, missing sommands, etc.
 It is only partiall at the moment.
 
+COMPILING
+
+This progeam is compiled using the 'cmake' system.
+
+	cmake .
+	make
+
+USAGE
+
+The program is command line driven. It isn't complete yet, so is missing
+several features that will be necessary for actual use.
+
+	./epl2pdf source.epl2
+
+This reads in the file 'source.epl2' and creates '/tmp/epl2pdf.pdf'.
+The output file name is current;y hardcoded in the program.
+
 WARNING
 
 Do not expect an exact match between the EPL2 output and the PDF
@@ -32,13 +49,18 @@ EPL2 assumes that things are being created on a bitmap, which is
 different than PDFs vector format. Some things, like XORing the data
 is not handled easily.
 
-The program used specific fonts from PDF, and not the actual EPL2
-fonts, therefore the character shapes and sizes may be somewhat
-different.
+The program used specific fonts (Courier-Prime) for PDF, and not the
+actual EPL2 fonts. Character shapes and sizes may be somewhat different.
+'Courier-Prime' just happens to be the bold courier font on my machine.
 
 Converting from the EPL2 point dimensions to the PDF points can end up
 causing slight position and size issues. Objects can vary size and
 position by a pixel or two in the conversion.
+
+If you get the error
+	terminate called after throwing an instance of 'PoDoFo::PdfError'
+then you probably already have a /tmp/epl2pdf.pdf file under another user.
+Remove it and try again.
 
 
 BUILDING
