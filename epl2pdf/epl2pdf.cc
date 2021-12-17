@@ -83,6 +83,20 @@ public:
 	}
 
 	int split_cmd(const std::string &cmd);
+	//!\brief Get cmd item if available, else blank.
+	//!
+	const std::string get(
+		int item)	//!< Item number to try for
+	{
+		if (item < size())
+		{
+			return at(item);
+		}
+		else
+		{
+			return "";
+		}
+	}
 	void dump();
 };
 
@@ -116,6 +130,8 @@ public:
 					//!< Instruction history for this page.
 	int lock_history;		//!< Lock history during reuse to avoid
 					//!< endless loop
+	int lineno;			//!< Command line number.
+					//!< Used by maybefirst.
 
 public:
 	//! \brief constructor
@@ -127,10 +143,16 @@ public:
 		href = 0.0;		// Reference point
 		vref = 0.0;		// Reference point
 		pFont = 0;		// Font
+		lock_history = 0;
+		lineno = 0;
 	}
 	void process_stream(std::istream &in);
 	void process_line(const std::string &buffer);
 	//!\brief process a list of commands
+	//!
+	//! This is used to reprint all commands that have occurred on a page.
+	//! It does this by storing all printing commands in 'history',
+	//! and then rerunning them from the saved buffer.
 	//!
 	inline void process_list(
 		const std::vector<std::string> &buffer)	//!< List of EPL2 commands
@@ -142,6 +164,9 @@ public:
 	}
 	//! \brief add command line to instruction history
 	//!
+	//! Stores all printing commands into 'history' for reuse if we need
+	//! to reprint thw page information.
+	//!
 	void push_history(std::string command)
 	{
 		if (lock_history == 0)
@@ -149,9 +174,27 @@ public:
 			history.push_back(command);
 		}
 	}
+	//!\brief clear history buffer.
+	//!
 	void clear_history()
 	{
 		history.clear();
+	}
+	//!\brief Handle things necessary when a new page starts.
+	//!
+	void maybe_first()
+	{
+		if (lineno == 0)
+		{
+			lineno++;
+			lock_history++;
+			process_list(history);
+			lock_history--;
+		}
+		else
+		{
+			lineno++;
+		}
 	}
 
 public:
@@ -163,7 +206,7 @@ public:
 	//! they will halt the conversion without causing an error.
 	//!
 	inline float cvt_tofloat(
-		std::string &p,			//!< String to convert
+		const std::string &p,		//!< String to convert
 		float def = 0.0)		//!< Default value
 	{
 		if (p == "")
@@ -183,7 +226,7 @@ public:
 	//! they will halt the conversion without causing an error.
 	//!
 	inline float cvt_toint(
-		std::string &p,			//!< String to convert
+		const std::string &p,		//!< String to convert
 		int def = 0)		//!< Default value
 	{
 		if (p == "")
@@ -196,7 +239,7 @@ public:
 		}
 	}
 	std::string cvt_tostring(
-		std::string &p);
+		const std::string &p);
 
 	//!\brief Convert from EPl2 point measurement to PDF measurements
 	//!
@@ -634,6 +677,7 @@ void epl2_class::process_line(
 	}
 	else if (thiscmd[0] == "A")	// ASCII text
 	{
+		maybe_first();
 		push_history(buffer);
 		//
 		// P1 Horozintal start position
@@ -655,12 +699,12 @@ void epl2_class::process_line(
 			std::cerr << "Ascii Text" << std::endl;
 		}
 		thiscmd.minsize(9);
-		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
-		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
+		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd.get(1)));
+		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd.get(2)));
 		char p3 = thiscmd[3][0];
-		float p5 = std::max(1.0f, cvt_tofloat(thiscmd[5]));
-		float p6 = std::max(1.0f, cvt_tofloat(thiscmd[6]));
-		std::string p8 = cvt_tostring(thiscmd[8]);
+		float p5 = std::max(1.0f, cvt_tofloat(thiscmd.get(5)));
+		float p6 = std::max(1.0f, cvt_tofloat(thiscmd.get(6)));
+		std::string p8 = cvt_tostring(thiscmd.get(8));
 
 		float fscale = p5 / p6 * 100.0;
 		float fsize = 10.0;
@@ -767,6 +811,7 @@ void epl2_class::process_line(
 	}
 	else if (thiscmd[0] == "B")	// Barcode
 	{
+		maybe_first();
 		push_history(buffer);
 		//
 		// P1 Horozintal start position
@@ -813,6 +858,7 @@ void epl2_class::process_line(
 	}
 	else if (thiscmd[0] == "b")	// Barcode
 	{
+		maybe_first();
 		push_history(buffer);
 std::cerr << "Barcode2" << std::endl;
 	}
@@ -820,6 +866,7 @@ std::cerr << "Barcode2" << std::endl;
 					// Don't know how to do xor in pdf,
 					// so it duplicates black bar.
 	{
+		maybe_first();
 		push_history(buffer);
 		//
 		// p1 = Horizotal start position
@@ -851,6 +898,7 @@ std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "LO")	// Line draw black
 	{
+		maybe_first();
 		push_history(buffer);
 		//
 		// p1 = Horizotal start position
@@ -885,6 +933,7 @@ std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "LS")	// Line draw diagnol
 	{
+		maybe_first();
 		push_history(buffer);
 		//
 		// p1 = Horizotal start position
@@ -916,16 +965,19 @@ std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "LW")	// Line draw white
 	{
+		maybe_first();
 		push_history(buffer);
 std::cerr << "LixeWhite" << std::endl;
 	}
 	else if (thiscmd[0] == "N")	// New Page
 	{
 std::cerr << "New Page" << std::endl;
+		maybe_first();
 		clear_history();
 	}
 	else if (thiscmd[0] == "P")	// Page
 	{
+		maybe_first();
 		//
 		// P1 = Number of label sets to print
 		// P2 = Number of copies of each label set to print
@@ -933,7 +985,7 @@ std::cerr << "New Page" << std::endl;
 		// Both parameters are currently igbored
 		//
 std::cerr << "Page" << std::endl;
-		int p1 = cvt_toint(thiscmd[1]);
+		int p1 = cvt_toint(thiscmd.get(1));
 		//
 		// Close current page
 		//
@@ -957,11 +1009,10 @@ std::cerr << "Page" << std::endl;
 			//
 			// Repaint data
 			//
-			lock_history = 1;
+			lock_history++;
 			process_list(history);
-			lock_history = 0;
+			lock_history--;
 
-#if 1
 			//
 			// Close current page
 			//
@@ -977,8 +1028,8 @@ std::cerr << "Page" << std::endl;
 				PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
 			}
 			painter.SetPage(pPage);
-#endif
 		}
+		lineno = 0;
 	}
 	else if (thiscmd[0] == "R")	// Set reference Point
 	{
@@ -997,6 +1048,7 @@ std::cerr << "Page" << std::endl;
 	}
 	else if (thiscmd[0] == "X")	// Box draw
 	{
+		maybe_first();
 		push_history(buffer);
 std::cerr << "BoxDraw" << std::endl;
 	}
@@ -1027,7 +1079,7 @@ std::cerr << "** Unparsed command **" << std::endl;
 //!\returnes parsed string.
 //!
 std::string epl2_class::cvt_tostring(
-	std::string &p)			//!< Unparsed string
+	const std::string &p)			//!< Unparsed string
 {
 	std::string result;		// String being built
 
