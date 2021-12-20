@@ -45,9 +45,9 @@ WARNING
 Do not expect an exact match between the EPL2 output and the PDF
 output. There are many differences between them.
 
-EPL2 assumes that things are being created on a bitmap, which is
-different than PDFs vector format. Some things, like XORing the data
-is not handled easily.
+EPL2 assumes that things are being created on a black/white bitmap,
+which is different than PDFs colored vector format. Some things,
+like XORing the data is not handled easily.
 
 The program used specific fonts (Courier-Prime) for PDF, and not the
 actual EPL2 fonts. Character shapes and sizes may be somewhat different.
@@ -57,10 +57,15 @@ Converting from the EPL2 point dimensions to the PDF points can end up
 causing slight position and size issues. Objects can vary size and
 position by a pixel or two in the conversion.
 
+EPL2 uses the top left of a character for its position, and PDF uses the
+bottom left as its position.
+
 If you get the error
 	terminate called after throwing an instance of 'PoDoFo::PdfError'
 then you probably already have a /tmp/epl2pdf.pdf file under another user.
 Remove it and try again.
+
+Not all barcode types have been coded. Work in progress.
 
 
 BUILDING
