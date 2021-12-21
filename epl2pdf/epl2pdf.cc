@@ -773,7 +773,7 @@ void epl2_class::process_line(
 // [cos(x) sin(x) -sin(x) cos(x) 0 0]
 // 	Rotate image
 		case '0':	// 0 degrees
-			f -= fsize;	// fudge position. Why? I don't know.
+			f -= fsize;	// fudge position, shift from top to bottom.
 			break;
 		case '3':	// 90 degrees
 			a = 0;
@@ -792,7 +792,7 @@ void epl2_class::process_line(
 			b = -1;
 			c = 1;
 			d = 0;
-			e -= fsize;	// fudge position. Why? I don't know.
+			e -= fsize;	// fudge position. Shift from top to bottom.
 			break;
 		};
 		if (debug)
@@ -943,7 +943,7 @@ std::cerr << "Barcode2" << std::endl;
 		//
 		if (debug)
 		{
-			std::cerr << "LineWhite" << std::endl;
+			std::cerr << "Diagonal" << std::endl;
 		}
 		thiscmd.minsize(9);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
@@ -953,14 +953,16 @@ std::cerr << "Barcode2" << std::endl;
 
 		if (debug)
 		{
-			std::cerr << "Box (" <<  p1 << ", " << p2 << ", " << p3 <<
+			std::cerr << "Line (" <<  p1 << ", " << p2 << ", " << p3 <<
 			", " << p4 << ")" << std::endl;
 		}
 
-		painter.Rectangle(p1,
-			p2,
-			p3,
-			-p4);
+		painter.MoveTo(p1, p2);
+		painter.LineTo(p1 + p3, p2);
+		painter.LineTo(p1 + p3, p2 + p4);
+		painter.LineTo(p1, p2 + p4);
+		painter.LineTo(p1, p2);
+		painter.ClosePath();
 		painter.Fill();
 	}
 	else if (thiscmd[0] == "LW")	// Line draw white
