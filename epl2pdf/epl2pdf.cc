@@ -878,7 +878,7 @@ std::cerr << "Barcode2" << std::endl;
 		{
 			std::cerr << "LineXor" << std::endl;
 		}
-		thiscmd.minsize(9);
+		thiscmd.minsize(5);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
@@ -910,7 +910,7 @@ std::cerr << "Barcode2" << std::endl;
 		{
 			std::cerr << "LineBlack" << std::endl;
 		}
-		thiscmd.minsize(9);
+		thiscmd.minsize(5);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
@@ -946,7 +946,7 @@ std::cerr << "Barcode2" << std::endl;
 		{
 			std::cerr << "Diagonal" << std::endl;
 		}
-		thiscmd.minsize(9);
+		thiscmd.minsize(5);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
@@ -981,7 +981,7 @@ std::cerr << "Barcode2" << std::endl;
 		{
 			std::cerr << "LineWhite" << std::endl;
 		}
-		thiscmd.minsize(9);
+		thiscmd.minsize(5);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
@@ -1018,6 +1018,7 @@ std::cerr << "New Page" << std::endl;
 		// Both parameters are currently igbored
 		//
 std::cerr << "Page" << std::endl;
+		thiscmd.minsize(3);
 		int p1 = cvt_toint(thiscmd.get(1));
 		//
 		// Close current page
