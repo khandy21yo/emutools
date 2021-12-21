@@ -922,16 +922,52 @@ std::cerr << "Barcode2" << std::endl;
 			", " << p4 << ")" << std::endl;
 		}
 
-		painter.Save();				// Save current settings
-		painter.SetColor(1.0, 1.0, 1.0);	// White
+//		painter.Save();				// Save current settings
+//		painter.SetColor(1.0, 1.0, 1.0);	// White
 		painter.Rectangle(p1,
 			p2,
 			p3,
 			-p4);
 		painter.Fill();
-		painter.Restore();			// Restore settings
+//		painter.Restore();			// Restore settings
 	}
 	else if (thiscmd[0] == "LS")	// Line draw diagnol
+	{
+		maybe_first();
+		push_history(buffer);
+		//
+		// p1 = Horizotal start position
+		// p2 = Vertical start position
+		// p3 = horizontal lengt n in dots
+		// p4 = vertical length in dots
+		// p5 = vertical length in dots
+		//
+		if (debug)
+		{
+			std::cerr << "Diagonal" << std::endl;
+		}
+		thiscmd.minsize(9);
+		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
+		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
+		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
+		float p4 = cvt_pttopt(cvt_tofloat(thiscmd[4]));
+		float p5 = cvt_pttopt(cvt_tofloat(thiscmd[5]));
+
+		if (debug)
+		{
+			std::cerr << "Line (" <<  p1 << ", " << p2 << ", " << p3 <<
+			", " << p4 << ", " << p5 << ")" << std::endl;
+		}
+
+		painter.MoveTo(p1, p2);
+		painter.LineTo(p1 + p3, p2);
+		painter.LineTo(p1 + p3 + p4, p2 - p5);
+		painter.LineTo(p1 + p4, p2 - p5);
+		painter.LineTo(p1, p2);
+		painter.ClosePath();
+		painter.Fill();
+	}
+	else if (thiscmd[0] == "LW")	// Line draw white
 	{
 		maybe_first();
 		push_history(buffer);
@@ -943,7 +979,7 @@ std::cerr << "Barcode2" << std::endl;
 		//
 		if (debug)
 		{
-			std::cerr << "Diagonal" << std::endl;
+			std::cerr << "LineWhite" << std::endl;
 		}
 		thiscmd.minsize(9);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
@@ -953,23 +989,18 @@ std::cerr << "Barcode2" << std::endl;
 
 		if (debug)
 		{
-			std::cerr << "Line (" <<  p1 << ", " << p2 << ", " << p3 <<
+			std::cerr << "Box (" <<  p1 << ", " << p2 << ", " << p3 <<
 			", " << p4 << ")" << std::endl;
 		}
 
-		painter.MoveTo(p1, p2);
-		painter.LineTo(p1 + p3, p2);
-		painter.LineTo(p1 + p3, p2 + p4);
-		painter.LineTo(p1, p2 + p4);
-		painter.LineTo(p1, p2);
-		painter.ClosePath();
+		painter.Save();				// Save current settings
+		painter.SetColor(1.0, 1.0, 1.0);	// White
+		painter.Rectangle(p1,
+			p2,
+			p3,
+			-p4);
 		painter.Fill();
-	}
-	else if (thiscmd[0] == "LW")	// Line draw white
-	{
-		maybe_first();
-		push_history(buffer);
-std::cerr << "LixeWhite" << std::endl;
+		painter.Restore();			// Restore settings
 	}
 	else if (thiscmd[0] == "N")	// New Page
 	{
