@@ -46,12 +46,20 @@ Do not expect an exact match between the EPL2 output and the PDF
 output. There are many differences between them.
 
 EPL2 assumes that things are being created on a black/white bitmap,
-which is different than PDFs colored vector format. Some things,
-like XORing the data is not handled easily.
+which is different than PDFs color vector format. Some things,
+like XORing the objects with the background is not possible.
 
-The program used specific fonts (Courier-Prime) for PDF, and not the
-actual EPL2 fonts. Character shapes and sizes may be somewhat different.
+This program uses a specific font (Courier-Prime) for PDF, and not the
+actual EPL2 fonts. Character shapes and sizes are somewhat different.
 'Courier-Prime' just happens to be the bold courier font on my machine.
+
+It does not handle download fonts yet.
+
+It does not handle variables (time, counters, variables) yet.
+
+It does not yet handle graphics yet.
+
+It does not handle latge blobs of binary data yet.
 
 Converting from the EPL2 point dimensions to the PDF points can end up
 causing slight position and size issues. Objects can vary size and

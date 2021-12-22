@@ -1071,6 +1071,14 @@ std::cerr << "Page" << std::endl;
 		}
 		lineno = 0;
 	}
+	else if (thiscmd[0] == "q")	// Set label width
+	{
+		// Igbored for now
+	}
+	else if (thiscmd[0] == "Q")	// Set form length
+	{
+		// Igbored for now
+	}
 	else if (thiscmd[0] == "R")	// Set reference Point
 	{
 		push_history(buffer);
@@ -1111,7 +1119,6 @@ std::cerr << "Page" << std::endl;
 		//
 		// normalize corners
 		//
-#if 0
 		if (p1 > p4)
 		{
 			float tmp = p1;
@@ -1124,7 +1131,7 @@ std::cerr << "Page" << std::endl;
 			p2 = p5;
 			p5 = tmp;
 		}
-#endif
+
 		if (debug)
 		{
 			std::cerr << "box (" <<  p1 << ", " << p2 << ", " << p3 <<
@@ -1134,7 +1141,7 @@ std::cerr << "Page" << std::endl;
 		//
 		// We have to do this using 4 bars.
 		// Using two boxes would cover up anything underneath.
-#if 1
+		//
 		painter.MoveTo(p1, p2);			// Top
 		painter.LineTo(p4, p2);
 		painter.LineTo(p4, p2 - p3);
@@ -1161,21 +1168,11 @@ std::cerr << "Page" << std::endl;
 
 		painter.MoveTo(p4, p2);			// Right
 		painter.LineTo(p4, p5);
-		painter.LineTo(p4 + p3, p5);
-		painter.LineTo(p4 + p3, p2);
+		painter.LineTo(p4 - p3, p5);
+		painter.LineTo(p4 - p3, p2);
 		painter.LineTo(p4, p2);
 		painter.ClosePath();
 		painter.Fill();
-
-#else
-		painter.MoveTo(p1, p2);			// Test
-		painter.LineTo(p4, p2);
-		painter.LineTo(p4, p5);
-		painter.LineTo(p1, p5);
-		painter.LineTo(p1, p2);
-		painter.ClosePath();
-		painter.Fill();
-#endif
 
 	}
 	else if (thiscmd[0] == ";")	// Comment
