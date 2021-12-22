@@ -633,6 +633,12 @@ void epl2_class::process_stream(
 	pFont->SetFontSize(10.0);
 	painter.SetFont(pFont);
 
+	if (debug)
+	{
+		std::cerr << "Page size: " <<
+		       pPage->GetPageSize().GetHeight() << std::endl;
+	}
+
 	while (getline(in, buffer))
 	{
 		process_line(buffer);
@@ -1084,7 +1090,93 @@ std::cerr << "Page" << std::endl;
 	{
 		maybe_first();
 		push_history(buffer);
-std::cerr << "BoxDraw" << std::endl;
+		//
+		// p1 = Horizotal start position
+		// p2 = Vertical start position
+		// p3 = Line thickness
+		// p4 = Horizontal length in dots
+		// p5 = vertical length in dots
+		//
+		if (debug)
+		{
+			std::cerr << "BoxDraw" << std::endl;
+		}
+		thiscmd.minsize(6);
+		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
+		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
+		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
+		float p4 = cvt_hpostohpos(cvt_tofloat(thiscmd[4]));
+		float p5 = cvt_vpostovpos(cvt_tofloat(thiscmd[5]));
+
+		//
+		// normalize corners
+		//
+#if 0
+		if (p1 > p4)
+		{
+			float tmp = p1;
+			p1 = p4;
+			p4 = tmp;
+		}
+		if (p2 < p5)
+		{
+			float tmp = p2;
+			p2 = p5;
+			p5 = tmp;
+		}
+#endif
+		if (debug)
+		{
+			std::cerr << "box (" <<  p1 << ", " << p2 << ", " << p3 <<
+			", " << p4 << ", " << p5 << ")" << std::endl;
+		}
+
+		//
+		// We have to do this using 4 bars.
+		// Using two boxes would cover up anything underneath.
+#if 1
+		painter.MoveTo(p1, p2);			// Top
+		painter.LineTo(p4, p2);
+		painter.LineTo(p4, p2 - p3);
+		painter.LineTo(p1, p2 - p3);
+		painter.LineTo(p1, p2);
+		painter.ClosePath();
+		painter.Fill();
+
+		painter.MoveTo(p1, p5);			// Top
+		painter.LineTo(p4, p5);
+		painter.LineTo(p4, p5 - p3);
+		painter.LineTo(p1, p5 - p3);
+		painter.LineTo(p1, p5);
+		painter.ClosePath();
+		painter.Fill();
+
+		painter.MoveTo(p1, p2);			// Left
+		painter.LineTo(p1, p5);
+		painter.LineTo(p1 + p3, p5);
+		painter.LineTo(p1 + p3, p2);
+		painter.LineTo(p1, p2);
+		painter.ClosePath();
+		painter.Fill();
+
+		painter.MoveTo(p4, p2);			// Right
+		painter.LineTo(p4, p5);
+		painter.LineTo(p4 + p3, p5);
+		painter.LineTo(p4 + p3, p2);
+		painter.LineTo(p4, p2);
+		painter.ClosePath();
+		painter.Fill();
+
+#else
+		painter.MoveTo(p1, p2);			// Test
+		painter.LineTo(p4, p2);
+		painter.LineTo(p4, p5);
+		painter.LineTo(p1, p5);
+		painter.LineTo(p1, p2);
+		painter.ClosePath();
+		painter.Fill();
+#endif
+
 	}
 	else if (thiscmd[0] == ";")	// Comment
 	{
