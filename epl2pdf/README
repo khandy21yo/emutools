@@ -23,12 +23,6 @@ missing features as rotation and reverse-image.
 Expect bugs, missing sommands, etc.
 It is only partiall at the moment.
 
-COMPILING
-
-This progeam is compiled using the 'cmake' system.
-
-	cmake .
-	make
 
 USAGE
 
@@ -37,10 +31,37 @@ several features that will be necessary for actual use.
 
 	./epl2pdf source.epl2
 
-This reads in the file 'source.epl2' and creates '/tmp/epl2pdf.pdf'.
-The output file name is current;y hardcoded in the program.
+This reads in the file 'source.epl2' and, by default, creates
+'/tmp/epl2pdf.pdf'. You can change this with the '-o' option.
 
-WARNING
+
+BUILDING
+
+This used the cmake package to build.
+I am using it because it does not seem to break as often as
+the autoconf/automake backage does.
+
+It is currently only been tested on Debian Linux.
+
+To Build, cd to the source directory and type
+
+	cmake .
+	make
+
+
+KNOWN BUGS
+
+Output file is, by default /tmp/epl2pdf.pdf. If you run this under two different
+users, the program will fail due to file permissions. Remove thsise file before
+running program under a new user.
+
+Minimal implmentation of commands. Only a few EPL2 commands are handled.
+
+Incomplete implementations. Many features of the implemented operations are not
+handled yet, such as rotation and reverse colors.
+
+epl2 and pdf seem to have very different ideas about positioning items, such as
+which point of an object is the corner.
 
 Do not expect an exact match between the EPL2 output and the PDF
 output. There are many differences between them.
@@ -74,41 +95,4 @@ then you probably already have a /tmp/epl2pdf.pdf file under another user.
 Remove it and try again.
 
 Not all barcode types have been coded. Work in progress.
-
-
-BUILDING
-
-This used the cmake package to build.
-I am using it because it does not seem to break as often as
-the autoconf/automake backage does.
-
-It is currently only been tested on Debian Linux.
-
-To Build, cd to the source directory and type
-
-	cmake .
-	make
-
-RUNNING
-
-While in the build directory, type
-
-	./epl2pdf myfile.epl2
-
-It generates a file '/tmp/spl2pdf.pdf'.
-
-
-KNOWN BUGS
-
-Output file is, by default /tmp/epl2pdf.pdf. If you run this under two different
-users, the program will fail due to no write access. Remove thsise file before
-running program under a new user.
-
-Minimal implmentation of commands. Only a few EPL2 commands are handled.
-
-Incomplete implementations. Many features of the implemented operations are not
-handled yet, such as rotation and reverse colors.
-
-epl2 and pdf seem to have very different ideas about positioning items, such as
-which point of an object is the corner.
 
