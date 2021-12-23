@@ -710,6 +710,7 @@ void epl2_class::process_line(
 		char p3 = thiscmd[3][0];
 		float p5 = std::max(1.0f, cvt_tofloat(thiscmd.get(5)));
 		float p6 = std::max(1.0f, cvt_tofloat(thiscmd.get(6)));
+		std::string p7 = cvt_tostring(thiscmd.get(7));
 		std::string p8 = cvt_tostring(thiscmd.get(8));
 
 		float fscale = p5 / p6 * 100.0;
@@ -809,6 +810,18 @@ void epl2_class::process_line(
 
 		painter.Save();
 		painter.SetTransformationMatrix(a, b, c, d, e, f);
+		if (p7 == "B")
+		{
+			float th = fsize;
+			float tw = p8.size() * fsize;	// This is wrong, but...
+			painter.Rectangle(0,
+				0,
+				tw,
+				th);
+			painter.Fill();
+			painter.SetColor(1.0, 1.0, 1.0);
+		}
+
 		painter.DrawText(0.0,
 			0.0,
 			p8);
@@ -858,7 +871,6 @@ void epl2_class::process_line(
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-//	pb.DrawBarcode(p2 - p7, p1, 0, p8, p7, p3);
 	pb.DrawBarcode(p2, p1, 0, p9, p7, p3);
 
 	}
