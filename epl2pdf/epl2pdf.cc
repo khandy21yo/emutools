@@ -813,7 +813,9 @@ void epl2_class::process_line(
 		if (p7 == "B")
 		{
 			float th = fsize;
-			float tw = p8.size() * fsize;	// This is wrong, but...
+			float tw = p8.size() * fsize * .7;	// This is wrong, but
+								// how to get actual
+								// size?
 			painter.Rectangle(0,
 				0,
 				tw,
