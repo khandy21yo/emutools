@@ -1150,10 +1150,10 @@ std::cerr << "Page" << std::endl;
 		painter.ClosePath();
 		painter.Fill();
 
-		painter.MoveTo(p1, p5);			// Top
+		painter.MoveTo(p1, p5);			// Bottom
 		painter.LineTo(p4, p5);
-		painter.LineTo(p4, p5 - p3);
-		painter.LineTo(p1, p5 - p3);
+		painter.LineTo(p4, p5 + p3);
+		painter.LineTo(p1, p5 + p3);
 		painter.LineTo(p1, p5);
 		painter.ClosePath();
 		painter.Fill();
