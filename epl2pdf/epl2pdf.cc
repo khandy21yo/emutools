@@ -820,9 +820,10 @@ void epl2_class::process_line(
 		if (p7 == "B")
 		{
 			float th = fsize;
-			float tw = p8.size() * fsize * .6;	// This is wrong, but
-								// how to get actual
-								// size?
+
+			float tw =		// text width
+				painter.GetFont()->GetFontMetrics()->StringWidth(p8);
+
 			painter.Rectangle(0,
 				0,
 				tw,
