@@ -6,4 +6,12 @@ A50,150,0,4,1,1,N,"Example 4"
 A50,200,0,5,1,1,N,"Example 5"
 A50,300,0,3,1,1,B,"Example 6"
 P
+N
+A50,0,0,1,1,1,B,"Example 1"
+A50,50,0,2,1,1,B,"Example 2"
+A50,100,0,3,1,1,B,"Example 3"
+A50,150,0,4,1,1,B,"Example 4"
+A50,200,0,5,1,1,B,"Example 5"
+A50,300,0,3,1,1,B,"Example 6"
+P
 

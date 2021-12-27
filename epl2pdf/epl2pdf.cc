@@ -809,23 +809,30 @@ void epl2_class::process_line(
 		}
 
 		painter.Save();
-		painter.SetTransformationMatrix(a, b, c, d, e, f);
+		float vdrop = 0.0;	// How far do we need to drop the black box
+					// to make the white text look centered.
+		if (p7 == "B")
+		{
+			vdrop = fsize / 4.0;
+		}
+
+		painter.SetTransformationMatrix(a, b, c, d, e, f - vdrop);
 		if (p7 == "B")
 		{
 			float th = fsize;
-			float tw = p8.size() * fsize * .7;	// This is wrong, but
+			float tw = p8.size() * fsize * .6;	// This is wrong, but
 								// how to get actual
 								// size?
 			painter.Rectangle(0,
 				0,
 				tw,
-				th);
+				th + vdrop);
 			painter.Fill();
 			painter.SetColor(1.0, 1.0, 1.0);
 		}
 
 		painter.DrawText(0.0,
-			0.0,
+			0.0 + vdrop,
 			p8);
 		painter.Restore();
 
@@ -1025,7 +1032,6 @@ std::cerr << "Barcode2" << std::endl;
 	else if (thiscmd[0] == "N")	// New Page
 	{
 std::cerr << "New Page" << std::endl;
-		maybe_first();
 		clear_history();
 	}
 	else if (thiscmd[0] == "P")	// Page
