@@ -11,5 +11,6 @@ rno2roff	Convert RNO files to nroff
 rstsbasic	Some RSTS/E basic code
 unmbasic	Convert 'compled' mbasic programs to text versions
 world		Code to handle 'The World Digitized' files
+epl2pdf		Convert an Eltron/Zebra EPL2 file to PDF
 
 

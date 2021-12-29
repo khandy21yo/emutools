@@ -61,7 +61,7 @@ using namespace PoDoFo;
 //
 // Local variables
 //
-static int debug = 0;		//!< Are debugging messages enabled?
+int debug = 0;		//!< Are debugging messages enabled?
 
 //!
 //! \brief Container for parsing parsing epl2 commands.

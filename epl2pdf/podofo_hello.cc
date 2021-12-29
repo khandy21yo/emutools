@@ -25,6 +25,8 @@
  */
 #include <iostream>
 
+int debug = 0;
+
 /*
  * Now include all podofo header files, to have access
  * to all functions of podofo and so that you do not have

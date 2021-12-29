@@ -53,26 +53,24 @@ KNOWN BUGS
 
 Output file is, by default /tmp/epl2pdf.pdf. If you run this under two different
 users, the program will fail due to file permissions. Remove thsise file before
-running program under a new user.
+running program under a new user, or specify output using '-o'.
 
 Minimal implmentation of commands. Only a few EPL2 commands are handled.
 
 Incomplete implementations. Many features of the implemented operations are not
-handled yet, such as rotation and reverse colors.
-
-epl2 and pdf seem to have very different ideas about positioning items, such as
-which point of an object is the corner.
+handled yet.
 
 Do not expect an exact match between the EPL2 output and the PDF
 output. There are many differences between them.
 
 EPL2 assumes that things are being created on a black/white bitmap,
 which is different than PDFs color vector format. Some things,
-like XORing the objects with the background is not possible.
+like XORing the objects with the background, is not possible.
 
 This program uses a specific font (Courier-Prime) for PDF, and not the
 actual EPL2 fonts. Character shapes and sizes are somewhat different.
-'Courier-Prime' just happens to be the bold courier font on my machine.
+'Courier-Prime' just happens to be the bold courier font on my development
+machine (debian test).
 
 It does not handle download fonts yet.
 
@@ -87,13 +85,11 @@ causing slight position and size issues. Objects can vary size and
 position by a pixel or two in the conversion.
 
 EPL2 uses the top left of a character for its position, and PDF uses the
-bottom left as its position.
+bottom left as its position. Currently not handling ascender/descender height.
 
 If you get the error
 	terminate called after throwing an instance of 'PoDoFo::PdfError'
 then you probably already have a /tmp/epl2pdf.pdf file under another user.
 Remove it and try again.
-
-Not all barcode types have been coded. Work in progress.
 
 Page size is hardcoded.

@@ -8,6 +8,8 @@
 
 #include "podofo_barcode.h"
 
+extern int debug;
+
 //!\brief Draw a barcode on current page
 //!
 //! This function will draw a specified barcode on the current page
@@ -59,6 +61,7 @@ int pdf_barcode::DrawBarcode(
 		b = 1;
 		c = -1;
 		d = 0;
+//		e += 0.8 * size;	// epl2 position fix
 		break;
 	case '2':	// 180 degrees
 		a = -1;
@@ -71,8 +74,7 @@ int pdf_barcode::DrawBarcode(
 		b = -1;
 		c = 1;
 		d = 0;
-//		e -= size;	// fudge position of rotated barcode.
-	       			// Why? I don't know, but it's necessary.
+//		e -= 0.8 * size;	// epl2 position fix
 		break;
 	};
 
@@ -120,11 +122,14 @@ int pdf_barcode::place_barcode(
 	rect = symbol->vector->rectangles;
 	while (rect)
 	{
-// std::cerr << "draw_rect: " <<
-// x + rect->x << "," <<
-// y + rect->y << "," <<
-// -rect->height << "," <<
-// rect->width << "," << std::endl;
+		if (debug)
+		{
+			std::cerr << "draw_rect: " <<
+				x + rect->x << "," <<
+				y + rect->y << "," <<
+				-rect->height << "," <<
+				rect->width << "," << std::endl;
+ 		}
 
 		draw_rect(
 			rect->y,
@@ -151,12 +156,15 @@ int pdf_barcode::place_barcode(
 	string = symbol->vector->strings;
 	while (string)
 	{
-// std::cerr << "draw_string: " <<
-// x + string->x << "," <<
-// y + string->y << "," <<
-// string->fsize << "," <<
-// string->text << "," <<
-// string->length << "," << std::endl;
+		if (debug)
+		{
+			std::cerr << "draw_string: " <<
+				string->x << "," <<
+				string->y << "," <<
+				string->fsize << "," <<
+				string->text << "," <<
+				string->length << "," << std::endl;
+		}
 
 		draw_string(
 			string->y,
@@ -182,13 +190,17 @@ int pdf_barcode::place_barcode(
 	return 0;
 }
 
+//! \brief Draw a rectandle (bar) on the page.
+//!
+//! Draws a rectangle on the screen.
+//
 int pdf_barcode::draw_rect(
 	float x,
 	float y,
 	float width,
 	float height)
 {
-	painter->Rectangle(y, x, -height, width);
+	painter->Rectangle(y, x, height, width);
 	painter->Fill();
 
 // std::cerr << "Rect: " << y << "," << x << "," << width << "," << height << std::endl;
@@ -231,6 +243,11 @@ int pdf_barcode::draw_hexagon(
 	return 0;
 }
 
+//!\brief Draw characters on the barcode
+//!
+//! Draws strings (characters) on the page.
+//! The x.y coordinates are the bootom left of the character.
+//!
 int pdf_barcode::draw_string(
 	float x,
 	float y,
@@ -248,13 +265,18 @@ int pdf_barcode::draw_string(
 	painter->SetFont(pFont);
 
 	painter->DrawText(
-		x,
 		y,
+		x,
 		text);
 
 	return 0;
 }
 
+//!\brief Draw circles on the page.
+//!
+//! Draws circles on the screen.
+//! The x,y coordinates are the center of the circle..
+//!
 int pdf_barcode::draw_circle(
 	float x,
 	float y,
