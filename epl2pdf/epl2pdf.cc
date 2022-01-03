@@ -146,8 +146,11 @@ public:
 		lock_history = 0;
 		lineno = 0;
 	}
+	int init_stream();
 	void process_stream(std::istream &in);
+	int finish_stream();
 	void process_line(const std::string &buffer);
+
 	//!\brief process a list of commands
 	//!
 	//! This is used to reprint all commands that have occurred on a page.
@@ -425,6 +428,8 @@ int main(int argc, const char **argv)
 	PdfStreamedDocument mydocument(epl2.ofile);
 	epl2.document = &mydocument;
 
+	epl2.init_stream();
+
 	//
 	// Process all file names passed on command ilne
 	//
@@ -446,6 +451,8 @@ int main(int argc, const char **argv)
 			epl2.process_stream(ifs);
 		}
 	}
+
+	epl2.finish_stream();
 
 	poptFreeContext(optCon);
 
@@ -593,12 +600,10 @@ void cmd_class::dump()
 //******************************************************************
 
 //!
-//! \brief Scan an open stream for commands
-//!
-void epl2_class::process_stream(
-	std::istream &in)		//!< Stream to read spl2 commands from
+//! \brief Initialize stream
+//
+int  epl2_class::init_stream()
 {
-	std::string buffer;
 
 	//
 	// We need an utput file name.
@@ -611,21 +616,14 @@ void epl2_class::process_stream(
 	//
 	// Initialize for a podofo pdf output
 	//
-	// We have to go through this off business because podofo doesn't
-	// want to create a document without the file name. and we cannot
-	// do that in the class before we get the output file name.
-	//
-	PdfStreamedDocument mydocument(ofile);
-	document = &mydocument;
-
-	pPage = mydocument.CreatePage(
+	pPage = document->CreatePage(
 		PdfPage::CreateStandardPageSize(ePdfPageSize_A4));
 	if( !pPage ) 
 	{
 		PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
 	}
 	painter.SetPage(pPage);
-	pFont = mydocument.CreateFont("Courier Prime");
+	pFont = document->CreateFont("Courier Prime");
 	if( !pFont )
 	{
 		PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
@@ -639,23 +637,42 @@ void epl2_class::process_stream(
 		       pPage->GetPageSize().GetHeight() << std::endl;
 	}
 
+	return 0;
+}
+
+//!
+//! \brief Scan an open stream for commands
+//!
+void epl2_class::process_stream(
+	std::istream &in)		//!< Stream to read spl2 commands from
+{
+	std::string buffer;
+
+
 	while (getline(in, buffer))
 	{
 		process_line(buffer);
 	}
+}
 
+//! \brief Finish stream
+//
+int epl2_class::finish_stream()
+{
 	epl2.painter.FinishPage();
 
 	/*
 	* Set some additional information on the PDF file.
 	*/
-	mydocument.GetInfo()->SetCreator(PdfString("espl2pdf"));
-	mydocument.GetInfo()->SetAuthor(PdfString("spl2pdf"));
-	mydocument.GetInfo()->SetTitle(PdfString("spl2pdf"));
-	mydocument.GetInfo()->SetSubject(PdfString("spl2pdf") );
-	mydocument.GetInfo()->SetKeywords( PdfString("Test;PDF;spl2pdf;") );
+	epl2.document->GetInfo()->SetCreator(PdfString("espl2pdf"));
+	epl2.document->GetInfo()->SetAuthor(PdfString("spl2pdf"));
+	epl2.document->GetInfo()->SetTitle(PdfString("spl2pdf"));
+	epl2.document->GetInfo()->SetSubject(PdfString("spl2pdf") );
+	epl2.document->GetInfo()->SetKeywords( PdfString("Test;PDF;spl2pdf;") );
 
-	mydocument.Close();
+	epl2.document->Close();
+
+	return 0;
 }
 
 //!\brief Process one EPL2 command

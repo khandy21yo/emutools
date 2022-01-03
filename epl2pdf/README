@@ -93,3 +93,6 @@ then you probably already have a /tmp/epl2pdf.pdf file under another user.
 Remove it and try again.
 
 Page size is hardcoded.
+
+Doesn't handle multiple files correctly. Does a file, zaps it, does next, ...
+
