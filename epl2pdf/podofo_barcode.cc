@@ -256,7 +256,7 @@ int pdf_barcode::draw_string(
 	float length)
 {
 	PdfFont* pFont;
-	pFont = document->CreateFont("Courier Prime");
+	pFont = document->CreateFont(EPL2_FONTNAME);
 	if( !pFont )
 	{
 		PODOFO_RAISE_ERROR(ePdfError_InvalidHandle);

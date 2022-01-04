@@ -94,5 +94,7 @@ Remove it and try again.
 
 Page size is hardcoded.
 
-Doesn't handle multiple files correctly. Does a file, zaps it, does next, ...
+Barcodes not fully implemented.
+
+Leaves a blank page at end of prf file.
 

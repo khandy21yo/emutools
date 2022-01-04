@@ -623,7 +623,7 @@ int  epl2_class::init_stream()
 		PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
 	}
 	painter.SetPage(pPage);
-	pFont = document->CreateFont("Courier Prime");
+	pFont = document->CreateFont(EPL2_FONTNAME);
 	if( !pFont )
 	{
 		PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
@@ -891,14 +891,14 @@ void epl2_class::process_line(
 				p2 << "," << 0 << "," << p9 << "." << p7 << std::endl;
 		}
 
-	pdf_barcode pb(document, &painter);
+		pdf_barcode pb(document, &painter);
 		//
 		// "p2-f7": Since the epl2 points at the bottom of the
 		// barcode to print, when we switch it over to PDF it
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-	pb.DrawBarcode(p2, p1, 0, p9, p7, p3);
+		pb.DrawBarcode(p2, p1, 0, p9, p7, p3);
 
 	}
 	else if (thiscmd[0] == "b")	// Barcode

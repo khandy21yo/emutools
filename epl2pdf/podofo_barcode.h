@@ -15,6 +15,8 @@
 #include <podofo/podofo.h>
 #include <zint.h>
 
+//! \brief Name of the font to use as the EPL2 font.
+static const char* EPL2_FONTNAME = "Courier Prime";
 
 using namespace PoDoFo;
 

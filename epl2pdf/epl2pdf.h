@@ -1,5 +1,7 @@
 //!\file
 
+#ifndef __epl2pdf_h__
+#define __epl2pdf_h__
 
 
 //
@@ -18,3 +20,4 @@
 //	zint
 //
 //
+#endif // __epl2pdf_h__
