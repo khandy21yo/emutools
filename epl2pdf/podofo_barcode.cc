@@ -34,7 +34,7 @@ int pdf_barcode::DrawBarcode(
 	{
 		my_symbol->symbology = barcode_style;
 	}
-	my_symbol->height = size;
+//	my_symbol->height = size;
 //	my_symbol->whitespace_height = size;
 	my_symbol->show_hrt = 0;		// Hide text
 
@@ -78,15 +78,34 @@ int pdf_barcode::DrawBarcode(
 		break;
 	};
 
-// std::cerr << "Transform: " << a << "," << b << "," <<
-// c << "," << d << "," << e << "," << f << std::endl;
-	painter->SetTransformationMatrix(a, b, c, d, e, f);
-
 	// Generate barcode
 	ZBarcode_Encode(my_symbol, (const unsigned char *)text.c_str(), 0);
 	ZBarcode_Buffer_Vector(my_symbol, /*rotate_angle*/ 0);
 
+	if (debug)
+	{
+		std::cerr << "BarcodeGen: Height=" << my_symbol->height <<
+			" WWid=" << my_symbol->whitespace_width <<
+			" WHgt=" << my_symbol->whitespace_height <<
+			" bWid=" << my_symbol->border_width <<
+			" rows=" << my_symbol->rows <<
+			" width=" << my_symbol->width <<
+			" bheight=" << my_symbol->bitmap_height <<
+			std::endl;
+	}
 
+	//
+	// Adjust size
+	//
+	float adjust = (size / my_symbol->height);
+	a = a * adjust;
+	b = b * adjust;
+	c = c * adjust;
+	d = d * adjust;
+
+// std::cerr << "Transform: " << a << "," << b << "," <<
+// c << "," << d << "," << e << "," << f << std::endl;
+	painter->SetTransformationMatrix(a, b, c, d, e, f);
 
 	//
 	// Draw barcode
