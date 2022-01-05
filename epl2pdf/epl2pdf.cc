@@ -883,6 +883,7 @@ void epl2_class::process_line(
 		char p3 = thiscmd[3][0];
 		bstyle = cvt_style(thiscmd[4]);
 		float p7 = cvt_pttopt(cvt_tofloat(thiscmd[7])) / 2.0;
+		std::string p8 = cvt_tostring(thiscmd[8]);
 		std::string p9 = cvt_tostring(thiscmd[9]);
 
 		if (debug)
@@ -898,7 +899,7 @@ void epl2_class::process_line(
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-		pb.DrawBarcode(p2, p1, 0, p9, p7, p3);
+		pb.DrawBarcode(p2, p1, 0, p9, p7, p3, p8[0]);
 
 	}
 	else if (thiscmd[0] == "b")	// Barcode

@@ -24,19 +24,35 @@ int pdf_barcode::DrawBarcode(
 	int barcode_style,	//!< Carcodre style (code39, code128, etc.)
 	std::string &text,	//!< Text of barcode
 	float size,		//!< sie of brcode
-	char rotation		//!< Rotation (0=0, 1=90, 2=180, 3=270)
+	char rotation,		//!< Rotation (0=0, 1=90, 2=180, 3=270)
+	char hrcode		//!< Human readable text on barcode
 )
 {
 	struct zint_symbol *my_symbol;
 	my_symbol = ZBarcode_Create();
-//	my_symbol->symbology = BARCODE_EXCODE39;
 	if (barcode_style != 0)
 	{
 		my_symbol->symbology = barcode_style;
 	}
-//	my_symbol->height = size;
-//	my_symbol->whitespace_height = size;
-	my_symbol->show_hrt = 0;		// Hide text
+
+	//
+	// Human readable text on barcode?
+	//
+	if (hrcode == 'B')
+	{
+		if (debug)
+		{
+			std::cerr << "SHOWHRT = YES" << std::endl;
+		}
+	}
+	else
+	{
+		if (debug)
+		{
+			std::cerr << "SHOWHRT = NO" << std::endl;
+		}
+		my_symbol->show_hrt = 0;		// Hide text
+	}
 
 	//
 	// Set a save marker,
@@ -46,14 +62,15 @@ int pdf_barcode::DrawBarcode(
 	painter->Save();
 
 	//
-	// Set options
+	// onfigure transformations.
+	// - Rotation
+	// - Scaling/size
+	// - position
 	//
 	float a=1, b=0, c=0, d=1, e=x, f=y;	// Transformation matrix
 
 	switch(rotation)
 	{
-// [cos(x) sin(x) -sin(x) cos(x) 0 0]
-// 	Rotate image
 	case '0':	// 0 degrees
 		break;
 	case '3':	// 90 degrees
@@ -61,7 +78,6 @@ int pdf_barcode::DrawBarcode(
 		b = 1;
 		c = -1;
 		d = 0;
-//		e += 0.8 * size;	// epl2 position fix
 		break;
 	case '2':	// 180 degrees
 		a = -1;
@@ -74,11 +90,12 @@ int pdf_barcode::DrawBarcode(
 		b = -1;
 		c = 1;
 		d = 0;
-//		e -= 0.8 * size;	// epl2 position fix
 		break;
 	};
 
+	//
 	// Generate barcode
+	//
 	ZBarcode_Encode(my_symbol, (const unsigned char *)text.c_str(), 0);
 	ZBarcode_Buffer_Vector(my_symbol, /*rotate_angle*/ 0);
 
@@ -95,7 +112,7 @@ int pdf_barcode::DrawBarcode(
 	}
 
 	//
-	// Adjust size
+	// Adjust barcode size
 	//
 	float adjust = (size / my_symbol->height);
 	a = a * adjust;
@@ -103,8 +120,11 @@ int pdf_barcode::DrawBarcode(
 	c = c * adjust;
 	d = d * adjust;
 
-// std::cerr << "Transform: " << a << "," << b << "," <<
-// c << "," << d << "," << e << "," << f << std::endl;
+	if (debug)
+	{
+		std::cerr << "Transform: " << a << "," << b << "," <<
+			c << "," << d << "," << e << "," << f << std::endl;
+ 	}
 	painter->SetTransformationMatrix(a, b, c, d, e, f);
 
 	//

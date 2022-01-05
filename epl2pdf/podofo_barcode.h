@@ -46,7 +46,8 @@ public:
 		int barcode_style,
 		std::string &text,
 		float size,
-		char rotation
+		char rotation,
+		char hrcode
 	);
 
 	int place_barcode(
