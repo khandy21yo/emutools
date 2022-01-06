@@ -34,14 +34,19 @@ several features that will be necessary for actual use.
 This reads in the file 'source.epl2' and, by default, creates
 '/tmp/epl2pdf.pdf'. You can change this with the '-o' option.
 
+to run all of the test cases at once, you can use
+
+	./epl2pdf test*.epl2
+
 
 BUILDING
 
-This used the cmake package to build.
+This uses the "cmake" package to build.
 I am using it because it does not seem to break as often as
-the autoconf/automake backage does.
+autoconf/automake does.
 
-It is currently only been tested on Debian Linux.
+It is currently only been tested on Debian/test Linux.
+Please let me know if other systems have problems building.
 
 To Build, cd to the source directory and type
 
@@ -55,7 +60,7 @@ Output file is, by default /tmp/epl2pdf.pdf. If you run this under two different
 users, the program will fail due to file permissions. Remove thsise file before
 running program under a new user, or specify output using '-o'.
 
-Minimal implmentation of commands. Only a few EPL2 commands are handled.
+Minimal implmentation of commands. Only some EPL2 commands are handled.
 
 Incomplete implementations. Many features of the implemented operations are not
 handled yet.
@@ -68,9 +73,11 @@ which is different than PDFs color vector format. Some things,
 like XORing the objects with the background, is not possible.
 
 This program uses a specific font (Courier-Prime) for PDF, and not the
-actual EPL2 fonts. Character shapes and sizes are somewhat different.
+actual EPL2 iembeded fonts. I have not yet found a font that matches the
+EPL2 fonts better than this one, which is not that close.
+Character shapes and sizes are somewhat different.
 'Courier-Prime' just happens to be the bold courier font on my development
-machine (debian test).
+machine (Debian/test).
 
 It does not handle download fonts yet.
 
@@ -92,13 +99,13 @@ If you get the error
 then you probably already have a /tmp/epl2pdf.pdf file under another user.
 Remove it and try again.
 
-Page size is hardcoded.
+Page size for the PDF image is hardcoded.
 
 Barcodes not fully implemented.
 
 Leaves a blank page at end of prf file.
 
-Barcodes human readable text is not in a good place. Don't know why.
+Barcode human readable text is not in a good place. Don't know why.
 
 The message
 	Syntax Warning: Mismatch between font type and embedded font file
