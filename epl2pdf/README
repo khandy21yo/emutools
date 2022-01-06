@@ -100,3 +100,8 @@ Leaves a blank page at end of prf file.
 
 Barcodes human readable text is not in a good place. Don't know why.
 
+The message
+	Syntax Warning: Mismatch between font type and embedded font file
+has something to do with the way fonts are stored in the PDF file.
+It seems to be something about a type1 or a truetype flag in the PDF file.
+

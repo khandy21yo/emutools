@@ -610,7 +610,6 @@ void cmd_class::dump()
 //
 int  epl2_class::init_stream()
 {
-
 	//
 	// We need an utput file name.
 	// Force it if we have to.
@@ -665,6 +664,11 @@ void epl2_class::process_stream(
 //
 int epl2_class::finish_stream()
 {
+	//
+	// We have to flush out the last (blank) page,
+	// because podofo requires it.
+	// Can we work around this?
+	//
 	epl2.painter.FinishPage();
 
 	/*
@@ -716,7 +720,7 @@ void epl2_class::process_line(
 	}
 	// Check for immediate action commands
 
-	else if (thiscmd.size() == 0)
+	else if (thiscmd[0] == "")	// No command
 	{
 	}
 	else if (thiscmd[0] == "A")	// ASCII text
@@ -1297,7 +1301,7 @@ std::cerr << "Barcode2" << std::endl;
 	}
 	else				// Unhandled command
 	{
-std::cerr << "** Unparsed command **" << std::endl;
+std::cerr << "** Unparsed command: " << buffer << " ***" << std::endl;
 	}
 }
 
