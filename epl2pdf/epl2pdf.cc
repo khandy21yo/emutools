@@ -441,7 +441,7 @@ int main(int argc, const char **argv)
 	//
 	while (filename = poptGetArg(optCon))
 	{
-//		if (debug)
+		if (debug)
 		{
 			std::cerr << "File: " << filename << std::endl;
 		}
@@ -698,7 +698,10 @@ void epl2_class::process_line(
 	thiscmd.split_cmd(buffer);
 	thiscmd.minsize(1);
 
-	thiscmd.dump();
+	if (debug)
+	{
+		thiscmd.dump();
+	}
 
 	if (inform)
 	{
@@ -1122,7 +1125,6 @@ std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "N")	// New Page
 	{
-std::cerr << "New Page" << std::endl;
 		clear_history();
 	}
 	else if (thiscmd[0] == "P")	// Page
@@ -1134,7 +1136,6 @@ std::cerr << "New Page" << std::endl;
 		//
 		// Both parameters are currently igbored
 		//
-std::cerr << "Page" << std::endl;
 		thiscmd.minsize(3);
 		int p1 = cvt_toint(thiscmd.get(1));
 		//
