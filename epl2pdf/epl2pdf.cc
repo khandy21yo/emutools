@@ -128,6 +128,11 @@ public:
 					//!<  Name is currently hardcoded.
 	std::vector<std::string> history;
 					//!< Instruction history for this page.
+	std::map<std::string,
+		std::vector<std::string>>
+		forms;			//!< Storage for all forms
+	int inform;			//!< Are we in a form?
+	std::string informname;		//!< While inform, name of current form
 	int lock_history;		//!< Lock history during reuse to avoid
 					//!< endless loop
 	int lineno;			//!< Command line number.
@@ -145,6 +150,7 @@ public:
 		pFont = 0;		// Font
 		lock_history = 0;
 		lineno = 0;
+		inform = 0;
 	}
 	int init_stream();
 	void process_stream(std::istream &in);
@@ -690,12 +696,24 @@ void epl2_class::process_line(
 
 	// Split command into parsed blocks
 	thiscmd.split_cmd(buffer);
+	thiscmd.minsize(1);
 
 	thiscmd.dump();
 
+	if (inform)
+	{
+		if (thiscmd[0] == "FE")
+		{
+			inform--;
+		}
+		else
+		{
+			forms[informname].push_back(buffer);
+		}
+	}
 	// Check for immediate action commands
 
-	if (thiscmd.size() == 0)
+	else if (thiscmd.size() == 0)
 	{
 	}
 	else if (thiscmd[0] == "A")	// ASCII text
@@ -907,6 +925,48 @@ void epl2_class::process_line(
 		maybe_first();
 		push_history(buffer);
 std::cerr << "Barcode2" << std::endl;
+	}
+	else if (thiscmd[0] == "FE")	// End Form
+	{
+		inform--;
+	}
+	else if (thiscmd[0] == "FI")	// List Forms
+	{
+		std::cout << "Form Information" << std::endl;
+		std::cout << forms.size() << std::endl;
+
+		for (auto fn = forms.begin(); fn != forms.end(); fn++)
+		{
+			std::cout << fn->first << std::endl;
+		}
+	}
+	else if (thiscmd[0] == "FK")	// Clear Form
+	{
+		// p1 = Form name
+		thiscmd.minsize(10);
+		std::string p1 = cvt_tostring(thiscmd[1]);
+
+		forms.erase(p1);
+	}
+	else if (thiscmd[0] == "FR")	// Retrieve Form
+	{
+		// p1 = Form name
+		thiscmd.minsize(10);
+		std::string p1 = cvt_tostring(thiscmd[1]);
+		lock_history++;
+		process_list(forms[p1]);
+		lock_history--;
+	}
+	else if (thiscmd[0] == "FS")	// Store Form
+	{
+		// p1 = Form name
+		thiscmd.minsize(10);
+		std::string p1 = cvt_tostring(thiscmd[1]);
+
+		std::vector<std::string> emptya;
+		forms.insert(std::make_pair(p1, emptya));
+		inform++;
+		informname = p1;
 	}
 	else if (thiscmd[0] == "LE")	// Line draw XOR
 					// Don't know how to do xor in pdf,
