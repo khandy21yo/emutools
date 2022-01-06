@@ -928,10 +928,21 @@ std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "FE")	// End Form
 	{
-		inform--;
+		//
+		// This command should not get executed, unless there is
+		// a missing "FS" in the source.
+		//
+		if (inform > 0)
+		{
+			inform--;
+		}
 	}
 	else if (thiscmd[0] == "FI")	// List Forms
 	{
+		//!
+		//! \note FI: This sould output as a form, not to the
+		//! console.
+		//!
 		std::cout << "Form Information" << std::endl;
 		std::cout << forms.size() << std::endl;
 
@@ -939,6 +950,7 @@ std::cerr << "Barcode2" << std::endl;
 		{
 			std::cout << fn->first << std::endl;
 		}
+		std::cout << std::endl;
 	}
 	else if (thiscmd[0] == "FK")	// Clear Form
 	{
