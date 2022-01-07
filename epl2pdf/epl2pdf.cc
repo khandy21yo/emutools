@@ -66,6 +66,12 @@ int debug = 0;		//!< Are debugging messages enabled?
 //!
 //! \brief Container for parsing parsing epl2 commands.
 //!
+//! this class is used to parse out the individual parts of an
+//! epl2 command.
+//! Given a line containing a single epl2 command line, 
+//! it splits the command between the command line, and the individual
+//! comma seperated options.
+//!
 class cmd_class : public std::vector<std::string>
 {
 public:
@@ -83,7 +89,12 @@ public:
 	}
 
 	int split_cmd(const std::string &cmd);
-	//!\brief Get cmd item if available, else blank.
+
+	//!\brief Get cmd itemi as a std::string if available, else blank.
+	//!
+	//! Used to retrieve individual options without having to check
+	//! that the option actually exists.
+	//! This helps avoid the program from crashing.
 	//!
 	const std::string get(
 		int item)	//!< Item number to try for
@@ -101,9 +112,11 @@ public:
 };
 
 //!
-//! \brief Class to hold all the epl2 data together
+//! \brief Class to handle the EPL2 command parsing.
 //!
-//! Container for all of the epl2 data.
+//! Does the work of converting the EPL2 commands into PDF
+//! commands.
+//! This the the main class in this program.
 //!
 class epl2_class
 {
@@ -140,6 +153,9 @@ public:
 
 public:
 	//! \brief constructor
+	//!
+	//! Initializes the class for use.
+	//!
 	epl2_class()
 	{
 		dpi = 200.0;		// Dots per inch
@@ -159,12 +175,14 @@ public:
 
 	//!\brief process a list of commands
 	//!
-	//! This is used to reprint all commands that have occurred on a page.
-	//! It does this by storing all printing commands in 'history',
-	//! and then rerunning them from the saved buffer.
+	//! When given a list of EPL2 commands, 
+	//! executes the entire list.
+	//!
+	//! This is used to redo a page started without a 'N' command,
+	//! process forms, handle 'P' with multi-copies listed, etc.
 	//!
 	inline void process_list(
-		const std::vector<std::string> &buffer)	//!< List of EPL2 commands
+		const std::vector<std::string> &buffer)	//!< List conyaining EPL2 commands
 	{
 		for (auto item = buffer.begin(); item != buffer.end(); item++)
 		{
@@ -174,22 +192,37 @@ public:
 	//! \brief add command line to instruction history
 	//!
 	//! Stores all printing commands into 'history' for reuse if we need
-	//! to reprint thw page information.
+	//! to reprint the page information.
+	//! This history is used on pages that don't start with a 'N',
+	//! and for 'P' commands that ask for multiple copies.
 	//!
 	void push_history(std::string command)
 	{
+		//
+		// lock_history gets set to avoid adding to the historry when
+		// we are processing a previously stored list.
+		//
 		if (lock_history == 0)
 		{
 			history.push_back(command);
 		}
 	}
+
 	//!\brief clear history buffer.
+	//!
+	//! Clear the stored history.
+	//! Usually because a 'N' (clear page' command is issued.
 	//!
 	void clear_history()
 	{
 		history.clear();
 	}
+
 	//!\brief Handle things necessary when a new page starts.
+	//!
+	//! Handle when a new page is being started.
+	//! After a 'P' command, you can issue another 'P' command to reprint
+	//! the page by leaving out the 'N' to clear the page buffer.
 	//!
 	void maybe_first()
 	{
@@ -238,6 +271,7 @@ public:
 			return std::stof(p);
 		}
 	}
+
 	//!\brief Convert a std::string value to a integer
 	//!
 	//! If the string is blank, returns a default value,
@@ -263,6 +297,10 @@ public:
 
 	//!\brief Convert from EPl2 point measurement to PDF measurements
 	//!
+	//! EPL2 measures things in pixelss, normally at 203 pixelss to the inch,
+	//! while PDF measures things in points, at 72 points to the inch.
+	//! This converts from pixels to points.
+	//
 	inline float cvt_pttopt(
 		float p)		//< Value to be converted
 	{
@@ -276,6 +314,13 @@ public:
 
 	//!\brief Convert from EPl2 vertical position to PDF position`
 	//!
+	//! The EPL2 printer, in addition using a different measuring system,
+	//! also defines the (0,0) point differently.
+	//! EPL2 puts the (0,0) point at the top left of the label,
+	//! while PDF puts (0,0) at the bottom left of the label.
+	//! This converts the EPL2 point to the corresponding PDF onei
+	//! takinging the reference point into account.
+	//!
 	inline float cvt_vpostovpos(
 		float p)		//< Value to be converted
 	{
@@ -288,6 +333,10 @@ public:
 	}
 
 	//!\brief Convert from EPl2 horizontal position to PDF position`
+	//!
+	//! EPL2 and PDF agree that the horizontal for (0,0) is to the left
+	//! of the label.
+	//! This handles converting, and handling the referece point.
 	//!
 	inline float cvt_hpostohpos(
 		float p)		//< Value to be converted
@@ -367,15 +416,17 @@ void usage(
 // Some local variables
 //
 //!
-//! \brief We need one implementation of the epl2_class.
+//! \brief We only need one implementation of the epl2_class.
 //!
-//! This program (currently) emulates a single epl2  printer, This is it.
+//! This program emulates a single EPL  printer, This is it.
 //!
 static epl2_class epl2;
 
 
 //!
 //! \brief Main driver)
+//!
+//! Handles parsing the command line, and getting things started.
 //!
 int main(int argc, const char **argv)
 {
@@ -647,6 +698,9 @@ int  epl2_class::init_stream()
 //!
 //! \brief Scan an open stream for commands
 //!
+//! This is the main loop for processing a file.
+//! It reads in all lines, and processes the commands,
+//!
 void epl2_class::process_stream(
 	std::istream &in)		//!< Stream to read spl2 commands from
 {
@@ -660,7 +714,9 @@ void epl2_class::process_stream(
 }
 
 //! \brief Finish stream
-//
+//!
+//! Handles processes necessary to finish off the PDF file, and closes it.\
+//!
 int epl2_class::finish_stream()
 {
 	//
@@ -689,7 +745,8 @@ int epl2_class::finish_stream()
 
 //!\brief Process one EPL2 command
 //!
-//! Processes on EPL2 command line.
+//! This is the main function to process EPL2 commands.
+//! Processes one EPL2 command line.
 //!
 void epl2_class::process_line(
 	const std::string &buffer)	//!< Line to process

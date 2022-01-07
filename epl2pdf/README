@@ -110,3 +110,6 @@ The message
 has something to do with the way fonts are stored in the PDF file.
 It seems to be something about a type1 or a truetype flag in the PDF file.
 
+Changing the reference point in the middle of a page can cause problems
+on additional reprints. The original reference point is lost.
+
