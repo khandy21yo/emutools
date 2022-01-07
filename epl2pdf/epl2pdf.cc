@@ -195,6 +195,17 @@ public:
 	{
 		if (lineno == 0)
 		{
+			//
+			// Initialize for a podofo pdf output
+			//
+			pPage = document->CreatePage(
+				PdfPage::CreateStandardPageSize(ePdfPageSize_A4));
+			if( !pPage ) 
+			{
+				PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
+			}
+			painter.SetPage(pPage);
+
 			lineno++;
 			lock_history++;
 			process_list(history);
@@ -618,23 +629,11 @@ int  epl2_class::init_stream()
 	{
 		ofile = strdup("/tmp/epl2pdf.pdf");
 	}
-	//
-	// Initialize for a podofo pdf output
-	//
-	pPage = document->CreatePage(
-		PdfPage::CreateStandardPageSize(ePdfPageSize_A4));
-	if( !pPage ) 
-	{
-		PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
-	}
-	painter.SetPage(pPage);
 	pFont = document->CreateFont(EPL2_FONTNAME);
 	if( !pFont )
 	{
 		PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
 	}
-	pFont->SetFontSize(10.0);
-	painter.SetFont(pFont);
 
 	if (debug)
 	{
@@ -669,7 +668,10 @@ int epl2_class::finish_stream()
 	// because podofo requires it.
 	// Can we work around this?
 	//
-	epl2.painter.FinishPage();
+	if (pPage != 0)
+	{
+		epl2.painter.FinishPage();
+	}
 
 	/*
 	* Set some additional information on the PDF file.
@@ -764,43 +766,36 @@ void epl2_class::process_line(
 		case '1':
 			fsize = 6.0;
 			pFont->SetFontSize(fsize);
-//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '2':
 			fsize = 7.0;
 			pFont->SetFontSize(fsize);
-//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '3':
 			fsize = 9.0;
 			pFont->SetFontSize(fsize);
-//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '4':
 			fsize = 12.0;
 			pFont->SetFontSize(fsize);
-//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '5':
 			fsize = 24.0;
 			pFont->SetFontSize(fsize);
-//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '6':
 			fsize = 9.5;
 			pFont->SetFontSize(fsize);
-//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '7':
 			fsize = 9.5;
 			pFont->SetFontSize(fsize);
-//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		}
@@ -819,8 +814,6 @@ void epl2_class::process_line(
 		float a=1, b=0, c=0, d=1, e=p1, f=p2;	// Transformationmatrix
 		switch(p3)
 		{
-// [cos(x) sin(x) -sin(x) cos(x) 0 0]
-// 	Rotate image
 		case '0':	// 0 degrees
 			a = p6;
 			d = p5;
@@ -1148,22 +1141,24 @@ std::cerr << "Barcode2" << std::endl;
 		// Close current page
 		//
 		epl2.painter.FinishPage();
+		pPage = 0;
 
-		//
-		// Create new page
-		//
-		pPage = document->CreatePage(
-			PdfPage::CreateStandardPageSize(ePdfPageSize_A4));
-		if( !pPage ) 
-		{
-			PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
-		}
-		painter.SetPage(pPage);
 		//
 		// Handle additional pages
 		//
 		for (int loop = 2; loop <= p1; loop++)
 		{
+			//
+			// Create new page
+			//
+			pPage = document->CreatePage(
+				PdfPage::CreateStandardPageSize(ePdfPageSize_A4));
+			if( !pPage ) 
+			{
+				PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
+			}
+			painter.SetPage(pPage);
+
 			//
 			// Repaint data
 			//
@@ -1176,16 +1171,6 @@ std::cerr << "Barcode2" << std::endl;
 			//
 			epl2.painter.FinishPage();
 
-			//
-			// Create new page
-			//
-			pPage = document->CreatePage(
-				PdfPage::CreateStandardPageSize(ePdfPageSize_A4));
-			if( !pPage ) 
-			{
-				PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
-			}
-			painter.SetPage(pPage);
 		}
 		lineno = 0;
 	}

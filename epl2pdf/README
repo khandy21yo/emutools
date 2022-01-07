@@ -103,8 +103,6 @@ Page size for the PDF image is hardcoded.
 
 Barcodes not fully implemented.
 
-Leaves a blank page at end of prf file.
-
 Barcode human readable text is not in a good place. Don't know why.
 
 The message
