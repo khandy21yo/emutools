@@ -1141,7 +1141,6 @@ std::cerr << "Barcode2" << std::endl;
 		// Close current page
 		//
 		epl2.painter.FinishPage();
-		pPage = 0;
 
 		//
 		// Handle additional pages
@@ -1173,6 +1172,7 @@ std::cerr << "Barcode2" << std::endl;
 
 		}
 		lineno = 0;
+		pPage = 0;
 	}
 	else if (thiscmd[0] == "q")	// Set label width
 	{
