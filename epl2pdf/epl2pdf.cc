@@ -755,7 +755,7 @@ void epl2_class::process_line(
 		std::string p7 = cvt_tostring(thiscmd.get(7));
 		std::string p8 = cvt_tostring(thiscmd.get(8));
 
-		float fscale = p5 / p6 * 100.0;
+		float fscale = p5 / p6;
 		float fsize = 10.0;
 
 		//	1=6pt, 2=7pt, 3=10pt, 4=12pt, 5=24pt, 6=9.5pt, 7=9.5pt
@@ -763,44 +763,44 @@ void epl2_class::process_line(
 		{
 		case '1':
 			fsize = 6.0;
-			pFont->SetFontSize(fsize * p6);
-			pFont->SetFontScale(fscale);
+			pFont->SetFontSize(fsize);
+//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '2':
 			fsize = 7.0;
-			pFont->SetFontSize(fsize * p6);
-			pFont->SetFontScale(fscale);
+			pFont->SetFontSize(fsize);
+//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '3':
 			fsize = 9.0;
-			pFont->SetFontSize(fsize * p6);
-			pFont->SetFontScale(fscale);
+			pFont->SetFontSize(fsize);
+//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '4':
 			fsize = 12.0;
-			pFont->SetFontSize(fsize * p6);
-			pFont->SetFontScale(fscale);
+			pFont->SetFontSize(fsize);
+//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '5':
 			fsize = 24.0;
-			pFont->SetFontSize(fsize * p6);
-			pFont->SetFontScale(fscale);
+			pFont->SetFontSize(fsize);
+//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '6':
 			fsize = 9.5;
-			pFont->SetFontSize(fsize * p6);
-			pFont->SetFontScale(fscale);
+			pFont->SetFontSize(fsize);
+//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		case '7':
 			fsize = 9.5;
-			pFont->SetFontSize(fsize * p6);
-			pFont->SetFontScale(fscale);
+			pFont->SetFontSize(fsize);
+//			pFont->SetFontScale(fscale);
 			painter.SetFont(pFont);
 			break;
 		}
@@ -822,24 +822,26 @@ void epl2_class::process_line(
 // [cos(x) sin(x) -sin(x) cos(x) 0 0]
 // 	Rotate image
 		case '0':	// 0 degrees
+			a = p6;
+			d = p5;
 			f -= fsize;	// fudge position, shift from top to bottom.
 			break;
 		case '3':	// 90 degrees
 			a = 0;
-			b = 1;
-			c = -1;
+			b = p5;
+			c = -p6;
 			d = 0;
 			break;
 		case '2':	// 180 degrees
-			a = -1;
+			a = -p6;
 			b = 0;
 			c = 0;
-			d = -1;
+			d = -p5;
 			break;
 		case '1':	// 270 degrees
 			a = 0;
-			b = -1;
-			c = 1;
+			b = -p5;
+			c = p6;
 			d = 0;
 			e -= fsize;	// fudge position. Shift from top to bottom.
 			break;
