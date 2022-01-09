@@ -1258,6 +1258,7 @@ std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "R")	// Set reference Point
 	{
+		maybe_first();
 		push_history(buffer);
 		//
 		// P1 Horozintal reference point
