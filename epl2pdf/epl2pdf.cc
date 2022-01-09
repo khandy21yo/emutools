@@ -1182,6 +1182,14 @@ std::cerr << "Barcode2" << std::endl;
 	else if (thiscmd[0] == "N")	// New Page
 	{
 		clear_history();
+
+		// So reprint will start at proper place
+		//
+		history.push_back(
+			"R " +
+			std::to_string(href) +
+			"," +
+			std::to_string(vref));
 	}
 	else if (thiscmd[0] == "P")	// Page
 	{
