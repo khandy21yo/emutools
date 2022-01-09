@@ -686,12 +686,6 @@ int  epl2_class::init_stream()
 		PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
 	}
 
-	if (debug)
-	{
-		std::cerr << "Page size: " <<
-		       pPage->GetPageSize().GetHeight() << std::endl;
-	}
-
 	return 0;
 }
 
@@ -774,6 +768,10 @@ void epl2_class::process_line(
 		}
 		else
 		{
+			if (debug)
+			{
+				std::cerr << "Inform: " << buffer << std::endl;
+			}
 			forms[informname].push_back(buffer);
 		}
 	}
@@ -1008,6 +1006,16 @@ std::cerr << "Barcode2" << std::endl;
 		for (auto fn = forms.begin(); fn != forms.end(); fn++)
 		{
 			std::cout << fn->first << std::endl;
+
+//			if (debug)
+			{
+				for (auto fl = fn->second.begin();
+					fl != fn->second.end();
+					fl++)
+				{
+					std::cout << "..." << *fl << std::endl;
+				}
+			}
 		}
 		std::cout << std::endl;
 	}
@@ -1021,12 +1029,12 @@ std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "FR")	// Retrieve Form
 	{
+		maybe_first();
+
 		// p1 = Form name
 		thiscmd.minsize(10);
 		std::string p1 = cvt_tostring(thiscmd[1]);
-		lock_history++;
 		process_list(forms[p1]);
-		lock_history--;
 	}
 	else if (thiscmd[0] == "FS")	// Store Form
 	{
@@ -1035,6 +1043,7 @@ std::cerr << "Barcode2" << std::endl;
 		std::string p1 = cvt_tostring(thiscmd[1]);
 
 		std::vector<std::string> emptya;
+		forms.erase(p1);
 		forms.insert(std::make_pair(p1, emptya));
 		inform++;
 		informname = p1;
