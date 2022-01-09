@@ -1,3 +1,4 @@
+; Test line drawing
 N
 LO 50,100,400,20
 LO 50,200,400,20

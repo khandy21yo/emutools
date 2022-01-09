@@ -1,3 +1,4 @@
+; Test for reprint with reference point settings
 N
 A12,18,0,2,1,1,R,"MY COMPANY.NAME"
 A100,45,0,1,2,2,N,"MY PRICE"
@@ -8,3 +9,4 @@ FE
 FR TOFORM
 P
 P
+R 0,0

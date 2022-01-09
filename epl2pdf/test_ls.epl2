@@ -1,3 +1,5 @@
+; Test lidiagonal line
 N
 LS 10,10,20,200,200
+LS 10,200,20,200,200
 P1
