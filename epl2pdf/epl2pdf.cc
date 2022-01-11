@@ -150,6 +150,7 @@ public:
 					//!< endless loop
 	int lineno;			//!< Command line number.
 					//!< Used by maybefirst.
+	PdfRect pagesize;		//!< Page size to use
 
 public:
 	//! \brief constructor
@@ -167,6 +168,22 @@ public:
 		lock_history = 0;
 		lineno = 0;
 		inform = 0;
+
+		// Shouldn't there be an easier way?
+		pagesize.SetBottom(PdfPage::CreateStandardPageSize(
+			ePdfPageSize_Letter).GetBottom());
+		pagesize.SetLeft(PdfPage::CreateStandardPageSize(
+			ePdfPageSize_Letter).GetLeft());
+		pagesize.SetWidth(PdfPage::CreateStandardPageSize(
+			ePdfPageSize_Letter).GetWidth());
+		pagesize.SetHeight(PdfPage::CreateStandardPageSize(
+			ePdfPageSize_Letter).GetHeight());
+		{
+			std::cerr << "L" << pagesize.GetLeft() <<
+				" B" << pagesize.GetBottom() <<
+				" W" << pagesize.GetWidth() <<
+				" H" << pagesize.GetHeight() << std::endl;
+		}
 	}
 	int init_stream();
 	void process_stream(std::istream &in);
@@ -231,8 +248,7 @@ public:
 			//
 			// Initialize for a podofo pdf output
 			//
-			pPage = document->CreatePage(
-				PdfPage::CreateStandardPageSize(ePdfPageSize_Letter));
+			pPage = document->CreatePage(pagesize);
 			if( !pPage ) 
 			{
 				PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
@@ -1224,8 +1240,7 @@ std::cerr << "Barcode2" << std::endl;
 			//
 			// Create new page
 			//
-			pPage = document->CreatePage(
-				PdfPage::CreateStandardPageSize(ePdfPageSize_Letter));
+			pPage = document->CreatePage(pagesize);
 			if( !pPage ) 
 			{
 				PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
@@ -1250,11 +1265,44 @@ std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "q")	// Set label width
 	{
-		// Igbored for now
+		push_history(buffer);
+
+		thiscmd.minsize(2);
+		float p1 = cvt_pttopt(cvt_tofloat(thiscmd[1]));
+
+		pagesize.SetWidth(p1);
+
+//		if (debug)
+		{
+			std::cerr << "q Width = " << p1 << std::endl;
+			std::cerr << "L" << pagesize.GetLeft() <<
+				" B" << pagesize.GetBottom() <<
+				" W" << pagesize.GetWidth() <<
+				" H" << pagesize.GetHeight() << std::endl;
+		}
+
 	}
 	else if (thiscmd[0] == "Q")	// Set form length
 	{
-		// Igbored for now
+		push_history(buffer);
+
+		thiscmd.minsize(4);
+		float p1 = cvt_pttopt(cvt_tofloat(thiscmd[1]));
+		float p2 = cvt_pttopt(cvt_tofloat(thiscmd[2]));
+		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
+
+		//
+		// Yes, the SetWidth sets the height
+		//
+		pagesize.SetHeight(p1);
+//		if (debug)
+		{
+			std::cerr << "Q height = " << p1 << std::endl;
+			std::cerr << "L" << pagesize.GetLeft() <<
+				" B" << pagesize.GetBottom() <<
+				" W" << pagesize.GetWidth() <<
+				" H" << pagesize.GetHeight() << std::endl;
+		}
 	}
 	else if (thiscmd[0] == "R")	// Set reference Point
 	{

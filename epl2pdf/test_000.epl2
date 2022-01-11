@@ -1,0 +1,7 @@
+; Initilize EPL for tests.
+; Sets page size, etc.
+R 0,0
+; 4 X 6.5
+; 4*203 X 6.5*203  =  812 X 1320
+q 812
+Q 1320
