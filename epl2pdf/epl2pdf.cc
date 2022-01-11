@@ -232,7 +232,7 @@ public:
 			// Initialize for a podofo pdf output
 			//
 			pPage = document->CreatePage(
-				PdfPage::CreateStandardPageSize(ePdfPageSize_A4));
+				PdfPage::CreateStandardPageSize(ePdfPageSize_Letter));
 			if( !pPage ) 
 			{
 				PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
@@ -1225,7 +1225,7 @@ std::cerr << "Barcode2" << std::endl;
 			// Create new page
 			//
 			pPage = document->CreatePage(
-				PdfPage::CreateStandardPageSize(ePdfPageSize_A4));
+				PdfPage::CreateStandardPageSize(ePdfPageSize_Letter));
 			if( !pPage ) 
 			{
 				PODOFO_RAISE_ERROR( ePdfError_InvalidHandle );
@@ -1258,7 +1258,7 @@ std::cerr << "Barcode2" << std::endl;
 	}
 	else if (thiscmd[0] == "R")	// Set reference Point
 	{
-		maybe_first();
+//		maybe_first();
 		push_history(buffer);
 		//
 		// P1 Horozintal reference point
