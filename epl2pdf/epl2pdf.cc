@@ -178,6 +178,7 @@ public:
 			ePdfPageSize_Letter).GetWidth());
 		pagesize.SetHeight(PdfPage::CreateStandardPageSize(
 			ePdfPageSize_Letter).GetHeight());
+		if (debug)
 		{
 			std::cerr << "L" << pagesize.GetLeft() <<
 				" B" << pagesize.GetBottom() <<
@@ -448,6 +449,8 @@ int main(int argc, const char **argv)
 {
 	int c;			// popt command letter
 	const char *filename;	// File to process
+	float tmpwidth = 0.0;
+	float tmpheight = 0.0;
 
 	//
 	// Handle command line arguements
@@ -460,6 +463,10 @@ int main(int argc, const char **argv)
 			 "dots per inch", "BPS" },
 		{ "output", 'o', POPT_ARG_STRING, &epl2.ofile, 0,
 			 "utput file name", "filename" },
+		{ "width", 'w', POPT_ARG_FLOAT, &tmpwidth, 0,
+			 "Width of form", "points (1/72 inch)" },
+		{ "length", 'l', POPT_ARG_FLOAT, &tmpheight, 0,
+			 "Length of form", "points (1/72 inch)" },
 		{ "debug", 'd', POPT_ARG_NONE, 0, 'd',
 			 "debugging messages", "" },
 		POPT_AUTOHELP
@@ -484,6 +491,15 @@ int main(int argc, const char **argv)
 			debug = 1;
 			break;
 		}
+	}
+
+	if (tmpwidth != 0.0)
+	{
+		epl2.pagesize.SetWidth(tmpwidth);
+	}
+	if (tmpheight != 0.0)
+	{
+		epl2.pagesize.SetHeight(tmpheight);
 	}
 
 	//
@@ -1272,7 +1288,7 @@ std::cerr << "Barcode2" << std::endl;
 
 		pagesize.SetWidth(p1);
 
-//		if (debug)
+		if (debug)
 		{
 			std::cerr << "q Width = " << p1 << std::endl;
 			std::cerr << "L" << pagesize.GetLeft() <<
@@ -1295,7 +1311,7 @@ std::cerr << "Barcode2" << std::endl;
 		// Yes, the SetWidth sets the height
 		//
 		pagesize.SetHeight(p1);
-//		if (debug)
+		if (debug)
 		{
 			std::cerr << "Q height = " << p1 << std::endl;
 			std::cerr << "L" << pagesize.GetLeft() <<

@@ -2,9 +2,11 @@ epl2pdf
 
 DESCRIPTION
 
-This is a partia program to convert an epl2 file info a pdf file.
+This program convertss an EPL2 file info a pdf file.
+EPL2 is a printer command language used by Eltron/Zebra bar code
+printers. It does not implemsent any ZPL commands.
 It is, as yet, incomplete. It is still in development.
-But it is capable of handling some simple spl2 files.
+But it is capable of handling some simple spl2 command files.
 
 It uses popt to handle parsing the command line.
 My versions of getopt were just broken when I started this long ago.
@@ -15,7 +17,7 @@ features missing from other libraries.
 
 It uses the zint library to generate the barcodes.
 This library containg most, if not all, of the needed barcode
-formats necessary to implement the epl2 requirements.
+formats necessary to implement the EPL2 requirements.
 
 What commands are implemented re only partial at the moment,
 missing features as rotation and reverse-image.
@@ -26,17 +28,36 @@ It is only partiall at the moment.
 
 USAGE
 
+Usage: epl2pdf [OPTIONS]* <file.epl>
+  -p, --dpi=BPS                       dots per inch
+  -o, --output=filename               utput file name
+  -w, --width=points (1/72 inch)      Width of form
+  -l, --length=points (1/72 inch)     Length of form
+  -d, --debug                         debugging messages
+
+-p defines the EPL2 points per inch. Default value is 203. Some printers
+use 300. Other values are allowed, but do not match any existing printers.
+
+-o specified the output file. Default is '/tmp/epl2pdf.pdf'.
+
+-w specified the width of the label to use, in points. There are 72 points
+to the inch. Default is Letter size paper (8.5 inches).
+
+-l specifies the length of the label, in points. There are 72 points to the
+inch. Default is Letter size paper (11 inches, 792 points).
+
+
 The program is command line driven. It isn't complete yet, so is missing
 several features that will be necessary for actual use.
 
-	./epl2pdf source.epl2
+	./epl2pdf test_a.epl2
 
 This reads in the file 'source.epl2' and, by default, creates
 '/tmp/epl2pdf.pdf'. You can change this with the '-o' option.
 
-to run all of the test cases at once, you can use
+to run all of the test cases in the sources at once, you can use
 
-	./epl2pdf test*.epl2
+	./epl2pdf test*.epl2 -o test.pdf
 
 
 BUILDING
@@ -54,16 +75,15 @@ To Build, cd to the source directory and type
 	make
 
 
-KNOWN BUGS
+KNOWN BUGS/NOTES
 
-Output file is, by default /tmp/epl2pdf.pdf. If you run this under two different
-users, the program will fail due to file permissions. Remove thsise file before
-running program under a new user, or specify output using '-o'.
-
+All of the test file (test-*.epl2) in the distribution are those used to
+test/debug the programs commands. They are not meant to be useful in any
+way
 Minimal implmentation of commands. Only some EPL2 commands are handled.
 
 Incomplete implementations. Many features of the implemented operations are not
-handled yet.
+handled yet., but they give some idea as to which features have been implemented.
 
 Do not expect an exact match between the EPL2 output and the PDF
 output. There are many differences between them.
@@ -99,8 +119,6 @@ If you get the error
 then you probably already have a /tmp/epl2pdf.pdf file under another user.
 Remove it and try again.
 
-Page size for the PDF image is hardcoded.
-
 Barcodes not fully implemented.
 
 Barcode human readable text is not in a good place. Don't know why.
@@ -109,7 +127,4 @@ The message
 	Syntax Warning: Mismatch between font type and embedded font file
 has something to do with the way fonts are stored in the PDF file.
 It seems to be something about a type1 or a truetype flag in the PDF file.
-
-Changing the reference point in the middle of a page can cause problems
-on additional reprints. The original reference point is lost.
 
