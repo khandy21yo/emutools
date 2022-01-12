@@ -1009,11 +1009,45 @@ void epl2_class::process_line(
 		pb.DrawBarcode(p2, p1, 0, p9, p7, p3, p8[0]);
 
 	}
-	else if (thiscmd[0] == "b")	// Barcode
+	else if (thiscmd[0] == "b")	// Second Barcode
 	{
+std::cerr << "Barcode2" << std::endl;
 		maybe_first();
 		push_history(buffer);
-std::cerr << "Barcode2" << std::endl;
+		//
+		//	0 = normal, 1 = 90, 2 = 180. 3 = 270
+		// P1 Horozintal start position
+		// P2 Vertical start position
+		// P3 Barcode selection
+		// P4 - 
+		// P6  Text to be encoded
+		//
+		if (debug)
+		{
+			std::cerr << "Barcode1" << std::endl;
+		}
+		thiscmd.minsize(10);
+		int bstyle;
+		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
+		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
+		char p3 = thiscmd[3][0];
+		std::string p6 = cvt_tostring(thiscmd[6]);
+
+		if (debug)
+		{
+			std::cerr << "DrawBarcode: " << p1 << "," <<
+				p2 << "," << 0 << "," << p6 << std::endl;
+		}
+
+		pdf_barcode pb(document, &painter);
+		//
+		// "p2-f7": Since the epl2 points at the bottom of the
+		// barcode to print, when we switch it over to PDF it
+		// is now pointing at the top, so we must shift it back
+		// down to the bottom.
+		//
+		pb.DrawBarcode(p2, p1, 0, p6, 72.0, p3, 0);
+
 	}
 	else if (thiscmd[0] == "FE")	// End Form
 	{
