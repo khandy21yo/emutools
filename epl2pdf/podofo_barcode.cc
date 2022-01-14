@@ -117,23 +117,30 @@ int pdf_barcode::DrawBarcode(
 	//
 	// Adjust barcode size
 	//
-	float adjust = (size / my_symbol->height);
-	a = a * adjust;
-	b = b * adjust;
-	c = c * adjust;
-	d = d * adjust;
-
-	if (debug)
+	if (my_symbol->height != 0)
 	{
-		std::cerr << "Transform: " << a << "," << b << "," <<
-			c << "," << d << "," << e << "," << f << std::endl;
- 	}
-	painter->SetTransformationMatrix(a, b, c, d, e, f);
+		float adjust = (size / my_symbol->height);
+		a = a * adjust;
+		b = b * adjust;
+		c = c * adjust;
+		d = d * adjust;
 
-	//
-	// Draw barcode
-	//
-	place_barcode(my_symbol, y, x);
+		if (debug)
+		{
+			std::cerr << "Transform: " << a << "," << b << "," <<
+				c << "," << d << "," << e << "," << f << std::endl;
+		}
+		painter->SetTransformationMatrix(a, b, c, d, e, f);
+
+		//
+		// Draw barcode
+		//
+		place_barcode(my_symbol, y, x);
+	}
+	else
+	{
+		std::cerr << "Barcode failed" << std::endl;
+	}
 
 	//
 	// Finish, clean up, Restore from Save.
@@ -224,7 +231,7 @@ int pdf_barcode::place_barcode(
 		draw_circle(
 			circle->x,
 			circle->y,
-			circle->diameter);
+			circle->diameter / 2.0);
 		painter->Fill();
 		circle = circle->next;
 	}
