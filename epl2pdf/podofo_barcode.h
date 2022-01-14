@@ -28,8 +28,11 @@ using namespace PoDoFo;
 class pdf_barcode
 {
 private:
-	PdfDocument *document;
-	PdfPainter *painter;
+	PdfDocument *document;		//<! podofo document reference
+	PdfPainter *painter;		//!< podofo painter reference
+
+public:
+	struct zint_symbol *my_symbol;	//!< Symbol being built
 
 public:
 	pdf_barcode(				//!< Constructor
@@ -38,6 +41,7 @@ public:
 	{
 		document = mydocument;
 		painter = mypainter;
+		my_symbol = ZBarcode_Create();
 	};
 
 	int DrawBarcode(

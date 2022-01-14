@@ -7,6 +7,7 @@
 //! \author Kevin Handy, Sep 2021
 
 #include "podofo_barcode.h"
+#include <cstring>
 
 extern int debug;
 
@@ -28,12 +29,14 @@ int pdf_barcode::DrawBarcode(
 	char hrcode		//!< Human readable text on barcode
 )
 {
-	struct zint_symbol *my_symbol;
-	my_symbol = ZBarcode_Create();
 	if (barcode_style != 0)
 	{
 		my_symbol->symbology = barcode_style;
 	}
+
+//	my_symbol->primary = text.c_str();
+//	strncat(my_symbol->primary, text.c_str(), sizeof(my_symbol->primary));
+//	my_symbol->option_1 = 3;
 
 	//
 	// Human readable text on barcode?

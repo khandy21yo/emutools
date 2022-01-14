@@ -365,51 +365,9 @@ public:
 		//
 		return cvt_pttopt(p + href);
 	}
-	//!\brief Convert from EPl2 Barcode Style to ZINT style`
-	//!
-	inline float cvt_style(
-		std::string p)		//< Value to be converted
-	{
-		if (p == "" || p == "3")	// Code 39
-		{
-			return BARCODE_EXCODE39;
-		}
-		else if (p == "3C")		// Code 39 with check digit
-		{				// This isn't implemented yet
-			return BARCODE_EXCODE39;
-		}
-		else if (p == "9")		// Code 39 with check digit
-		{				// This isn't implemented yet
-			return BARCODE_CODE93;
-		}
-		else if (p == "0")		// Code 128 special shipping
-		{				//  container
-						// This isn't zint compatable
-
-			return BARCODE_CODE128;
-		}
-		else if (p == "1")		// Code 128 audo A,B,C
-		{
-			return BARCODE_CODE128;
-		}
-		else if (p == "1A")		// Code 128  A
-		{				// Not Zint Compatable
-			return BARCODE_CODE128;
-		}
-		else if (p == "1B")		// Code 128 B
-		{
-			return BARCODE_CODE128B;
-		}
-		else if (p == "1C")		// Code 128 C
-		{				// Not Zint Compatable
-			return BARCODE_CODE128;
-		}
-		else if (p == "K")		// Codabar
-		{
-			return BARCODE_CODABAR;
-		}
-		return BARCODE_EXCODE39;
-	}
+	float cvt_style(
+		std::string p,
+		pdf_barcode &pb);
 };
 
 //!
@@ -988,7 +946,6 @@ void epl2_class::process_line(
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		char p3 = thiscmd[3][0];
-		bstyle = cvt_style(thiscmd[4]);
 		float p7 = cvt_pttopt(cvt_tofloat(thiscmd[7])) / 2.0;
 		std::string p8 = cvt_tostring(thiscmd[8]);
 		std::string p9 = cvt_tostring(thiscmd[9]);
@@ -1006,6 +963,7 @@ void epl2_class::process_line(
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
+		bstyle = cvt_style(thiscmd[4], pb);
 		pb.DrawBarcode(p2, p1, 0, p9, p7, p3, p8[0]);
 
 	}
@@ -1020,7 +978,7 @@ std::cerr << "Barcode2" << std::endl;
 		// P2 Vertical start position
 		// P3 Barcode selection
 		// P4 - 
-		// P6  Text to be encoded
+		// P5  Text to be encoded
 		//
 		if (debug)
 		{
@@ -1031,12 +989,12 @@ std::cerr << "Barcode2" << std::endl;
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		char p3 = thiscmd[3][0];
-		std::string p6 = cvt_tostring(thiscmd[6]);
+		std::string p5 = cvt_tostring(thiscmd[5]);
 
 		if (debug)
 		{
 			std::cerr << "DrawBarcode: " << p1 << "," <<
-				p2 << "," << 0 << "," << p6 << std::endl;
+				p2 << "," << 0 << "," << p5 << std::endl;
 		}
 
 		pdf_barcode pb(document, &painter);
@@ -1046,7 +1004,8 @@ std::cerr << "Barcode2" << std::endl;
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-		pb.DrawBarcode(p2, p1, 0, p6, 72.0, p3, 0);
+		bstyle = cvt_style(thiscmd[3], pb);
+		pb.DrawBarcode(p2, p1, 0, p5, 72.0, p3, 0);
 
 	}
 	else if (thiscmd[0] == "FE")	// End Form
@@ -1502,3 +1461,58 @@ std::string epl2_class::cvt_tostring(
 
 	return result;
 }
+
+//!\brief Convert from EPl2 Barcode Style to ZINT style`
+//!
+float epl2_class::cvt_style(
+	std::string p,		//!< Value to be converted
+	pdf_barcode &pb)	//!< Symbol being munged
+{
+	float result = 0.0;
+
+	if (p == "" || p == "3")	// Code 39
+	{
+		result = pb.my_symbol->symbology = BARCODE_EXCODE39;
+	}
+	else if (p == "3C")		// Code 39 with check digit
+	{				// This isn't implemented yet
+		result = pb.my_symbol->symbology = BARCODE_EXCODE39;
+	}
+	else if (p == "9")		// Code 39 with check digit
+	{				// This isn't implemented yet
+		result = pb.my_symbol->symbology = BARCODE_CODE93;
+	}
+	else if (p == "0")		// Code 128 special shipping
+	{				//  container
+					// This isn't zint compatable
+
+		result = pb.my_symbol->symbology = BARCODE_CODE128;
+	}
+	else if (p == "1")		// Code 128 audo A,B,C
+	{
+		result = pb.my_symbol->symbology = BARCODE_CODE128;
+	}
+	else if (p == "1A")		// Code 128  A
+	{				// Not Zint Compatable
+		result = pb.my_symbol->symbology = BARCODE_CODE128;
+	}
+	else if (p == "1B")		// Code 128 B
+	{
+		result = pb.my_symbol->symbology = BARCODE_CODE128B;
+	}
+	else if (p == "1C")		// Code 128 C
+	{				// Not Zint Compatable
+		result = pb.my_symbol->symbology = BARCODE_CODE128;
+	}
+	else if (p == "K")		// Codabar
+	{
+		result = pb.my_symbol->symbology = BARCODE_CODABAR;
+	}
+	else if (p == "M")		// Codabar
+	{
+		result = pb.my_symbol->symbology = BARCODE_MAXICODE;
+	}
+
+	return result;
+}
+
