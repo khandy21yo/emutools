@@ -418,9 +418,9 @@ int main(int argc, const char **argv)
 	const struct poptOption optionsTable[] =
 	{
 		{ "dpi", 'p', POPT_ARG_INT, &epl2.dpi, 0,
-			 "dots per inch", "BPS" },
+			 "dots per inch", "pixels" },
 		{ "output", 'o', POPT_ARG_STRING, &epl2.ofile, 0,
-			 "utput file name", "filename" },
+			 "output file name", "filename" },
 		{ "width", 'w', POPT_ARG_FLOAT, &tmpwidth, 0,
 			 "Width of form", "points (1/72 inch)" },
 		{ "length", 'l', POPT_ARG_FLOAT, &tmpheight, 0,
@@ -1134,14 +1134,11 @@ std::cerr << "Barcode2" << std::endl;
 			", " << p4 << ")" << std::endl;
 		}
 
-//		painter.Save();				// Save current settings
-//		painter.SetColor(1.0, 1.0, 1.0);	// White
 		painter.Rectangle(p1,
 			p2,
 			p3,
 			-p4);
 		painter.Fill();
-//		painter.Restore();			// Restore settings
 	}
 	else if (thiscmd[0] == "LS")	// Line draw diagnol
 	{

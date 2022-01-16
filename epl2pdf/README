@@ -2,35 +2,23 @@ epl2pdf
 
 DESCRIPTION
 
-This program convertss an EPL2 file info a pdf file.
+This program converts an EPL2 file info a pdf file.
+
 EPL2 is a printer command language used by Eltron/Zebra bar code
-printers. It does not implemsent any ZPL commands.
+printers. It does not implement any ZPL commands.
 It is, as yet, incomplete. It is still in development.
 But it is capable of handling some simple spl2 command files.
 
-It uses popt to handle parsing the command line.
-My versions of getopt were just broken when I started this long ago.
-
-It uses the podofo library to handle the PDF utput. This is a poorly
-documented package, but it seems to have several necessary
-features missing from other libraries.
-
-It uses the zint library to generate the barcodes.
-This library containg most, if not all, of the needed barcode
-formats necessary to implement the EPL2 requirements.
-
-What commands are implemented re only partial at the moment,
-missing features as rotation and reverse-image.
-
-Expect bugs, missing sommands, etc.
-It is only partiall at the moment.
+Expect bugs, missing commands, etc. It should be sufficient to
+display a image to a user, but expect problems generating actual
+bar-codes, test first.
 
 
 USAGE
 
 Usage: epl2pdf [OPTIONS]* <file.epl>
   -p, --dpi=BPS                       dots per inch
-  -o, --output=filename               utput file name
+  -o, --output=filename               output file name
   -w, --width=points (1/72 inch)      Width of form
   -l, --length=points (1/72 inch)     Length of form
   -d, --debug                         debugging messages
@@ -75,15 +63,37 @@ To Build, cd to the source directory and type
 	make
 
 
+COMMANDS IMPLEMENTED
+
+These commands have been implemented, at least partially.
+
+	A, B, b, FE, FI, FK, FR, FS, LE, LO, LS, LW, N,
+	P, q, Q, R, X, ;
+
+Others may exist, depending on the completeness of this document.
+
+
 KNOWN BUGS/NOTES
+
+It uses the podofo library to handle the PDF output. This is a poorly
+documented package, but it seems to have the necessary features to
+implement the needed features.
+
+It uses the zint library to generate the bar-codes.
+This library contains most, if not all, of the needed bar-code
+formats necessary to implement the EPL2 requirements.
+Gnu-barcode has dropped the library portion, and does not
+implement many of the barcodes needed.
+
+It uses popt to handle parsing the command line.
+My versions of getopt were just broken when I started this long ago.
 
 All of the test file (test-*.epl2) in the distribution are those used to
 test/debug the programs commands. They are not meant to be useful in any
-way
-Minimal implmentation of commands. Only some EPL2 commands are handled.
+other way.
 
-Incomplete implementations. Many features of the implemented operations are not
-handled yet., but they give some idea as to which features have been implemented.
+Minimal implementation of commands. Not all of the EPL2 commands are
+implemented. Many features of the implemented commands are not handled.
 
 Do not expect an exact match between the EPL2 output and the PDF
 output. There are many differences between them.
@@ -93,19 +103,19 @@ which is different than PDFs color vector format. Some things,
 like XORing the objects with the background, is not possible.
 
 This program uses a specific font (Courier-Prime) for PDF, and not the
-actual EPL2 iembeded fonts. I have not yet found a font that matches the
+actual EPL2 imbedded fonts. I have not yet found a font that matches the
 EPL2 fonts better than this one, which is not that close.
 Character shapes and sizes are somewhat different.
 'Courier-Prime' just happens to be the bold courier font on my development
 machine (Debian/test).
 
-It does not handle download fonts yet.
+It does not handle download fonts.
 
-It does not handle variables (time, counters, variables) yet.
+It does not handle variables (time, counters, variables).
 
-It does not yet handle graphics yet.
+It does not yet handle graphics.
 
-It does not handle latge blobs of binary data yet.
+It does not handle large blobs of binary data.
 
 Converting from the EPL2 point dimensions to the PDF points can end up
 causing slight position and size issues. Objects can vary size and
@@ -119,12 +129,20 @@ If you get the error
 then you probably already have a /tmp/epl2pdf.pdf file under another user.
 Remove it and try again.
 
-Barcodes not fully implemented.
+Bar codes not fully implemented. Large list, little time.
 
-Barcode human readable text is not in a good place. Don't know why.
+Bar-code human readable text is not in a good place. Don't know why.
 
 The message
 	Syntax Warning: Mismatch between font type and embedded font file
 has something to do with the way fonts are stored in the PDF file.
 It seems to be something about a type1 or a truetype flag in the PDF file.
+
+These bar-codes  haven't been validated (scanned) to make sure they are
+actually correct. They look right, but some of them, like maxicode, have
+a lot of weirdness in the zint library to process them.
+
+Adjustments set for the width of the bars in a bar-code are ignored.
+Zint doesn't have the concept built in. Scaling the width might work as
+an approximation, but the amount to scale is complex estimate.
 

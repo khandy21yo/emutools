@@ -243,6 +243,9 @@ int pdf_barcode::place_barcode(
 				y + circle->colour << "," <<
 				circle->diameter << "," << std::endl;
  		}
+		//
+		//Switch to white
+		//
 		if ((circle->colour & 1) == 1)
 		{
 			painter->SetColor(1.0, 1.0, 1.0);
@@ -253,6 +256,9 @@ int pdf_barcode::place_barcode(
 			circle->diameter);
 		painter->Fill();
 
+		//
+		//Switch back to black
+		//
 		if ((circle->colour & 1) == 1)
 		{
 			painter->SetColor(0.0, 0.0, 0.0);
