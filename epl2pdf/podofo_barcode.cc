@@ -117,9 +117,16 @@ int pdf_barcode::DrawBarcode(
 	//
 	// Adjust barcode size
 	//
-	if (my_symbol->height != 0)
+	float height = my_symbol->height;
+	switch(my_symbol->symbology)
 	{
-		float adjust = (size / my_symbol->height);
+	case BARCODE_MAXICODE:	// Doesn't set height correctly. So we guess
+		height = 72;
+		break;
+	}
+	if (height != 0)
+	{
+		float adjust = (size / height);
 		a = a * adjust;
 		b = b * adjust;
 		c = c * adjust;
@@ -228,11 +235,28 @@ int pdf_barcode::place_barcode(
 	circle = symbol->vector->circles;
 	while (circle)
 	{
+		if (debug)
+		{
+			std::cerr << "draw_circle: " <<
+				x + circle->x << "," <<
+				y + circle->y << "," <<
+				y + circle->colour << "," <<
+				circle->diameter << "," << std::endl;
+ 		}
+		if ((circle->colour & 1) == 1)
+		{
+			painter->SetColor(1.0, 1.0, 1.0);
+		}
 		draw_circle(
 			circle->x,
 			circle->y,
-			circle->diameter / 2.0);
+			circle->diameter);
 		painter->Fill();
+
+		if ((circle->colour & 1) == 1)
+		{
+			painter->SetColor(0.0, 0.0, 0.0);
+		}
 		circle = circle->next;
 	}
 
@@ -282,7 +306,7 @@ int pdf_barcode::draw_hexagon(
 	painter->LineTo(cornerx, cornery + third * 2.0);		// |
 	painter->LineTo(cornerx + third, cornery + third * 3.0);	// /
 	painter->LineTo(cornerx + third * 2.0, cornery + third * 3.0);	// -
-	painter->LineTo(cornerx + third * 3.0, cornery + third * 2.0);	// \
+	painter->LineTo(cornerx + third * 3.0, cornery + third * 2.0);	// \.
 	painter->LineTo(cornerx + third * 3.0, cornery + third);	// |
 	painter->LineTo(cornerx + third * 2.0, cornery);		// /
 	painter->LineTo(cornerx + third * 1.0, cornery);		// -

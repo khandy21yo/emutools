@@ -365,7 +365,7 @@ public:
 		//
 		return cvt_pttopt(p + href);
 	}
-	float cvt_style(
+	int cvt_style(
 		std::string p,
 		pdf_barcode &pb);
 };
@@ -990,6 +990,7 @@ std::cerr << "Barcode2" << std::endl;
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		char p3 = thiscmd[3][0];
 		std::string p5 = cvt_tostring(thiscmd[5]);
+		float height = 72;
 
 		if (debug)
 		{
@@ -1005,7 +1006,7 @@ std::cerr << "Barcode2" << std::endl;
 		// down to the bottom.
 		//
 		bstyle = cvt_style(thiscmd[3], pb);
-		pb.DrawBarcode(p2, p1, 0, p5, 72.0, p3, 0);
+		pb.DrawBarcode(p2 - height, p1, 0, p5, height, p3, 0);
 
 	}
 	else if (thiscmd[0] == "FE")	// End Form
@@ -1464,11 +1465,12 @@ std::string epl2_class::cvt_tostring(
 
 //!\brief Convert from EPl2 Barcode Style to ZINT style`
 //!
-float epl2_class::cvt_style(
-	std::string p,		//!< Value to be converted
-	pdf_barcode &pb)	//!< Symbol being munged
+int epl2_class::cvt_style(
+	std::string p,		//!< EPL2 symbol value to be converted
+	pdf_barcode &pb)	//!< Symbol being created
 {
-	float result = 0.0;
+	int result = 0.0;
+	result = pb.my_symbol->symbology = BARCODE_EXCODE39;	// default
 
 	if (p == "" || p == "3")	// Code 39
 	{
