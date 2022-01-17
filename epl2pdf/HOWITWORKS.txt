@@ -1,0 +1,83 @@
+
+	HOW IT WORKS
+Converting EPL2 Documents to PDF
+
+INTRODUCTION
+
+	This document describes some of the considerations that need to be
+	made in the translation from EPL2 to PDDF.  It probably misses may
+	of the finer details, as it is just a rough overvire.
+
+DEFINITIONS
+
+	When the text refers to a "Page", that represents whatever form or
+	label used in the printer.
+
+SIZES USED
+
+	This is refering to the size of the units used to position items on
+	the page.
+
+	The EPL2 printers are based on pixels, of which there are either 203
+	per inch, or optionally 300 per inch, depending on the printer used.
+	This progran defaults to 203 because that seems to be how most of the
+	printers are configured out of the box.
+
+	PDF printers are based on points (which is a standard size
+	in typography, based on the size of a period)  of which there are 72
+	per inch.
+
+	So measurements must be adjusted to convert from pixels to points.
+	This is done by dividing by 203, then multiplying by 72.
+
+ORIGIN
+
+	This revers to where the (0,0) point is located.
+
+	EPL2 printers place the (0,0) point at the top left of the page.
+	Moving to (1,1) moves down one pixel and to the right one pixel.
+
+	PDF places the (0,0) at the bottom left of the page. Moving to
+	(1,1) requires moving up one poit, and to the right one point.
+
+	The horizontal positioning only needs the pixelto point adjustment,
+	but vertical position needs the pixel to point conversion, aas well
+	as an adjustment to switch the origin from the top to the bottom.
+
+	The vertical position is calculated as
+	"(page height) - (EPL_Y * 72 / 203)"
+
+FONTS
+
+	The fonts are the glyphs that are used to display text.
+
+	EPL2 fonts are fixed width bitmaps. The individual glyphs consist of
+	a two dimensional grid specifing which pixels to paint. They include
+	one pixel wide band arount=d the ehtore glyph. The reference point
+	for placing the glyph is the upper left corner, which is normally
+	one of the white border pixels.
+
+	PDF fonts are vecters, and this program prefers fixed width fonts,
+	such as a Courier font. They usually contain whitespace around the
+	glyphs, but are not pixel pased. The reference point is at the borrom
+	left of the base of the uppercase part of the letters. excluding
+	the whitespace.
+
+	Converting character positions is complicated.
+
+BARCODES
+
+	Barcodes refer to the machine readable codes generated the the "B" and
+	"b" commands.
+
+	EPL2 places the reference point at the to left of the symbol.
+
+	PDF placed the reference point at the bottom left of the symbol.
+
+ROTATION
+
+	The EPL2 command set allows for rotation by 0, 90, 180, 270 degrees.
+
+	While rotating, care must be taken to note the difference in the
+	reference point from the upper left to the lower left position.
+
