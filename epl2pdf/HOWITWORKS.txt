@@ -74,10 +74,30 @@ BARCODES
 
 	PDF placed the reference point at the bottom left of the symbol.
 
-ROTATION
+ROTATION AND SCALING
 
 	The EPL2 command set allows for rotation by 0, 90, 180, 270 degrees.
 
 	While rotating, care must be taken to note the difference in the
-	reference point from the upper left to the lower left position.
+	reference point from the EPL2 upper left to the PDF lower left 
+	position.
+
+	The rotations are handled using a "Transform Matrix" to relocate
+	the origin to the proper position, including any rotation and
+	scaling requested, and drawing the image based at (0,0) in the
+	transform matrix as if it wasn't rotated. After the object is
+	completed, the "Transform Matrix" is reverted back to normal.
+
+REVERSE TEXT
+
+	Epl2 can print text in reverse, that is a black background with 
+	white text. PDF can display white text, but does not automatically
+	add a black background, thus displaying white text on a white
+	background
+
+	To handle this, a black rectangle is displayed which covers the
+	area behind the text, then paints the white characters on top.
+
+	Adjustments must be made to the position of the bar so that the
+	fonts descenters are positioned properly.
 
