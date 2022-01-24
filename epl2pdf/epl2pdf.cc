@@ -805,7 +805,6 @@ void epl2_class::process_line(
 		std::string p7 = cvt_tostring(thiscmd.get(7));
 		std::string p8 = cvt_tostring(thiscmd.get(8));
 
-		float fscale = p5 / p6;
 		float fsize = 10.0;
 
 		//	1=6pt, 2=7pt, 3=10pt, 4=12pt, 5=24pt, 6=9.5pt, 7=9.5pt
@@ -863,7 +862,7 @@ void epl2_class::process_line(
 //		float asize =
 //			-painter.GetFont()->GetFontMetrics()->GetDescent();
 		float asize =
-			fsize;
+			fsize * p5;
 
 		//
 		// "p2-fsize": Since the epl2 points at the bottom of the

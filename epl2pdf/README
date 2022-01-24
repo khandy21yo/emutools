@@ -11,7 +11,7 @@ But it is capable of handling some simple spl2 command files.
 
 Expect bugs, missing commands, etc. It should be sufficient to
 display a image to a user, but expect problems generating actual
-bar-codes, test first.
+bar-codes. Test first.
 
 
 USAGE
@@ -35,7 +35,7 @@ to the inch. Default is Letter size paper (8.5 inches).
 inch. Default is Letter size paper (11 inches, 792 points).
 
 
-The program is command line driven. It isn't complete yet, so is missing
+The program is command line driven. It is incomplete yet, as it is missing
 several features that will be necessary for actual use.
 
 	./epl2pdf test_a.epl2
@@ -89,18 +89,18 @@ It uses popt to handle parsing the command line.
 My versions of getopt were just broken when I started this long ago.
 
 All of the test file (test-*.epl2) in the distribution are those used to
-test/debug the programs commands. They are not meant to be useful in any
-other way.
+test/debug the program. They are not meant to be useful in any other way.
 
 Minimal implementation of commands. Not all of the EPL2 commands are
-implemented. Many features of the implemented commands are not handled.
+implemented. Many features of the implemented commands are missing.
 
 Do not expect an exact match between the EPL2 output and the PDF
-output. There are many differences between them.
+output. There are many fundimental differennnces in the way EPL2 sees
+the world, and the way PDF sees it.
 
 EPL2 assumes that things are being created on a black/white bitmap,
-which is different than PDFs color vector format. Some things,
-like XORing the objects with the background, is not possible.
+PDFs assume colored vectors. Some things, like XORing the objects with
+the background, is not possible.
 
 This program uses a specific font (Courier-Prime) for PDF, and not the
 actual EPL2 imbedded fonts. I have not yet found a font that matches the
@@ -113,11 +113,11 @@ It does not handle download fonts.
 
 It does not handle variables (time, counters, variables).
 
-It does not yet handle graphics.
+It does not handle graphics.
 
 It does not handle large blobs of binary data.
 
-Converting from the EPL2 point dimensions to the PDF points can end up
+Converting from the EPL2 pixel dimensions to the PDF points can end up
 causing slight position and size issues. Objects can vary size and
 position by a pixel or two in the conversion.
 
@@ -129,9 +129,12 @@ If you get the error
 then you probably already have a /tmp/epl2pdf.pdf file under another user.
 Remove it and try again.
 
-Bar codes not fully implemented. Large list, little time.
+Bar codes not fully implemented or tested. Much has been done, but Zibt
+has may special "features" in many bar code symbologies. The barcodes are
+mostly just a minimal setup.
 
-Bar-code human readable text is not in a good place. Don't know why.
+Bar-code human readable text is not in a good place. Zint is doing odd
+things.
 
 The message
 	Syntax Warning: Mismatch between font type and embedded font file
@@ -144,5 +147,6 @@ a lot of weirdness in the zint library to process them.
 
 Adjustments set for the width of the bars in a bar-code are ignored.
 Zint doesn't have the concept built in. Scaling the width might work as
-an approximation, but the amount to scale is complex estimate.
+an approximation, but the amount to scale is complex due to the unknown
+size the barse are generated as currently.
 
