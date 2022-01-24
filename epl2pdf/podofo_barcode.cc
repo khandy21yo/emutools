@@ -75,32 +75,42 @@ int pdf_barcode::DrawBarcode(
 	switch(rotation)
 	{
 	case '0':	// 0 degrees
+		f -= size * 2.0;
 		break;
 	case '3':	// 90 degrees
 		a = 0;
 		b = 1;
 		c = -1;
 		d = 0;
+		e += size * 2.0;
 		break;
 	case '2':	// 180 degrees
 		a = -1;
 		b = 0;
 		c = 0;
 		d = -1;
+		f += size * 2.0;
 		break;
 	case '1':	// 270 degrees
 		a = 0;
 		b = -1;
 		c = 1;
 		d = 0;
+		e -= size * 2.0;
 		break;
 	};
 
 	//
 	// Generate barcode
 	//
-	ZBarcode_Encode(my_symbol, (const unsigned char *)text.c_str(), 0);
-	ZBarcode_Buffer_Vector(my_symbol, /*rotate_angle*/ 0);
+	int error = ZBarcode_Encode_and_Buffer_Vector(my_symbol,
+		(const unsigned char *)text.c_str(), 0, 0);
+	if (error)
+	{
+		std::cerr << "Barcode error: " <<
+			error << ":" <<
+			my_symbol->errtxt << std::endl;
+	}
 
 	if (debug)
 	{
@@ -142,7 +152,7 @@ int pdf_barcode::DrawBarcode(
 		//
 		// Draw barcode
 		//
-		place_barcode(my_symbol, y, x);
+		place_barcode(my_symbol);
 	}
 	else
 	{
@@ -167,11 +177,7 @@ int pdf_barcode::DrawBarcode(
 //! And heavily modified for this application.
 //!
 int pdf_barcode::place_barcode(
-	struct zint_symbol* symbol,	//!< Aint symbol interfce
-	int y,				//!< y position (not used.
-					//!< Handled using transformationmatrix)
-	int x				//!< x position (not used.
-					//!< Handled using transformationmatrix)
+	struct zint_symbol* symbol	//!< Aint symbol interfce
 )
 {
 	struct zint_vector_rect *rect;
@@ -181,8 +187,8 @@ int pdf_barcode::place_barcode(
 		if (debug)
 		{
 			std::cerr << "draw_rect: " <<
-				x + rect->x << "," <<
-				y + rect->y << "," <<
+				rect->x << "," <<
+				rect->y << "," <<
 				-rect->height << "," <<
 				rect->width << "," << std::endl;
  		}
@@ -190,7 +196,7 @@ int pdf_barcode::place_barcode(
 		draw_rect(
 			rect->y,
 			rect->x,
-			-rect->height,
+			rect->height,
 			rect->width);
 		painter->Fill();
 		rect = rect->next;
@@ -238,9 +244,9 @@ int pdf_barcode::place_barcode(
 		if (debug)
 		{
 			std::cerr << "draw_circle: " <<
-				x + circle->x << "," <<
-				y + circle->y << "," <<
-				y + circle->colour << "," <<
+				circle->x << "," <<
+				circle->y << "," <<
+				circle->colour << "," <<
 				circle->diameter << "," << std::endl;
  		}
 		//
@@ -291,12 +297,6 @@ int pdf_barcode::draw_hexagon(
 	float y,
 	float diameter)
 {
-//	pPainter->MoveTo( x, y );
-//	pPainter->LineTo( x+dWidth, y-dHeight );
-//	pPainter->LineTo( x-dWidth, y-dHeight );
-//	pPainter->ClosePath();
-//	pPainter->Fill();
-
 	float cornerx = x - diameter / 2.0;
 	float cornery = y - diameter / 2.0;
 	float third = diameter / 3.0;

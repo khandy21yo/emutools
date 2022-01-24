@@ -55,9 +55,7 @@ public:
 	);
 
 	int place_barcode(
-		struct zint_symbol *symbol ,
-		int y,
-		int x
+		struct zint_symbol *symbol
 	);
 
 private:
