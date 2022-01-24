@@ -1522,6 +1522,98 @@ int epl2_class::cvt_style(
 	{
 		result = pb.my_symbol->symbology = BARCODE_CODABAR;
 	}
+	else if (p == "E80")		// EAN8
+	{
+		result = pb.my_symbol->symbology = BARCODE_EANX;
+	}
+	else if (p == "E82")		// EAN8 2 digit add-on
+	{
+		result = pb.my_symbol->symbology = BARCODE_EANX;
+	}
+	else if (p == "E85")		// EAN8 5 gdigit add-on
+	{
+		result = pb.my_symbol->symbology = BARCODE_EANX;
+	}
+	else if (p == "E30")		// EAN13
+	{
+		result = pb.my_symbol->symbology = BARCODE_EANX;
+	}
+	else if (p == "E32")		// EAN13 2 digit add-on
+	{
+		result = pb.my_symbol->symbology = BARCODE_EANX;
+	}
+	else if (p == "E35")		// EAN813 5 gdigit add-on
+	{
+		result = pb.my_symbol->symbology = BARCODE_EANX;
+	}
+	else if (p == "2G")		// German post code
+	{
+		result = pb.my_symbol->symbology = BARCODE_DPLEIT;
+	}
+	else if (p == "2")		// Interleaved 2-of-5
+	{
+		result = pb.my_symbol->symbology = BARCODE_C25INTER;
+	}
+	else if (p == "2C")		// Interleaved 2-of-5
+	{
+		result = pb.my_symbol->symbology = BARCODE_C25INTER;
+	}
+	else if (p == "2D")		// Interleaved 2-of-5
+	{
+		result = pb.my_symbol->symbology = BARCODE_C25INTER;
+	}
+	else if (p == "P")		// Postnet
+	{
+		result = pb.my_symbol->symbology = BARCODE_POSTNET;
+	}
+	else if (p == "PL")		// Planet 11 & 13 digit
+	{
+		result = pb.my_symbol->symbology = BARCODE_PLANET;
+	}
+	else if (p == "J")		// Japenese Postnet
+	{
+		result = pb.my_symbol->symbology = BARCODE_JAPANPOST;
+	}
+	else if (p == "1E ")		// UCC/EAN 128
+	{
+		result = pb.my_symbol->symbology = BARCODE_EAN128;
+	}
+	else if (p == "UA0 ")		// UPC A
+	{
+		result = pb.my_symbol->symbology = BARCODE_UPCA;
+	}
+	else if (p == "UA2 ")		// UPC A + check digits
+	{
+		result = pb.my_symbol->symbology = BARCODE_UPCA_CHK;
+	}
+	else if (p == "UA5 ")		// UPC A + 5 digit add-on
+	{
+		result = pb.my_symbol->symbology = BARCODE_UPCA;
+	}
+	else if (p == "UE0 ")		// UPC E
+	{
+		result = pb.my_symbol->symbology = BARCODE_UPCE;
+	}
+	else if (p == "UE2 ")		// UPC E + check digits
+	{
+		result = pb.my_symbol->symbology = BARCODE_UPCE_CHK;
+	}
+	else if (p == "UE5 ")		// UPC E + 5 digit add-on
+	{
+		result = pb.my_symbol->symbology = BARCODE_UPCE;
+	}
+	else if (p == "2U")		// UPC Interleaved 2-of-5
+	{
+		result = pb.my_symbol->symbology = BARCODE_C25INTER;
+	}
+	else if (p == "P")		// MSI Plessy
+	{
+		result = pb.my_symbol->symbology = BARCODE_MSI_PLESSEY;
+	}
+	else if (p == "M")		// MSI Plessy
+	{
+		result = pb.my_symbol->symbology = BARCODE_MSI_PLESSEY;
+	}
 
 	return result;
 }
