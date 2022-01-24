@@ -1614,6 +1614,25 @@ int epl2_class::cvt_style(
 	{
 		result = pb.my_symbol->symbology = BARCODE_MSI_PLESSEY;
 	}
+	else if (p == "R14")		// RSSS 14
+	{
+		result = pb.my_symbol->symbology = BARCODE_RSS14;
+	}
+	else if (p == "RL")		// RSSS 14 Limited
+	{
+		result = pb.my_symbol->symbology = BARCODE_DBAR_LTD;
+//		result = pb.my_symbol->symbology = BARCODE_RSS14;
+	}
+	else if (p == "RS")		// RSSS 14 Stacked
+	{
+//		result = pb.my_symbol->symbology = BARCODE_DBAR_EXP;
+		result = pb.my_symbol->symbology = BARCODE_RSS14;
+	}
+	else if (p == "RT")		// RSSS 14 Truncated
+	{
+//		result = pb.my_symbol->symbology = BARCODE_RSS14;
+		result = pb.my_symbol->symbology = BARCODE_RSS14;
+	}
 
 	return result;
 }
