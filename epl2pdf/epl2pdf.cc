@@ -1478,6 +1478,13 @@ std::string epl2_class::cvt_tostring(
 
 //!\brief Convert from EPl2 Barcode Style to ZINT style`
 //!
+//! EPL2 uses a text string to define which barcode to use.
+//! Zint uses an integer constant to define the barcode to use.
+//! This attempts to convert from EPL2 strings to Zint numbers,
+//! and to do any special operations required for the specific barcode.
+//!
+//! This operates on the "B" style barcodes.
+//!
 int epl2_class::cvt_style(
 	std::string p,		//!< EPL2 symbol value to be converted
 	pdf_barcode &pb)	//!< Symbol being created
@@ -1639,6 +1646,13 @@ int epl2_class::cvt_style(
 }
 
 //!\brief Convert from EPl2 Barcode Style to ZINT style`
+//!
+//! EPL2 uses a text string to define which barcode to use.
+//! Zint uses an integer constant to define the barcode to use.
+//! This attempts to convert from EPL2 strings to Zint numbers,
+//! and to do any special operations required for the specific barcode.
+//!
+//! This operates on the "b" style barcodes.
 //!
 int epl2_class::cvt_styleb(
 	std::string p,		//!< EPL2 symbol value to be converted
