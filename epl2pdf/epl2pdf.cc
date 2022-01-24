@@ -1627,9 +1627,29 @@ int epl2_class::cvt_styleb(
 	int result = 0.0;
 	result = pb.my_symbol->symbology = BARCODE_EXCODE39;	// default
 
-	if (p == "M")		// Codabar
+	if (p == "A")		// Aztec
+	{
+		result = pb.my_symbol->symbology = BARCODE_AZTEC;
+	}
+	else if (p == "AZ")		// Aztec Mesa
+	{
+		result = pb.my_symbol->symbology = BARCODE_AZTEC;
+	}
+	else if (p == "D")		// Data Matrix
+	{
+		result = pb.my_symbol->symbology = BARCODE_DATAMATRIX;
+	}
+	else if (p == "M")		// Codabar
 	{
 		result = pb.my_symbol->symbology = BARCODE_MAXICODE;
+	}
+	else if (p == "P")		// pdf417
+	{
+		result = pb.my_symbol->symbology = BARCODE_PDF417;
+	}
+	else if (p == "Q")		// qrcode
+	{
+		result = pb.my_symbol->symbology = BARCODE_QRCODE;
 	}
 
 	return result;
