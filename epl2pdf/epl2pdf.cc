@@ -861,8 +861,10 @@ void epl2_class::process_line(
 //			painter.GetFont()->GetFontMetrics()->GetAscent();
 //		float asize =
 //			-painter.GetFont()->GetFontMetrics()->GetDescent();
+//		float asize =
+//			fsize * p5;
 		float asize =
-			fsize * p5;
+			painter.GetFont()->GetFontMetrics()->GetAscent() * p5;
 
 		//
 		// "p2-fsize": Since the epl2 points at the bottom of the
