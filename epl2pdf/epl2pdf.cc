@@ -368,6 +368,9 @@ public:
 	int cvt_style(
 		std::string p,
 		pdf_barcode &pb);
+	int cvt_styleb(
+		std::string p,
+		pdf_barcode &pb);
 };
 
 //!
@@ -850,6 +853,18 @@ void epl2_class::process_line(
 			std::cerr << "Text (" <<  p1 << ", " << p2 <<
 			       	")" << std::endl;
 		}
+
+//		float asize =
+//			fsize +
+//			painter.GetFont()->GetFontMetrics()->GetDescent();
+//		float asize =
+//			fsize +
+//			painter.GetFont()->GetFontMetrics()->GetAscent();
+//		float asize =
+//			-painter.GetFont()->GetFontMetrics()->GetDescent();
+		float asize =
+			fsize;
+
 		//
 		// "p2-fsize": Since the epl2 points at the bottom of the
 		// characters to print, when we switch it over to PDF it
@@ -862,7 +877,7 @@ void epl2_class::process_line(
 		case '0':	// 0 degrees
 			a = p6;
 			d = p5;
-			f -= fsize;	// fudge position, shift from top to bottom.
+			f -= asize;	// fudge position, shift from top to bottom.
 			break;
 		case '3':	// 90 degrees
 			a = 0;
@@ -881,7 +896,7 @@ void epl2_class::process_line(
 			b = -p5;
 			c = p6;
 			d = 0;
-			e -= fsize;	// fudge position. Shift from top to bottom.
+			e -= asize;	// fudge position. Shift from top to bottom.
 			break;
 		};
 		if (debug)
@@ -1005,7 +1020,7 @@ std::cerr << "Barcode2" << std::endl;
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-		bstyle = cvt_style(thiscmd[3], pb);
+		bstyle = cvt_styleb(thiscmd[3], pb);
 		pb.DrawBarcode(p2 - height, p1, 0, p5, height, p3, 0);
 
 	}
@@ -1507,7 +1522,20 @@ int epl2_class::cvt_style(
 	{
 		result = pb.my_symbol->symbology = BARCODE_CODABAR;
 	}
-	else if (p == "M")		// Codabar
+
+	return result;
+}
+
+//!\brief Convert from EPl2 Barcode Style to ZINT style`
+//!
+int epl2_class::cvt_styleb(
+	std::string p,		//!< EPL2 symbol value to be converted
+	pdf_barcode &pb)	//!< Symbol being created
+{
+	int result = 0.0;
+	result = pb.my_symbol->symbology = BARCODE_EXCODE39;	// default
+
+	if (p == "M")		// Codabar
 	{
 		result = pb.my_symbol->symbology = BARCODE_MAXICODE;
 	}
