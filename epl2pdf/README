@@ -21,6 +21,7 @@ Usage: epl2pdf [OPTIONS]* <file.epl>
   -o, --output=filename               output file name
   -w, --width=points (1/72 inch)      Width of form
   -l, --length=points (1/72 inch)     Length of form
+  -f, --output=font name              font to use
   -d, --debug                         debugging messages
 
 -p defines the EPL2 points per inch. Default value is 203. Some printers

@@ -10,6 +10,7 @@
 #include <cstring>
 
 extern int debug;
+const char *EPL2_FONTNAME = "Courier Prime";
 
 //!\brief Draw a barcode on current page
 //!

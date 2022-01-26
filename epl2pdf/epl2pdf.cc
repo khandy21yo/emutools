@@ -19,29 +19,6 @@
 //
 
 
-//
-// PDF transform matrix
-//
-// a scale in x
-// b rotation
-// c rotation
-// d scale in y
-// e translate in x
-// f translate in y
-//
-// [1 0 0 1 tx ty]
-// 	Translate (move) image base to tx ty
-// [sx 0 0 sy 0 0]
-// 	Scale image (resize based on sx sy)
-// [cos(x) sin(x) -sin(x) cos(x) 0 0]
-// 	Rotate image
-// [1 tan(x)  tan(b) 1 0 0]
-// 	skews the x by (x) and the y by (y)
-//
-//
-//
-//
-//
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -428,6 +405,8 @@ int main(int argc, const char **argv)
 			 "Width of form", "points (1/72 inch)" },
 		{ "length", 'l', POPT_ARG_FLOAT, &tmpheight, 0,
 			 "Length of form", "points (1/72 inch)" },
+		{ "output", 'f', POPT_ARG_STRING, &EPL2_FONTNAME, 0,
+			 "font to use", "font name" },
 		{ "debug", 'd', POPT_ARG_NONE, 0, 'd',
 			 "debugging messages", "" },
 		POPT_AUTOHELP
