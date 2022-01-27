@@ -1004,6 +1004,16 @@ std::cerr << "Barcode2" << std::endl;
 		pb.DrawBarcode(p2 - height, p1, 0, p5, height, p3, 0);
 
 	}
+	else if (thiscmd[0] == "D")	// Density
+	{
+		//
+		// What should we do with this density setting?
+		// We currently just do B/W.
+		// Should we greyscale?
+		//
+		thiscmd.minsize(2);
+		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
+	}
 	else if (thiscmd[0] == "FE")	// End Form
 	{
 		//
