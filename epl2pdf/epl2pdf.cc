@@ -344,13 +344,7 @@ public:
 	}
 	int cvt_style(
 		std::string p,
-		pdf_barcode &pb,
-		cmd_class &thiscmd);
-	int cvt_styleb(
-		std::string p,
-		pdf_barcode &pb,
-		cmd_class &thiscmd,
-		std::string &text);
+		pdf_barcode &pb);
 };
 
 //!
@@ -955,13 +949,12 @@ void epl2_class::process_line(
 		}
 
 		pdf_barcode pb(document, &painter);
+
+		bstyle = cvt_style(thiscmd[4], pb);
+
 		//
-		// "p2-f7": Since the epl2 points at the bottom of the
-		// barcode to print, when we switch it over to PDF it
-		// is now pointing at the top, so we must shift it back
-		// down to the bottom.
+		// Generate and place the barcode
 		//
-		bstyle = cvt_style(thiscmd[4], pb, thiscmd);
 		pb.DrawBarcode(p2, p1, 0, p9, p7, p3, p8[0]);
 
 	}
@@ -986,13 +979,13 @@ std::cerr << "Barcode2" << std::endl;
 		int bstyle;
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
-		char p3 = thiscmd[3][0];
+		std::string p = thiscmd[3];
 		//
 		// The barcode data to encode is in the last field.
 		// It can vlost in the 'b' style barcodes.
 		//
 		std::string text = cvt_tostring(thiscmd[thiscmd.size() - 1]);
-		float height = 72;
+		float height = 72;	// Desired height
 
 		if (debug)
 		{
@@ -1001,14 +994,42 @@ std::cerr << "Barcode2" << std::endl;
 		}
 
 		pdf_barcode pb(document, &painter);
+
+		// was in cvt_sty;eb, but the settings are weird enough
+		// that we must have access to all the variables to correctly
+		// parse the parameters.
 		//
-		// "p2-f7": Since the epl2 points at the bottom of the
-		// barcode to print, when we switch it over to PDF it
-		// is now pointing at the top, so we must shift it back
-		// down to the bottom.
+		if (p == "A")		// Aztec
+		{
+			pb.my_symbol->symbology = BARCODE_AZTEC;
+		}
+		else if (p == "AZ")		// Aztec Mesa
+		{
+			pb.my_symbol->symbology = BARCODE_AZTEC;
+		}
+		else if (p == "D")		// Data Matrix
+		{
+			pb.my_symbol->symbology = BARCODE_DATAMATRIX;
+		}
+		else if (p == "M")		// MaxiCode
+		{
+			pb.my_symbol->symbology = BARCODE_MAXICODE;
+			height = 72;
+		}
+		else if (p == "P")		// pdf417
+		{
+			pb.my_symbol->symbology = BARCODE_PDF417;
+		}
+		else if (p == "Q")		// qrcode
+		{
+			pb.my_symbol->symbology = BARCODE_QRCODE;
+		}
+
 		//
-		bstyle = cvt_styleb(thiscmd[3], pb, thiscmd, text);
-		pb.DrawBarcode(p2 - height, p1, 0, text, height, p3, 0);
+		// Generate and place the barcode
+		//
+//		pb.DrawBarcode(p2 - height, p1, 0, text, height, '0', 0);
+		pb.DrawBarcode(p2 + height, p1, 0, text, height, '0', 0);
 
 	}
 	else if (thiscmd[0] == "D")	// Density
@@ -1483,8 +1504,7 @@ std::string epl2_class::cvt_tostring(
 //!
 int epl2_class::cvt_style(
 	std::string p,		//!< EPL2 symbol value to be converted
-	pdf_barcode &pb,	//!< Symbol being created
-	cmd_class &thiscmd)	//!< Command arguemenys
+	pdf_barcode &pb)	//!< Symbol being created
 {
 	int result = 0.0;
 	result = pb.my_symbol->symbology = BARCODE_EXCODE39;	// default
@@ -1642,57 +1662,4 @@ int epl2_class::cvt_style(
 	return result;
 }
 
-//!\brief Convert from EPl2 Barcode Style to ZINT style`
-//!
-//! EPL2 uses a text string to define which barcode to use.
-//! Zint uses an integer constant to define the barcode to use.
-//! This attempts to convert from EPL2 strings to Zint numbers,
-//! and to do any special operations required for the specific barcode.
-//!
-//! This operates on the "b" style barcodes.
-//!
-int epl2_class::cvt_styleb(
-	std::string p,		//!< EPL2 symbol value to be converted
-	pdf_barcode &pb,	//!< Symbol being created
-	cmd_class &thiscmd,	//!< command arguements
-	std::string &text)	//!< Barcode text field, returned value
-				//!< All the 'B' put the data in sifferent
-				//!< fields.
-{
-	int result = 0.0;
-	result = pb.my_symbol->symbology = BARCODE_EXCODE39;	// default
-
-	if (p == "A")		// Aztec
-	{
-		result = pb.my_symbol->symbology = BARCODE_AZTEC;
-//		text = cvt_tostring(thiscmd[9]);
-	}
-	else if (p == "AZ")		// Aztec Mesa
-	{
-		result = pb.my_symbol->symbology = BARCODE_AZTEC;
-//		text = cvt_tostring(thiscmd[12]);
-	}
-	else if (p == "D")		// Data Matrix
-	{
-		result = pb.my_symbol->symbology = BARCODE_DATAMATRIX;
-//		text = cvt_tostring(thiscmd[8]);
-	}
-	else if (p == "M")		// MaxiCode
-	{
-		result = pb.my_symbol->symbology = BARCODE_MAXICODE;
-//		text = cvt_tostring(thiscmd[6]);
-	}
-	else if (p == "P")		// pdf417
-	{
-		result = pb.my_symbol->symbology = BARCODE_PDF417;
-//		text = cvt_tostring(thiscmd[16]);
-	}
-	else if (p == "Q")		// qrcode
-	{
-		result = pb.my_symbol->symbology = BARCODE_QRCODE;
-//		text = cvt_tostring(thiscmd[9]);
-	}
-
-	return result;
-}
 

@@ -25,7 +25,7 @@ int pdf_barcode::DrawBarcode(
 	float x,		//!< x position of barcode
 	int barcode_style,	//!< Carcodre style (code39, code128, etc.)
 	std::string &text,	//!< Text of barcode
-	float size,		//!< sie of brcode
+	float size,		//!< desired height of brcode
 	char rotation,		//!< Rotation (0=0, 1=90, 2=180, 3=270)
 	char hrcode		//!< Human readable text on barcode
 )
