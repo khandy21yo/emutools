@@ -344,10 +344,13 @@ public:
 	}
 	int cvt_style(
 		std::string p,
-		pdf_barcode &pb);
+		pdf_barcode &pb,
+		cmd_class &thiscmd);
 	int cvt_styleb(
 		std::string p,
-		pdf_barcode &pb);
+		pdf_barcode &pb,
+		cmd_class &thiscmd,
+		std::string &text);
 };
 
 //!
@@ -958,7 +961,7 @@ void epl2_class::process_line(
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-		bstyle = cvt_style(thiscmd[4], pb);
+		bstyle = cvt_style(thiscmd[4], pb, thiscmd);
 		pb.DrawBarcode(p2, p1, 0, p9, p7, p3, p8[0]);
 
 	}
@@ -979,18 +982,22 @@ std::cerr << "Barcode2" << std::endl;
 		{
 			std::cerr << "Barcode1" << std::endl;
 		}
-		thiscmd.minsize(10);
+//		thiscmd.minsize(17);	// we can't use this here
 		int bstyle;
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		char p3 = thiscmd[3][0];
-		std::string p5 = cvt_tostring(thiscmd[5]);
+		//
+		// The barcode data to encode is in the last field.
+		// It can vlost in the 'b' style barcodes.
+		//
+		std::string text = cvt_tostring(thiscmd[thiscmd.size() - 1]);
 		float height = 72;
 
 		if (debug)
 		{
 			std::cerr << "DrawBarcode: " << p1 << "," <<
-				p2 << "," << 0 << "," << p5 << std::endl;
+				p2 << "," << 0 << "," << text << std::endl;
 		}
 
 		pdf_barcode pb(document, &painter);
@@ -1000,8 +1007,8 @@ std::cerr << "Barcode2" << std::endl;
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-		bstyle = cvt_styleb(thiscmd[3], pb);
-		pb.DrawBarcode(p2 - height, p1, 0, p5, height, p3, 0);
+		bstyle = cvt_styleb(thiscmd[3], pb, thiscmd, text);
+		pb.DrawBarcode(p2 - height, p1, 0, text, height, p3, 0);
 
 	}
 	else if (thiscmd[0] == "D")	// Density
@@ -1476,7 +1483,8 @@ std::string epl2_class::cvt_tostring(
 //!
 int epl2_class::cvt_style(
 	std::string p,		//!< EPL2 symbol value to be converted
-	pdf_barcode &pb)	//!< Symbol being created
+	pdf_barcode &pb,	//!< Symbol being created
+	cmd_class &thiscmd)	//!< Command arguemenys
 {
 	int result = 0.0;
 	result = pb.my_symbol->symbology = BARCODE_EXCODE39;	// default
@@ -1645,7 +1653,11 @@ int epl2_class::cvt_style(
 //!
 int epl2_class::cvt_styleb(
 	std::string p,		//!< EPL2 symbol value to be converted
-	pdf_barcode &pb)	//!< Symbol being created
+	pdf_barcode &pb,	//!< Symbol being created
+	cmd_class &thiscmd,	//!< command arguements
+	std::string &text)	//!< Barcode text field, returned value
+				//!< All the 'B' put the data in sifferent
+				//!< fields.
 {
 	int result = 0.0;
 	result = pb.my_symbol->symbology = BARCODE_EXCODE39;	// default
@@ -1653,26 +1665,32 @@ int epl2_class::cvt_styleb(
 	if (p == "A")		// Aztec
 	{
 		result = pb.my_symbol->symbology = BARCODE_AZTEC;
+//		text = cvt_tostring(thiscmd[9]);
 	}
 	else if (p == "AZ")		// Aztec Mesa
 	{
 		result = pb.my_symbol->symbology = BARCODE_AZTEC;
+//		text = cvt_tostring(thiscmd[12]);
 	}
 	else if (p == "D")		// Data Matrix
 	{
 		result = pb.my_symbol->symbology = BARCODE_DATAMATRIX;
+//		text = cvt_tostring(thiscmd[8]);
 	}
-	else if (p == "M")		// Codabar
+	else if (p == "M")		// MaxiCode
 	{
 		result = pb.my_symbol->symbology = BARCODE_MAXICODE;
+//		text = cvt_tostring(thiscmd[6]);
 	}
 	else if (p == "P")		// pdf417
 	{
 		result = pb.my_symbol->symbology = BARCODE_PDF417;
+//		text = cvt_tostring(thiscmd[16]);
 	}
 	else if (p == "Q")		// qrcode
 	{
 		result = pb.my_symbol->symbology = BARCODE_QRCODE;
+//		text = cvt_tostring(thiscmd[9]);
 	}
 
 	return result;
