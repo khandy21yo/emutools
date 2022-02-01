@@ -15,24 +15,6 @@ find_package(POPT)
 find_library(Zint zint)
 
 add_executable(
-	podofo_hello
-	podofo_hello.cc
-	podofo_barcode.cc
-)
-# The podofo library doesn't include useful things like a cmake config file
-# so we have to handle this manually, which will probably break.
-#target_include_directories(
-#	podofo_hello
-#	PRIVATE ${PoDoFo_INCLUDE_DIRS}
-#)
-target_link_libraries(
-	podofo_hello
-#	${PoDoFo_LIBRARIES}
-	-lpodofo
-	${Zint}
-)
-
-add_executable(
 	epl2pdf
 	epl2pdf.cc
 	podofo_barcode.cc
