@@ -151,3 +151,5 @@ Zint doesn't have the concept built in. Scaling the width might work as
 an approximation, but the amount to scale is complex due to the unknown
 size the barse are generated as currently.
 
+Does not handle "Code Pages".
+

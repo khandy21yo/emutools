@@ -1441,6 +1441,16 @@ std::cerr << "Barcode2" << std::endl;
 		painter.Fill();
 
 	}
+	else if (thiscmd[0] == "ZB")	// Flip entire page 180 degrees
+	{
+		// Not handled yet
+		push_history(buffer);
+	}
+	else if (thiscmd[0] == "ZT")	// Flip entire page 0 degree cancel ZB
+	{
+		// Not handled yet
+		push_history(buffer);
+	}
 	else if (thiscmd[0] == ";")	// Comment
 	{
 		// Comment. do nothing.
