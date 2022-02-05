@@ -102,6 +102,8 @@ public:
 	char *ofile;	//!< File to process
 	float href;	//!< Horizontal Rederence poinnt (epl)
 	float vref;	//< Vertical Reference point (epl)
+	float fadj;	//!< Adjustment for woth of characters to get
+			//!< closer to EPL2 hight/width.
 
 	//
 	// PODOFO pdf objects
@@ -145,6 +147,7 @@ public:
 		lock_history = 0;
 		lineno = 0;
 		inform = 0;
+		fadj = 0.93;
 
 		// Shouldn't there be an easier way?
 		pagesize.SetBottom(PdfPage::CreateStandardPageSize(
@@ -404,6 +407,8 @@ int main(int argc, const char **argv)
 			 "Length of form", "points (1/72 inch)" },
 		{ "output", 'f', POPT_ARG_STRING, &EPL2_FONTNAME, 0,
 			 "font to use", "font name" },
+		{ "fadjust", 'a', POPT_ARG_FLOAT, &epl2.fadj, 0,
+			 "Adjustment for font width", "% adjustment"},
 		{ "debug", 'd', POPT_ARG_NONE, 0, 'd',
 			 "debugging messages", "" },
 		POPT_AUTOHELP
@@ -852,28 +857,28 @@ void epl2_class::process_line(
 		switch(p3)
 		{
 		case '0':	// 0 degrees
-			a = p6;
-			d = p5;
+			a = p5 * fadj;
+			d = p6;
 			f -= asize;	// fudge position, shift from top to bottom.
 			break;
-		case '3':	// 90 degrees
+		case '1':	// 270 degrees
 			a = 0;
-			b = p5;
-			c = -p6;
+			b = -p5 * fadj;
+			c = p6;
 			d = 0;
+			e -= asize;	// fudge position. Shift from top to bottom.
 			break;
 		case '2':	// 180 degrees
 			a = -p6;
 			b = 0;
 			c = 0;
-			d = -p5;
+			d = -p5 * fadj;
 			break;
-		case '1':	// 270 degrees
+		case '3':	// 90 degrees
 			a = 0;
-			b = -p5;
+			b = -p5 * fadj;
 			c = p6;
 			d = 0;
-			e -= asize;	// fudge position. Shift from top to bottom.
 			break;
 		};
 		if (debug)
