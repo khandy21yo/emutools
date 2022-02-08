@@ -153,3 +153,9 @@ size the barse are generated as currently.
 
 Does not handle "Code Pages".
 
+"N" command only works at beginning of page.
+
+ZB, ZT not implemented yet. Will only work at start of page.
+	Is it worth implementing? Mutch mucking around with the 
+	transformation matrix code would be necessary.
+
