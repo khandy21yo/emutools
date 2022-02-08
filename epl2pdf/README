@@ -22,6 +22,7 @@ Usage: epl2pdf [OPTIONS]* <file.epl>
   -w, --width=points (1/72 inch)      Width of form
   -l, --length=points (1/72 inch)     Length of form
   -f, --output=font name              font to use
+  -a, --fadjust=% adjustment          Adjustment for font width
   -d, --debug                         debugging messages
 
 -p defines the EPL2 points per inch. Default value is 203. Some printers
@@ -34,6 +35,13 @@ to the inch. Default is Letter size paper (8.5 inches).
 
 -l specifies the length of the label, in points. There are 72 points to the
 inch. Default is Letter size paper (11 inches, 792 points).
+
+-f allows specifying another font to use instead of courier.
+
+-a is used to adjust the width of the characters, in order to make them
+more closely match the EPL2's hight/width. This is a multiplier, so a
+enter of 0.75 would make the font 1/4 smaller, and 1.5 would make it
+50% larger.
 
 
 The program is command line driven. It is incomplete yet, as it is missing
