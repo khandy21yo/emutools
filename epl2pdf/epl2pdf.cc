@@ -965,7 +965,6 @@ void epl2_class::process_line(
 	}
 	else if (thiscmd[0] == "b")	// Second Barcode
 	{
-std::cerr << "Barcode2" << std::endl;
 		maybe_first();
 		push_history(buffer);
 		//
@@ -978,7 +977,7 @@ std::cerr << "Barcode2" << std::endl;
 		//
 		if (debug)
 		{
-			std::cerr << "Barcode1" << std::endl;
+			std::cerr << "Barcode2" << std::endl;
 		}
 //		thiscmd.minsize(17);	// we can't use this here
 		int bstyle;

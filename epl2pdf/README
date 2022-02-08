@@ -161,3 +161,6 @@ size the barse are generated as currently.
 
 Does not handle "Code Pages".
 
+depending on which version of zint, the circles in maxicode may come
+out as one black circle.
+

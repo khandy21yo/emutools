@@ -250,7 +250,7 @@ int pdf_barcode::place_barcode(
 				circle->x << "," <<
 				circle->y << "," <<
 				circle->colour << "," <<
-				circle->diameter << "," << std::endl;
+				circle->diameter << std::endl;
  		}
 		//
 		//Switch to white
