@@ -129,15 +129,35 @@ int pdf_barcode::DrawBarcode(
 	// Adjust barcode size
 	//
 	float height = my_symbol->height;
+#if 1
 	switch(my_symbol->symbology)
 	{
 	case BARCODE_MAXICODE:	// Doesn't set height correctly. So we guess
-		height = 72;
+//		// Maxicode claims to be 165 points high (<2 inch)
+//		// but 72 (1in) is a much more accurate size.
+//		std::cerr << "Maxiheight = " << height << std::endl;
+		height = 65;
+//		height /= 2;
+		break;
+	case BARCODE_PDF417:
+		// This adjustment seems to help, but it's just a guess
+		height *= 2;
 		break;
 	}
+#endif
 
+	//
+	// A height of zero usually means the barcode didn't properly
+	// generate.
+	//
 	if (height != 0)
 	{
+		//
+		// This adjust resizes the barcode from the height zint
+		// generated to the height we want. This doesn't work
+		// right for 2d (b) barcodes that don't have a fixed
+		// height.
+		//
 		float adjust = (size / height);
 		a = a * adjust;
 		b = b * adjust;
