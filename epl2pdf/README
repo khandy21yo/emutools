@@ -164,3 +164,9 @@ Does not handle "Code Pages".
 depending on which version of zint, the circles in maxicode may come
 out as one black circle.
 
+"N" command only works at beginning of page.
+
+ZB, ZT not implemented yet. Will only work at start of page.
+	Is it worth implementing? Mutch mucking around with the 
+	transformation matrix code would be necessary.
+
