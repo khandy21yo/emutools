@@ -63,6 +63,12 @@ FONTS
 	left of the base of the uppercase part of the letters. excluding
 	the whitespace.
 
+	The widths of the fonts used c an also differ. The width of PDF fonts
+	are ofter wider than the corresponding EPL2 fonts, which can cause
+	text to extend farther. The -fadjust can be used to reduce this
+	problem by scaling the width of the PDF font, without changing its
+	height.
+
 	Converting character positions is complicated.
 
 BARCODES
