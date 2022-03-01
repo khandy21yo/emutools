@@ -107,3 +107,26 @@ REVERSE TEXT
 	Adjustments must be made to the position of the bar so that the
 	fonts descenters are positioned properly.
 
+
+GETTING SAMPLE EPL2 FILES
+
+	I would recommend storing your samples in a text file for easier
+	editing/reusing for experimenting. Retyping the same command list
+	over and over is error prone.
+
+	EPL2 Manual
+
+		You can use a PDF viewer that allows you to cut/paste the
+		examples, or simple type them in manually. Don't forget that
+		a "P" (page) command is required at the end of the file to
+		cause them to print.
+
+	FedEx Server
+
+		Go to the directory
+
+			C:\FedEx\Fedex_LabelBuffer
+
+		The files there are your labels with the name based on the
+		tracking number.
+
