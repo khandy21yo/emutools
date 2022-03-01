@@ -953,14 +953,17 @@ void epl2_class::process_line(
 				p2 << "," << 0 << "," << p9 << "." << p7 << std::endl;
 		}
 
-		pdf_barcode pb(document, &painter);
+		if (p9 != "")
+		{
+			pdf_barcode pb(document, &painter);
 
-		bstyle = cvt_style(thiscmd[4], pb);
+			bstyle = cvt_style(thiscmd[4], pb);
 
-		//
-		// Generate and place the barcode
-		//
-		pb.DrawBarcode(p2, p1, 0, p9, p7, p3, p8[0]);
+			//
+			// Generate and place the barcode
+			//
+			pb.DrawBarcode(p2, p1, 0, p9, p7, p3, p8[0]);
+		}
 
 	}
 	else if (thiscmd[0] == "b")	// Second Barcode
@@ -1496,6 +1499,10 @@ std::string epl2_class::cvt_tostring(
 		case '\\':		// May go bad with malformed strings
 			loop++;
 			result += p[loop];
+			break;
+
+		case '\n':		// Drop line termination characters
+		case '\r':
 			break;
 
 		default:
