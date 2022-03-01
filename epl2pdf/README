@@ -170,3 +170,6 @@ ZB, ZT not implemented yet. Will only work at start of page.
 	Is it worth implementing? Mutch mucking around with the 
 	transformation matrix code would be necessary.
 
+There are cases where an EPL2 printer will generate bad barcodes, auch as
+a Code128 without any data, or a Codabar with the wrong number of characters, 
+but Zint just reports an error an refuses to generate bad barcodes.
