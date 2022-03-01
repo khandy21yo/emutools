@@ -111,6 +111,7 @@ int pdf_barcode::DrawBarcode(
 		std::cerr << "Barcode error: " <<
 			error << ":" <<
 			my_symbol->errtxt << std::endl;
+		return error;
 	}
 
 	if (debug)
