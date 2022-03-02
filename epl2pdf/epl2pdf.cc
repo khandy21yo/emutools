@@ -138,7 +138,7 @@ public:
 	//!
 	epl2_class()
 	{
-		dpi = 200.0;		// Dots per inch
+		dpi = 203.0;		// Dots per inch
 		document = 0;		// Not yet created
 		ofile = 0;		// Not yet parsed
 		href = 0.0;		// Reference point
@@ -1045,6 +1045,8 @@ void epl2_class::process_line(
 		// What should we do with this density setting?
 		// We currently just do B/W.
 		// Should we greyscale?
+		//
+		// p1 = density (1-15). default 7-10 (depending on model).
 		//
 		thiscmd.minsize(2);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
