@@ -405,7 +405,7 @@ int main(int argc, const char **argv)
 			 "Width of form", "points (1/72 inch)" },
 		{ "length", 'l', POPT_ARG_FLOAT, &tmpheight, 0,
 			 "Length of form", "points (1/72 inch)" },
-		{ "output", 'f', POPT_ARG_STRING, &EPL2_FONTNAME, 0,
+		{ "font", 'f', POPT_ARG_STRING, &EPL2_FONTNAME, 0,
 			 "font to use", "font name" },
 		{ "fadjust", 'a', POPT_ARG_FLOAT, &epl2.fadj, 0,
 			 "Adjustment for font width", "% adjustment"},
