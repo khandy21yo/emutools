@@ -405,7 +405,7 @@ int main(int argc, const char **argv)
 			 "Width of form", "points (1/72 inch)" },
 		{ "length", 'l', POPT_ARG_FLOAT, &tmpheight, 0,
 			 "Length of form", "points (1/72 inch)" },
-		{ "output", 'f', POPT_ARG_STRING, &EPL2_FONTNAME, 0,
+		{ "font", 'f', POPT_ARG_STRING, &EPL2_FONTNAME, 0,
 			 "font to use", "font name" },
 		{ "fadjust", 'a', POPT_ARG_FLOAT, &epl2.fadj, 0,
 			 "Adjustment for font width", "% adjustment"},
@@ -845,7 +845,7 @@ void epl2_class::process_line(
 //		float asize =
 //			fsize * p5;
 		float asize =
-			painter.GetFont()->GetFontMetrics()->GetAscent() * p5;
+			painter.GetFont()->GetFontMetrics()->GetAscent() * p6;
 
 		//
 		// "p2-fsize": Since the epl2 points at the bottom of the
@@ -856,11 +856,6 @@ void epl2_class::process_line(
 		float a=1, b=0, c=0, d=1, e=p1, f=p2;	// Transformationmatrix
 		switch(p3)
 		{
-		case '0':	// 0 degrees
-			a = p5 * fadj;
-			d = p6;
-			f -= asize;	// fudge position, shift from top to bottom.
-			break;
 		case '1':	// 270 degrees
 			a = 0;
 			b = -p5 * fadj;
@@ -879,6 +874,11 @@ void epl2_class::process_line(
 			b = -p5 * fadj;
 			c = p6;
 			d = 0;
+			break;
+		default:	// 0 degrees
+			a = p5 * fadj;
+			d = p6;
+			f -= asize;	// fudge position, shift from top to bottom.
 			break;
 		};
 		if (debug)
