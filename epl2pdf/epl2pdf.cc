@@ -802,7 +802,7 @@ void epl2_class::process_line(
 			painter.SetFont(pFont);
 			break;
 		case '3':
-			fsize = 9.0;
+			fsize = 10.0;
 			pFont->SetFontSize(fsize);
 			painter.SetFont(pFont);
 			break;
@@ -817,12 +817,12 @@ void epl2_class::process_line(
 			painter.SetFont(pFont);
 			break;
 		case '6':
-			fsize = 9.5;
+			fsize = 12;
 			pFont->SetFontSize(fsize);
 			painter.SetFont(pFont);
 			break;
 		case '7':
-			fsize = 9.5;
+			fsize = 12;
 			pFont->SetFontSize(fsize);
 			painter.SetFont(pFont);
 			break;
