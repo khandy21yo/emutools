@@ -108,6 +108,19 @@ REVERSE TEXT
 	fonts descenters are positioned properly.
 
 
+FONTS
+
+	epl2pdf can use any system fonts (TrueType or Type-1), but does
+	better with monospaced fonts (usually have 'Mono' in the name).
+
+	The height to width size can also be important, but this can be
+	adjusted to some extent using the '-s' option.
+
+	Another issue is the whitespace (leading) ath the top of the
+	characters. EPL2 has one 'pixel' ath hthe top and bottom of the
+	fonts, wheil the TrueType and type-1 may have greater spaging.
+
+
 GETTING SAMPLE EPL2 FILES
 
 	I would recommend storing your samples in a text file for easier

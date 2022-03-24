@@ -38,7 +38,8 @@ inch. Default is Letter size paper (11 inches, 792 points).
 
 -f allows specifying another font to use instead of "courier prime".
 Some fonts thay you may prefer include "IBM Plex Mono SemiBold",
-"Aerial Mono".
+"Aerial Mono". A mono-spaced font usually works better at matching
+actual labels than a non-mono font.
 
 -a is used to adjust the width of the characters, in order to make them
 more closely match the EPL2's hight/width. This is a multiplier, so a
