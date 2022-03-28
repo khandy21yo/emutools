@@ -40,6 +40,46 @@ using namespace PoDoFo;
 //
 int debug = 0;		//!< Are debugging messages enabled?
 
+//!\brief class used to paarse 2d option lists
+//!
+//! This is a helper class used furing the parsing of 2d barcode
+//! parameters.
+//!
+class tdmap : public std::map<std::string, std::string>
+{
+public:
+	//!\brief get a value if it exists
+	//!
+	//! If option exists in the table, returns that value,
+	//! otherwise returns a default value.
+	//!
+	std::string getparam(
+		const std::string &code,	//!< Code to scan for
+		const std::string &value)	//!<  Default value
+	{
+		auto search = this->find(code);
+		if ( search != this->end())
+		{
+			return search->second;
+		}
+		else
+		{
+			return value;
+		}
+	}
+	
+	//!\brief Was an option specified
+	//!
+	//! If code exists in the table, returns true else returns false
+	//!
+	bool exists(
+		const std::string &code)	//!< Code to scan for
+	{
+		auto search = this->find(code);
+		return ( search != this->end());
+	}
+};
+
 //!
 //! \brief Container for parsing parsing epl2 commands.
 //!
@@ -992,7 +1032,7 @@ void epl2_class::process_line(
 		// Parse 2d parameters
 		// Maps the option valyue to the option character.
 		//
-		std::map<std::string, std::string> tdparam;
+		tdmap tdparam;
 		for (int loop = 4; loop < thiscmd.size() - 2; loop++)
 		{
 			tdparam[thiscmd[loop].substr(0,1)] =
