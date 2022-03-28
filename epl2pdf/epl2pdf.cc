@@ -987,6 +987,18 @@ void epl2_class::process_line(
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		std::string p = thiscmd[3];
+
+		//
+		// Parse 2d parameters
+		// Maps the option valyue to the option character.
+		//
+		std::map<std::string, std::string> tdparam;
+		for (int loop = 4; loop < thiscmd.size() - 2; loop++)
+		{
+			tdparam[thiscmd[loop].substr(0,1)] =
+				thiscmd[loop].substr(1);
+		}
+
 		//
 		// The barcode data to encode is in the last field.
 		// It can vlost in the 'b' style barcodes.
