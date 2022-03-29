@@ -52,7 +52,8 @@ public:
 		std::string &text,
 		float size,
 		char rotation,
-		char hrcode
+		char hrcode,
+		float tdadjust = 0.0
 	);
 
 	int place_barcode(

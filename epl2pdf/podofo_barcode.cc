@@ -27,7 +27,8 @@ int pdf_barcode::DrawBarcode(
 	std::string &text,	//!< Text of barcode
 	float size,		//!< desired height of brcode
 	char rotation,		//!< Rotation (0=0, 1=90, 2=180, 3=270)
-	char hrcode		//!< Human readable text on barcode
+	char hrcode,		//!< Human readable text on barcode
+	float tdadjust		//!< Scaling for 2d barcodes, because they are weird.
 )
 {
 	float adjust = 0.0;
@@ -153,7 +154,11 @@ int pdf_barcode::DrawBarcode(
 	// A height of zero usually means the barcode didn't properly
 	// generate.
 	//
-	if (height != 0)
+	if (tdadjust!= 0.0)
+	{
+		adjust = tdadjust;
+	}
+	else if (height != 0)
 	{
 		//
 		// This adjust resizes the barcode from the height zint
