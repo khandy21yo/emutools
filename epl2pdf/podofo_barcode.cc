@@ -133,7 +133,7 @@ int pdf_barcode::DrawBarcode(
 	//
 	float height = my_symbol->height;
 
-#if 1
+#if 0
 	switch(my_symbol->symbology)
 	{
 	case BARCODE_MAXICODE:	// Doesn't set height correctly. So we guess
@@ -154,9 +154,10 @@ int pdf_barcode::DrawBarcode(
 	// A height of zero usually means the barcode didn't properly
 	// generate.
 	//
-	if (tdadjust!= 0.0)
+	if (tdadjust != 0.0)
 	{
 		adjust = tdadjust;
+std::cerr << "tdadj = " << tdadjust << std::endl;
 	}
 	else if (height != 0)
 	{

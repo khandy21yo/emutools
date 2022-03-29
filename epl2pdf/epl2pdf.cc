@@ -1010,6 +1010,7 @@ void epl2_class::process_line(
 	{
 		maybe_first();
 		push_history(buffer);
+		float tdadjust = 0.0;
 		//
 		//	0 = normal, 1 = 90, 2 = 180. 3 = 270
 		// P1 Horozintal start position
@@ -1073,11 +1074,14 @@ void epl2_class::process_line(
 		else if (p == "M")		// MaxiCode
 		{
 			pb.my_symbol->symbology = BARCODE_MAXICODE;
-			height = 72;
+			tdadjust = 1.0;	// Maxxicode is suppodes to be a fixed size.
+					//  so we need to adjust to convert from zint
+					//  size to pdf size.
 		}
 		else if (p == "P")		// pdf417
 		{
 			pb.my_symbol->symbology = BARCODE_PDF417;
+			tdadjust = 0.4;
 		}
 		else if (p == "Q")		// qrcode
 		{
@@ -1087,8 +1091,7 @@ void epl2_class::process_line(
 		//
 		// Generate and place the barcode
 		//
-//		pb.DrawBarcode(p2 - height, p1, 0, text, height, '0', 0);
-		pb.DrawBarcode(p2 + height, p1, 0, text, height, '0', 0);
+		pb.DrawBarcode(p2 + height, p1, 0, text, height, '0', 0, tdadjust);
 
 	}
 	else if (thiscmd[0] == "D")	// Density
