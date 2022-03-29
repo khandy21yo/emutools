@@ -30,6 +30,7 @@ int pdf_barcode::DrawBarcode(
 	char hrcode		//!< Human readable text on barcode
 )
 {
+	float adjust = 0.0;
 	if (barcode_style != 0)
 	{
 		my_symbol->symbology = barcode_style;
@@ -130,6 +131,7 @@ int pdf_barcode::DrawBarcode(
 	// Adjust barcode size
 	//
 	float height = my_symbol->height;
+
 #if 1
 	switch(my_symbol->symbology)
 	{
@@ -159,7 +161,11 @@ int pdf_barcode::DrawBarcode(
 		// right for 2d (b) barcodes that don't have a fixed
 		// height.
 		//
-		float adjust = (size / height);
+		adjust = (size / height);
+	}
+
+	if (adjust != 0.0)
+	{
 		a = a * adjust;
 		b = b * adjust;
 		c = c * adjust;
