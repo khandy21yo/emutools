@@ -1008,9 +1008,11 @@ void epl2_class::process_line(
 	}
 	else if (thiscmd[0] == "b")	// Second Barcode
 	{
+		float tdadjust = 0.0;
+		std::string rotate = "0";
+
 		maybe_first();
 		push_history(buffer);
-		float tdadjust = 0.0;
 		//
 		//	0 = normal, 1 = 90, 2 = 180. 3 = 270
 		// P1 Horozintal start position
@@ -1082,16 +1084,19 @@ void epl2_class::process_line(
 		{
 			pb.my_symbol->symbology = BARCODE_PDF417;
 			tdadjust = 0.4;
+			rotate = tdparam.getparam("o", "0");
 		}
 		else if (p == "Q")		// qrcode
 		{
 			pb.my_symbol->symbology = BARCODE_QRCODE;
+			tdadjust = std::stof(tdparam.getparam("s", "3")) / 3.0;
+
 		}
 
 		//
 		// Generate and place the barcode
 		//
-		pb.DrawBarcode(p2 + height, p1, 0, text, height, '0', 0, tdadjust);
+		pb.DrawBarcode(p2 + height, p1, 0, text, height, rotate[0], 0, tdadjust);
 
 	}
 	else if (thiscmd[0] == "D")	// Density
