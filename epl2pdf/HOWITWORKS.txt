@@ -113,6 +113,21 @@ FONTS
 	epl2pdf can use any system fonts (TrueType or Type-1), but does
 	better with monospaced fonts (usually have 'Mono' in the name).
 
+	There are many differences between how the EPL2 fonts work compared
+	to how PDF fonts work
+
+		. EPL2 positions characters based on the upper left point
+		  of the font, which contains one blank row at the top of
+		  the fonts.
+		    PDF font characters are positioned at the baseline of
+		  the font (the bottom of a M, but lower case letters will
+		  cross below the basline).
+		- A 10 point EPL2 font size includes the blank rows at the
+		  top of the characters, but a 10 point PDF font does not
+		  include the blank row, so PDF characters can be taller
+		  than EPL2 characters.
+		- The EPL2 baseline is
+
 	The height to width size can also be important, but this can be
 	adjusted to some extent using the '-s' option.
 
@@ -127,7 +142,9 @@ GETTING SAMPLE EPL2 FILES
 	editing/reusing for experimenting. Retyping the same command list
 	over and over is error prone.
 
-	EPL2 Manual
+	EPL2 Manual "Eltron Programming Language (EPL) Programming Guide"
+
+		This manual is available on the internet in numerous places.
 
 		You can use a PDF viewer that allows you to cut/paste the
 		examples, or simple type them in manually. Don't forget that

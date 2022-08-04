@@ -1261,8 +1261,8 @@ void epl2_class::process_line(
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
-		float p4 = cvt_pttopt(cvt_tofloat(thiscmd[4]));
-		float p5 = cvt_pttopt(cvt_tofloat(thiscmd[5]));
+		float p4 = cvt_hpostohpos(cvt_tofloat(thiscmd[4]));
+		float p5 = cvt_vpostovpos(cvt_tofloat(thiscmd[5]));
 
 		if (debug)
 		{
@@ -1272,8 +1272,8 @@ void epl2_class::process_line(
 
 		painter.MoveTo(p1, p2);
 		painter.LineTo(p1 + p3, p2);
-		painter.LineTo(p1 + p3 + p4, p2 - p5);
-		painter.LineTo(p1 + p4, p2 - p5);
+		painter.LineTo(p4 + p3, p5);
+		painter.LineTo(p4, p5);
 		painter.LineTo(p1, p2);
 		painter.ClosePath();
 		painter.Fill();
