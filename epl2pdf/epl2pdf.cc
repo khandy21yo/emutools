@@ -1270,11 +1270,11 @@ void epl2_class::process_line(
 			", " << p4 << ", " << p5 << ")" << std::endl;
 		}
 
-		painter.MoveTo(p1, p2);
-		painter.LineTo(p1 + p3, p2);
-		painter.LineTo(p4 + p3, p5);
-		painter.LineTo(p4, p5);
-		painter.LineTo(p1, p2);
+		painter.MoveTo(p4, p2);
+		painter.LineTo(p4 + p3, p2);
+		painter.LineTo(p1 + p3, p5);
+		painter.LineTo(p1, p5);
+		painter.LineTo(p4, p2);
 		painter.ClosePath();
 		painter.Fill();
 	}
