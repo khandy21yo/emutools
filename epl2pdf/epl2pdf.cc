@@ -1247,11 +1247,13 @@ void epl2_class::process_line(
 		maybe_first();
 		push_history(buffer);
 		//
-		// p1 = Horizotal start position
+		// p1 = Horizotal end position
 		// p2 = Vertical start position
-		// p3 = horizontal lengt n in dots
-		// p4 = vertical length in dots
-		// p5 = vertical length in dots
+		// p3 = horizontal width n in dots
+		// p4 = vertical start position
+		// p5 = horizontal end position
+		//
+		// NOTE; THe p1,p4 seem backwards, but that'a how it works.
 		//
 		if (debug)
 		{
