@@ -144,6 +144,9 @@ public:
 	float vref;	//< Vertical Reference point (epl)
 	float fadj;	//!< Adjustment for woth of characters to get
 			//!< closer to EPL2 hight/width.
+	int badls;	//!< On some off-brand epl2 printers, the LS command
+			//! is implemented wrng, swapping p1 and p4.
+			//! This allows us to emulate that fault.
 
 	//
 	// PODOFO pdf objects
@@ -188,6 +191,7 @@ public:
 		lineno = 0;
 		inform = 0;
 		fadj = 0.93;
+		badls = 0;
 
 		// Shouldn't there be an easier way?
 		pagesize.SetBottom(PdfPage::CreateStandardPageSize(
@@ -449,6 +453,8 @@ int main(int argc, const char **argv)
 			 "font to use", "font name" },
 		{ "fadjust", 'a', POPT_ARG_FLOAT, &epl2.fadj, 0,
 			 "Adjustment for font width", "% adjustment"},
+		{ "badls", 'b', POPT_ARG_NONE, 0, 'b',
+			 "Bad LS command", "" },
 		{ "debug", 'd', POPT_ARG_NONE, 0, 'd',
 			 "debugging messages", "" },
 		POPT_AUTOHELP
@@ -469,6 +475,9 @@ int main(int argc, const char **argv)
 	{
 		switch (c)
 		{
+		case 'b':
+			epl2.badls = 1;
+			break;
 		case 'd':
 			debug = 1;
 			break;
@@ -1272,11 +1281,18 @@ void epl2_class::process_line(
 			", " << p4 << ", " << p5 << ")" << std::endl;
 		}
 
-		painter.MoveTo(p4, p2);
-		painter.LineTo(p4 + p3, p2);
-		painter.LineTo(p1 + p3, p5);
-		painter.LineTo(p1, p5);
-		painter.LineTo(p4, p2);
+		if (badls != 0)
+		{
+			int temp = p1;
+			p1 = p4;
+			p4 = temp;
+		}
+
+		painter.MoveTo(p1, p2);
+		painter.LineTo(p1 + p3, p2);
+		painter.LineTo(p4 + p3, p5);
+		painter.LineTo(p4, p5);
+		painter.LineTo(p1, p2);
 		painter.ClosePath();
 		painter.Fill();
 	}
