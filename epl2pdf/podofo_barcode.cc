@@ -32,6 +32,8 @@ int pdf_barcode::DrawBarcode(
 )
 {
 	float adjust = 0.0;
+//	my_symbol->scale = 1.0;
+//	my_symbol->dot_size = 0.1;
 	if (barcode_style != 0)
 	{
 		my_symbol->symbology = barcode_style;
@@ -106,11 +108,22 @@ int pdf_barcode::DrawBarcode(
 	//
 	// Generate barcode
 	//
+std::cerr << "XX scale = " << my_symbol->scale << ", dot_size = " <<
+my_symbol->dot_size << std::endl;
 	int error = ZBarcode_Encode_and_Buffer_Vector(my_symbol,
-		(const unsigned char *)text.c_str(), 0, 0);
+		(const unsigned char *)text.c_str(), 1, 0);
+std::cerr << "YY scale = " << my_symbol->scale << ", dot_size = " <<
+my_symbol->dot_size << std::endl;
 	if (error)
 	{
 		std::cerr << "Barcode error: " <<
+			error << ":" <<
+			my_symbol->errtxt << std::endl;
+		return error;
+	}
+	if (my_symbol->vector == 0)
+	{
+		std::cerr << "Barcode creation error: " <<
 			error << ":" <<
 			my_symbol->errtxt << std::endl;
 		return error;
@@ -218,7 +231,15 @@ int pdf_barcode::place_barcode(
 			rect->height,
 			rect->width);
 		painter->Fill();
-		rect = rect->next;
+		if (rect == rect->next)
+		{
+			rect = 0;
+			std::cerr << "rect->next error" << std::endl;
+		}
+		else
+		{
+			rect = rect->next;
+		}
 	}
 
 	struct zint_vector_hexagon *hexagon;
@@ -230,7 +251,15 @@ int pdf_barcode::place_barcode(
 			hexagon->y,
 			hexagon->diameter);
 		painter->Fill();
-		hexagon = hexagon->next;
+		if (hexagon == hexagon->next)
+		{
+			std::cerr << "hexigon->next error" << std::endl;
+			hexagon = 0;
+		}
+		else
+		{
+			hexagon = hexagon->next;
+		}
 	}
 
 	struct zint_vector_string *string;
@@ -253,7 +282,15 @@ int pdf_barcode::place_barcode(
 			string->fsize,
 			string->text,
 			string->length);
-		string = string->next;
+		if (string == string->next)
+		{
+			std::cerr << "string->next error" << std::endl;
+			string = 0;
+		}
+		else
+		{
+			string = string->next;
+		}
 	}
 
 	struct zint_vector_circle *circle;
@@ -288,7 +325,15 @@ int pdf_barcode::place_barcode(
 		{
 			painter->SetColor(0.0, 0.0, 0.0);
 		}
-		circle = circle->next;
+		if (circle == circle->next)
+		{
+			std::cerr << "circle->next error" << std::endl;
+			circle = 0;
+		}
+		else
+		{
+			circle = circle->next;
+		}
 	}
 
 	return 0;

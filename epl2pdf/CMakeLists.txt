@@ -12,7 +12,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(POPT)
 #find_package(PoDoFo)
-find_library(Zint zint)
+find_package(Zint)
 
 add_executable(
 	epl2pdf
@@ -22,13 +22,14 @@ add_executable(
 target_include_directories(
 	epl2pdf
 	PRIVATE ${POPT_INCLUDE_DIRS}
+	PRIVATE ${ZINT_INCLUDE_DIRS}
 )
 target_link_libraries(
 	epl2pdf
 	-lpodofo
 	${POPT_LIBRARIES}
 	${PoDoFo_LIBRARIES}
-	zint
+	${ZINT_LIBRARIES}
 )
 
 install(TARGETS  epl2pdf
