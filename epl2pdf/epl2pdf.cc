@@ -342,7 +342,7 @@ public:
 	//! while PDF measures things in points, at 72 points to the inch.
 	//! This converts from pixels to points.
 	//
-	inline float cvt_pttopt(
+	inline float cvt_pxtopt(
 		float p)		//< Value to be converted
 	{
 		//
@@ -370,7 +370,7 @@ public:
 		// while PDF puts it at the top left.
 		//
 		return pPage->GetPageSize().GetHeight() -
-			(cvt_pttopt(p + vref));
+			(cvt_pxtopt(p + vref));
 	}
 
 	//!\brief Convert from EPl2 horizontal position to PDF position`
@@ -387,7 +387,7 @@ public:
 		// to get the the size in inches, then multiply that by
 		// the postscript points/inch to get the right size.
 		//
-		return cvt_pttopt(p + href);
+		return cvt_pxtopt(p + href);
 	}
 	int cvt_style(
 		std::string p,
@@ -835,6 +835,15 @@ void epl2_class::process_line(
 		std::string p7 = cvt_tostring(thiscmd.get(7));
 		std::string p8 = cvt_tostring(thiscmd.get(8));
 
+		//
+		// Calculate a fudge factor for the font, which is necessary
+		// because the EPL2 fonts include whitespace at the top line
+		// of the font. while trutype does not.
+		// Anyway, this is an attempt to fix some character position
+		// issues somewhat.
+		//
+		float fudge = cvt_pxtopt(p6);
+
 		float fsize = 10.0;
 
 		//	1=6pt, 2=7pt, 3=10pt, 4=12pt, 5=24pt, 6=9.5pt, 7=9.5pt
@@ -883,16 +892,6 @@ void epl2_class::process_line(
 			       	")" << std::endl;
 		}
 
-//		float asize =
-//			fsize +
-//			painter.GetFont()->GetFontMetrics()->GetDescent();
-//		float asize =
-//			fsize +
-//			painter.GetFont()->GetFontMetrics()->GetAscent();
-//		float asize =
-//			-painter.GetFont()->GetFontMetrics()->GetDescent();
-//		float asize =
-//			fsize * p5;
 		float asize =
 			painter.GetFont()->GetFontMetrics()->GetAscent() * p6;
 
@@ -902,7 +901,7 @@ void epl2_class::process_line(
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-		float a=1, b=0, c=0, d=1, e=p1, f=p2;	// Transformationmatrix
+		float a=1, b=0, c=0, d=1, e=p1, f=p2  + fudge;	// Transformationmatrix
 		switch(p3)
 		{
 		case '1':	// 270 degrees
@@ -992,7 +991,7 @@ void epl2_class::process_line(
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
 		char p3 = thiscmd[3][0];
-		float p7 = cvt_pttopt(cvt_tofloat(thiscmd[7])) / 2.0;
+		float p7 = cvt_pxtopt(cvt_tofloat(thiscmd[7])) / 2.0;
 		std::string p8 = cvt_tostring(thiscmd[8]);
 		std::string p9 = cvt_tostring(thiscmd[9]);
 
@@ -1204,8 +1203,8 @@ void epl2_class::process_line(
 		thiscmd.minsize(5);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
-		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
-		float p4 = cvt_pttopt(cvt_tofloat(thiscmd[4]));
+		float p3 = cvt_pxtopt(cvt_tofloat(thiscmd[3]));
+		float p4 = cvt_pxtopt(cvt_tofloat(thiscmd[4]));
 
 		if (debug)
 		{
@@ -1236,8 +1235,8 @@ void epl2_class::process_line(
 		thiscmd.minsize(5);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
-		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
-		float p4 = cvt_pttopt(cvt_tofloat(thiscmd[4]));
+		float p3 = cvt_pxtopt(cvt_tofloat(thiscmd[3]));
+		float p4 = cvt_pxtopt(cvt_tofloat(thiscmd[4]));
 
 		if (debug)
 		{
@@ -1271,7 +1270,7 @@ void epl2_class::process_line(
 		thiscmd.minsize(5);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
-		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
+		float p3 = cvt_pxtopt(cvt_tofloat(thiscmd[3]));
 		float p4 = cvt_hpostohpos(cvt_tofloat(thiscmd[4]));
 		float p5 = cvt_vpostovpos(cvt_tofloat(thiscmd[5]));
 
@@ -1313,8 +1312,8 @@ void epl2_class::process_line(
 		thiscmd.minsize(5);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
-		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
-		float p4 = cvt_pttopt(cvt_tofloat(thiscmd[4]));
+		float p3 = cvt_pxtopt(cvt_tofloat(thiscmd[3]));
+		float p4 = cvt_pxtopt(cvt_tofloat(thiscmd[4]));
 
 		if (debug)
 		{
@@ -1395,7 +1394,7 @@ void epl2_class::process_line(
 		push_history(buffer);
 
 		thiscmd.minsize(2);
-		float p1 = cvt_pttopt(cvt_tofloat(thiscmd[1]));
+		float p1 = cvt_pxtopt(cvt_tofloat(thiscmd[1]));
 
 		pagesize.SetWidth(p1);
 
@@ -1414,9 +1413,9 @@ void epl2_class::process_line(
 		push_history(buffer);
 
 		thiscmd.minsize(4);
-		float p1 = cvt_pttopt(cvt_tofloat(thiscmd[1]));
-		float p2 = cvt_pttopt(cvt_tofloat(thiscmd[2]));
-		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
+		float p1 = cvt_pxtopt(cvt_tofloat(thiscmd[1]));
+		float p2 = cvt_pxtopt(cvt_tofloat(thiscmd[2]));
+		float p3 = cvt_pxtopt(cvt_tofloat(thiscmd[3]));
 
 		//
 		// Yes, the SetWidth sets the height
@@ -1465,7 +1464,7 @@ void epl2_class::process_line(
 		thiscmd.minsize(6);
 		float p1 = cvt_hpostohpos(cvt_tofloat(thiscmd[1]));
 		float p2 = cvt_vpostovpos(cvt_tofloat(thiscmd[2]));
-		float p3 = cvt_pttopt(cvt_tofloat(thiscmd[3]));
+		float p3 = cvt_pxtopt(cvt_tofloat(thiscmd[3]));
 		float p4 = cvt_hpostohpos(cvt_tofloat(thiscmd[4]));
 		float p5 = cvt_vpostovpos(cvt_tofloat(thiscmd[5]));
 
