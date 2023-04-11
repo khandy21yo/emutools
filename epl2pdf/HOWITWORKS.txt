@@ -38,7 +38,7 @@ ORIGIN
 	Moving to (1,1) moves down one pixel and to the right one pixel.
 
 	PDF places the (0,0) at the bottom left of the page. Moving to
-	(1,1) requires moving up one poit, and to the right one point.
+	(1,1) moves up one poit, and to the right one point.
 
 	The horizontal positioning only needs the pixelto point adjustment,
 	but vertical position needs the pixel to point conversion, aas well
@@ -51,25 +51,25 @@ FONTS
 
 	The fonts are the glyphs that are used to display text.
 
-	EPL2 fonts are fixed width bitmaps. The individual glyphs consist of
+	EPL2 fonts are fixed width bitmaps. The individual glyphs uses
 	a two dimensional grid specifing which pixels to paint. They include
 	one pixel wide band arount=d the ehtore glyph. The reference point
-	for placing the glyph is the upper left corner, which is normally
-	one of the white border pixels.
+	for placing the glyph is the top left corner of the glyph. which
+	includes the white border pixels.
 
-	PDF fonts are vecters, and this program prefers fixed width fonts,
+	PDF fonts are vecter based. This program prefers fixed width fonts,
 	such as a Courier font. They usually contain whitespace around the
-	glyphs, but are not pixel pased. The reference point is at the borrom
-	left of the base of the uppercase part of the letters. excluding
-	the whitespace.
+	glyphs, but are not pixel pased. The reference point is at the
+	left of the baseline  of the letters. 
 
-	The widths of the fonts used c an also differ. The width of PDF fonts
-	are ofter wider than the corresponding EPL2 fonts, which can cause
-	text to extend farther. The -fadjust can be used to reduce this
-	problem by scaling the width of the PDF font, without changing its
-	height.
+	The widths of the PDF fonts used can also differ from the EPL2 fonts.
+	The width of PDF fonts are often wider than the corresponding EPL2
+	fonts, which can cause text to extend farther. The -fadjust can be
+	used to reduce this problem by scaling the width of the PDF font,
+	without changing its height.
 
-	Converting character positions is complicated.
+	Converting character positions is complicated, and is not made easier
+	when rotation is involved
 
 BARCODES
 
@@ -78,7 +78,10 @@ BARCODES
 
 	EPL2 places the reference point at the to left of the symbol.
 
-	PDF placed the reference point at the bottom left of the symbol.
+	PDF places the reference point at the bottom left of the symbol.
+
+	EPL2 allows specifying the width of the bars to be used, byt zint
+	does not, so any adjustment must be done by scaling the barcode.
 
 ROTATION AND SCALING
 
