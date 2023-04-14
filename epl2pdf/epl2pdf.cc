@@ -870,7 +870,7 @@ void epl2_class::process_line(
 			painter.SetFont(pFont);
 			break;
 		case '5':
-			fsize = 24.0;
+			fsize = 30.0;
 			pFont->SetFontSize(fsize);
 			painter.SetFont(pFont);
 			break;
@@ -901,7 +901,7 @@ void epl2_class::process_line(
 		// is now pointing at the top, so we must shift it back
 		// down to the bottom.
 		//
-		float a=1, b=0, c=0, d=1, e=p1, f=p2  + fudge;	// Transformationmatrix
+		float a=1, b=0, c=0, d=1, e=p1, f=p2;	// Transformationmatrix
 		switch(p3)
 		{
 		case '1':	// 270 degrees

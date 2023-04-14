@@ -108,17 +108,17 @@ int pdf_barcode::DrawBarcode(
 	//
 	// Generate barcode
 	//
-std::cerr << "XX scale = " << my_symbol->scale << ", dot_size = " <<
-my_symbol->dot_size << std::endl;
+// std::cerr << "XX scale = " << my_symbol->scale << ", dot_size = " <<
+// my_symbol->dot_size << std::endl;
 	int error = ZBarcode_Encode_and_Buffer_Vector(my_symbol,
-		(const unsigned char *)text.c_str(), 1, 0);
-std::cerr << "YY scale = " << my_symbol->scale << ", dot_size = " <<
-my_symbol->dot_size << std::endl;
+		(const unsigned char *)text.c_str(), 0, 0);
+// std::cerr << "YY scale = " << my_symbol->scale << ", dot_size = " <<
+// my_symbol->dot_size << std::endl;
 	if (error)
 	{
 		std::cerr << "Barcode error: " <<
 			error << ":" <<
-			my_symbol->errtxt << std::endl;
+			my_symbol->errtxt << ": " << text << std::endl;
 		return error;
 	}
 	if (my_symbol->vector == 0)
