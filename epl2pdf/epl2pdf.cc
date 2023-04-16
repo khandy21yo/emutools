@@ -892,8 +892,22 @@ void epl2_class::process_line(
 			       	")" << std::endl;
 		}
 
+		//
+		// The asize is used to adjust for the fact that EPL2
+		//  references the top of the character, while truetype
+		//  references the baseline of a font.
+		//
+		// fsize (font point size) times the multiplier times
+		// an adjustment (full char size adjusted to baseline
+		// (determined by trial and error)
+		//
 		float asize =
-			painter.GetFont()->GetFontMetrics()->GetAscent() * p6;
+			fsize * p6 * .58;
+		//
+		// Tried using this at first, but it is wildly off.
+		//
+//		floYat asize =
+//			painter.GetFont()->GetFontMetrics()->GetAscent() * p6;
 
 		//
 		// "p2-fsize": Since the epl2 points at the bottom of the
