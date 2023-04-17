@@ -11,7 +11,7 @@ But it is capable of handling some simple spl2 command files.
 
 Expect bugs, missing commands, etc. It should be sufficient to
 display a image to a user, but expect problems generating actual
-bar-codes. Test first.
+bar-code labels. Test first.
 
 
 USAGE
@@ -94,32 +94,33 @@ implement the needed features.
 It uses the zint library to generate the bar-codes.
 This library contains most, if not all, of the needed bar-code
 formats necessary to implement the EPL2 requirements.
-Gnu-barcode has dropped the library portion, and does not
+Gnu-barcode has dropped its library access, and does not
 implement many of the barcodes needed.
 
 It uses popt to handle parsing the command line.
 My versions of getopt were just broken when I started this long ago.
 
 All of the test file (test-*.epl2) in the distribution are those used to
-test/debug the program. They are not meant to be useful in any other way.
+test/debug the program. They are not meant to be useful in any other wayi,
+but should give a sample of what works.
 
-Minimal implementation of commands. Not all of the EPL2 commands are
-implemented. Many features of the implemented commands are missing.
+Minimal implementation of many commands. Not all of the EPL2 commands are
+implemented, and many features of the implemented commands are missing.
 
 Do not expect an exact match between the EPL2 output and the PDF
 output. There are many fundimental differennnces in the way EPL2 sees
 the world, and the way PDF sees it.
 
 EPL2 assumes that things are being created on a black/white bitmap,
-PDFs assume colored vectors. Some things, like XORing the objects with
-the background, is not possible.
+PDFs assume colored vectors. Some commands, like XORing the objects with
+the background, is not imple,ented.
 
 This program uses a specific font (Courier-Prime) for PDF, and not the
-actual EPL2 imbedded fonts. I have not yet found a font that matches the
+actual EPL2 fonts. I have not yet found a font that matches the
 EPL2 fonts better than this one, which is not that close.
-Character shapes and sizes are somewhat different.
-'Courier-Prime' just happens to be the bold courier font on my development
-machine (Debian/test).
+Character shapes and sizes are different.
+'Courier-Prime' just happens to be the bold courier fonti available on my
+development machines (Debian/test).
 
 It does not handle download fonts.
 
@@ -130,22 +131,22 @@ It does not handle graphics.
 It does not handle large blobs of binary data.
 
 Converting from the EPL2 pixel dimensions to the PDF points can end up
-causing slight position and size issues. Objects can vary size and
-position by a pixel or two in the conversion.
+causing position and size issues. Objects can vary size and
+position in the conversion.
 
-EPL2 uses the top left of a character for its position, and PDF uses the
-bottom left as its position. Currently not handling ascender/descender height.
+EPL2 uses the top left of a glyph to position it, and PDF uses the baseline
+left.
 
 If you get the error
 	terminate called after throwing an instance of 'PoDoFo::PdfError'
 then you probably already have a /tmp/epl2pdf.pdf file under another user.
 Remove it and try again.
 
-Bar codes not fully implemented or tested. Much has been done, but Zibt
-has may special "features" in many bar code symbologies. The barcodes are
-mostly just a minimal setup.
+Bar codes are not fully implemented or tested. Much has been done, but Zibt
+has may special "features" in many bar code symbologies. The barcodes
+currently have a minimal setup.
 
-Bar-code human readable text is not in a good place. Zint is doing odd
+Bar-code human readable text is not in the proper place. Zint is doing odd
 things.
 
 The message
@@ -154,8 +155,8 @@ has something to do with the way fonts are stored in the PDF file.
 It seems to be something about a type1 or a truetype flag in the PDF file.
 
 These bar-codes  haven't been validated (scanned) to make sure they are
-actually correct. They look right, but some of them, like maxicode, have
-a lot of weirdness in the zint library to process them.
+actually correct or readable. They look right, but some of them, like
+maxicode, have a lot of weirdness in the zint library to process them.
 
 Adjustments set for the width of the bars in a bar-code are ignored.
 Zint doesn't have the concept built in. Scaling the width might work as
@@ -165,7 +166,7 @@ size the barse are generated as currently.
 Does not handle "Code Pages".
 
 depending on which version of zint, the circles in maxicode may come
-out as one black circle.
+out as one black circle.i instead of a set of rings
 
 "N" command only works at beginning of page.
 
