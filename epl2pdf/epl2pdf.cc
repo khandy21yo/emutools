@@ -190,7 +190,7 @@ public:
 		lock_history = 0;
 		lineno = 0;
 		inform = 0;
-		fadj = 0.93;
+		fadj = 0.80;
 		badls = 0;
 
 		// Shouldn't there be an easier way?
