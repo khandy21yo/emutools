@@ -69,6 +69,8 @@ int rno_filter(std::istream &in)
 		ptr = 0;
 		std::cout << parse_text(buffer, ptr) <<std::endl;
 	}
+
+	return 0;
 }
 
 //! \brief Translate text line
