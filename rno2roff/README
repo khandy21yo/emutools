@@ -10,16 +10,16 @@ reasonable result.
 
 It does not completely cover all the runoff commands, and some
 of it just doesn't work right, but it is sufficient for what I
-was playing with at the time. You can also produce PostScript
+was playing with at the time. You can also produce Postscript
 output for a fancier document. Those commands that are not
-handles are left in the .roff outout as comments.
+handled are left in the .roff output as comments.
 
 Commands require some whitespace between the commands and its
 parameters. ".s1" won't work, but ".s 1" will.
 
 RSTS RNO defaults to ".UPPER CASE", but VAX RNO wants the default
 to be ".LOWER CASE". Add a ".LOWER CASE", or ".LS" at the top of
-the document if you need to forve this.
+the document if you need to force this.
 
 Note: This filter is in early development.
 It probably isn't very useful at the moment.

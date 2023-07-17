@@ -37,7 +37,7 @@ to the inch. Default is Letter size paper (8.5 inches).
 inch. Default is Letter size paper (11 inches, 792 points).
 
 -f allows specifying another font to use instead of "courier prime".
-Some fonts thay you may prefer include "IBM Plex Mono SemiBold",
+Some fonts that you may prefer include "IBM Plex Mono SemiBold",
 "Aerial Mono". A mono-spaced font usually works better at matching
 actual labels than a non-mono font.
 
@@ -101,25 +101,25 @@ It uses popt to handle parsing the command line.
 My versions of getopt were just broken when I started this long ago.
 
 All of the test file (test-*.epl2) in the distribution are those used to
-test/debug the program. They are not meant to be useful in any other wayi,
+test/debug the program. They are not meant to be useful in any other way,
 but should give a sample of what works.
 
 Minimal implementation of many commands. Not all of the EPL2 commands are
 implemented, and many features of the implemented commands are missing.
 
 Do not expect an exact match between the EPL2 output and the PDF
-output. There are many fundimental differennnces in the way EPL2 sees
+output. There are many fundamental differences in the way EPL2 sees
 the world, and the way PDF sees it.
 
 EPL2 assumes that things are being created on a black/white bitmap,
 PDFs assume colored vectors. Some commands, like XORing the objects with
-the background, is not imple,ented.
+the background, is not implemented.
 
 This program uses a specific font (Courier-Prime) for PDF, and not the
 actual EPL2 fonts. I have not yet found a font that matches the
 EPL2 fonts better than this one, which is not that close.
 Character shapes and sizes are different.
-'Courier-Prime' just happens to be the bold courier fonti available on my
+'Courier-Prime' just happens to be the bold courier font available on my
 development machines (Debian/test).
 
 It does not handle download fonts.
@@ -142,7 +142,7 @@ If you get the error
 then you probably already have a /tmp/epl2pdf.pdf file under another user.
 Remove it and try again.
 
-Bar codes are not fully implemented or tested. Much has been done, but Zibt
+Bar codes are not fully implemented or tested. Much has been done, but Zint
 has may special "features" in many bar code symbologies. The barcodes
 currently have a minimal setup.
 
@@ -161,12 +161,12 @@ maxicode, have a lot of weirdness in the zint library to process them.
 Adjustments set for the width of the bars in a bar-code are ignored.
 Zint doesn't have the concept built in. Scaling the width might work as
 an approximation, but the amount to scale is complex due to the unknown
-size the barse are generated as currently.
+size the bars are generated as currently.
 
 Does not handle "Code Pages".
 
 depending on which version of zint, the circles in maxicode may come
-out as one black circle.i instead of a set of rings
+out as one black circle instead of a set of rings
 
 "N" command only works at beginning of page.
 
@@ -174,6 +174,6 @@ ZB, ZT not implemented yet. Will only work at start of page.
 	Is it worth implementing? Mutch mucking around with the 
 	transformation matrix code would be necessary.
 
-There are cases where an EPL2 printer will generate bad barcodes, auch as
+There are cases where an EPL2 printer will generate bad barcodes, such as
 a Code128 without any data, or a Codabar with the wrong number of characters, 
 but Zint just reports an error an refuses to generate bad barcodes.
