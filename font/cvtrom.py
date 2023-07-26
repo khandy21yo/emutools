@@ -73,15 +73,22 @@ with open(romfile, "rb", encoding=None) as romf:
 
                         if dodots:
                             pen.moveTo((cbase, rbase))
-                            pen.curveTo((cbase + colwid / 2, rbase + rowwid / 2), \
-                                (cbase + colwid / 2, rbase + rowwid / 2), \
+                            pen.curveTo( \
+                                (cbase + colwid / 2, rbase), \
+                                (cbase + colwid / 2, rbase), \
                                 (cbase + colwid / 2, rbase + rowwid / 2))
-                            pen.curveTo((cbase, rbase + rowwid), \
-                                (cbase, rbase + rowwid), \
+                            pen.curveTo( \
+                                (cbase + colwid / 2, rbase + rowwid), \
+                                (cbase + colwid / 2, rbase + rowwid), \
                                 (cbase, rbase + rowwid))
-                            pen.curveTo((cbase - colwid / 2, rbase + rowwid / 2), \
-                                (cbase - colwid / 2, rbase + rowwid / 2), \
+                            pen.curveTo( \
+                                (cbase - colwid / 2, rbase + rowwid), \
+                                (cbase - colwid / 2, rbase + rowwid), \
                                 (cbase - colwid / 2, rbase + rowwid / 2))
+                            pen.curveTo( \
+                                (cbase - colwid / 2, rbase), \
+                                (cbase - colwid / 2, rbase), \
+                                (cbase, rbase))
                             pen.closePath()
                         else:
                             pen.moveTo((cbase, rbase))
@@ -97,8 +104,11 @@ with open(romfile, "rb", encoding=None) as romf:
             print(coltext, rowdata)
 
         print()
-#        newglyph.removeOverlap()
-#        newglyph.simplify()
+        if dodots:
+            pass
+        else:
+            newglyph.removeOverlap()
+            newglyph.simplify()
 
         pen = None
 
