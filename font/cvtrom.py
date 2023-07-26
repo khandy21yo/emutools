@@ -107,9 +107,11 @@ with open(romfile, "rb", encoding=None) as romf:
         if dodots:
             newglyph.removeOverlap()
             newglyph.simplify()
+            newglyph.autoHint()
         else:
             newglyph.removeOverlap()
             newglyph.simplify()
+            newglyph.autoHint()
 
         pen = None
 
