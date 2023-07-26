@@ -9,6 +9,8 @@
 #
 import fontforge
 
+dodots = 1      # Use round dots instead of rectangles to make glyphs.
+
 romfile = "81-187.rom"
 fontname = "kpii81"
 
@@ -69,11 +71,25 @@ with open(romfile, "rb", encoding=None) as romf:
                         cbase = 800 - colloop * colwid;
                         rbase = 800 - 75 - rowloop * rowwid;
 
-                        pen.moveTo((cbase, rbase))
-                        pen.lineTo((cbase, rbase + rowwid))
-                        pen.lineTo((cbase + colwid, rbase + rowwid))
-                        pen.lineTo((cbase + colwid, rbase))
-                        pen.closePath()
+                        if dodots:
+                            pen.moveTo((cbase, rbase))
+                            pen.curveTo((cbase + colwid / 2, rbase + rowwid / 2), \
+                                (cbase + colwid / 2, rbase + rowwid / 2), \
+                                (cbase + colwid / 2, rbase + rowwid / 2))
+                            pen.curveTo((cbase, rbase + rowwid), \
+                                (cbase, rbase + rowwid), \
+                                (cbase, rbase + rowwid))
+                            pen.curveTo((cbase - colwid / 2, rbase + rowwid / 2), \
+                                (cbase - colwid / 2, rbase + rowwid / 2), \
+                                (cbase - colwid / 2, rbase + rowwid / 2))
+                            pen.closePath()
+                        else:
+                            pen.moveTo((cbase, rbase))
+                            pen.lineTo((cbase, rbase + rowwid))
+                            pen.lineTo((cbase + colwid + 1, rbase + rowwid))
+                            pen.lineTo((cbase + colwid + 1, rbase))
+                            pen.closePath()
+
 
                 else:
                         coltext = "." + coltext
@@ -81,8 +97,8 @@ with open(romfile, "rb", encoding=None) as romf:
             print(coltext, rowdata)
 
         print()
-        newglyph.removeOverlap()
-        newglyph.simplify()
+#        newglyph.removeOverlap()
+#        newglyph.simplify()
 
         pen = None
 
