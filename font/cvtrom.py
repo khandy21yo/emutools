@@ -74,20 +74,20 @@ with open(romfile, "rb", encoding=None) as romf:
                         if dodots:
                             pen.moveTo((cbase, rbase))
                             pen.curveTo( \
-                                (cbase + colwid / 4, rbase), \
-                                (cbase + colwid / 2, rbase + rowwid / 4), \
-                                (cbase + colwid / 2 + 1, rbase + rowwid / 2))
+                                (cbase - colwid / 4 - 2, rbase), \
+                                (cbase - colwid / 2 - 2, rbase + rowwid / 4), \
+                                (cbase - colwid / 2 - 2, rbase + rowwid / 2))
                             pen.curveTo( \
-                                (cbase + colwid / 2, rbase + rowwid * 3 / 4), \
-                                (cbase + colwid / 4, rbase + rowwid), \
+                                (cbase - colwid / 2, rbase + rowwid * 3 / 4), \
+                                (cbase - colwid / 4, rbase + rowwid), \
                                 (cbase, rbase + rowwid + 1))
                             pen.curveTo( \
-                                (cbase - colwid / 4, rbase + rowwid), \
-                                (cbase - colwid / 2, rbase + rowwid * 3 / 4), \
-                                (cbase - colwid / 2, rbase + rowwid / 2))
+                                (cbase + colwid / 4, rbase + rowwid), \
+                                (cbase + colwid / 2, rbase + rowwid * 3 / 4), \
+                                (cbase + colwid / 2, rbase + rowwid / 2))
                             pen.curveTo( \
-                                (cbase - colwid / 2, rbase + rowwid / 4), \
-                                (cbase - colwid / 4, rbase), \
+                                (cbase + colwid / 2, rbase + rowwid / 4), \
+                                (cbase + colwid / 4, rbase), \
                                 (cbase, rbase))
                             pen.closePath()
                         else:
