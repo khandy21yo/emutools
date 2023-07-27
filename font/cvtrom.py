@@ -26,6 +26,9 @@ print("rom file =", romfile, ", font name =", fontname)
 #
 newfont=fontforge.font()
 newfont.fontname = fontname
+newfont.fullname = "Kaypro II (81) font"
+newfont.familyname = "Kaypro II 81"
+#newfont.descent = 300
 
 #
 # Process one rom file
@@ -101,9 +104,9 @@ with open(romfile, "rb", encoding=None) as romf:
                 else:
                         coltext = "." + coltext
 
-            print(coltext, rowdata)
+#            print(coltext, rowdata)
 
-        print()
+#        print()
         if dodots:
             newglyph.removeOverlap()
             newglyph.simplify()
