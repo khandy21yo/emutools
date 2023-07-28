@@ -50,6 +50,7 @@ with open(romfile, "rb", encoding=None) as romf:
     for charloop in range(0, 256):
 
         print("Starting", charloop)
+
         newglyph = newfont.createChar(charloop)
 
         pen = newfont[charloop].glyphPen()
@@ -70,7 +71,7 @@ with open(romfile, "rb", encoding=None) as romf:
 
                 if rowdata & (1 << colloop):
                         coltext = "*" + coltext
-
+#
                         cbase = 800 - colloop * colwid;
                         rbase = 800 - 75 - rowloop * rowwid;
 
@@ -101,8 +102,8 @@ with open(romfile, "rb", encoding=None) as romf:
                             pen.closePath()
 
 
-                else:
-                        coltext = "." + coltext
+#                else:
+#                        coltext = "." + coltext
 
 #            print(coltext, rowdata)
 
