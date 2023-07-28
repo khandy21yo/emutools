@@ -5,11 +5,11 @@ from sys import argv
 #romfile = sys.argv[1]
 #fontname = argv[2]
 
-#romfile = "81-146a.rom"
-#fontname = "kpii81greek"
+romfile = "81-x015.rom"
+fontname = "kpii81greek"
 
-romfile = "81-187.rom"
-fontname = "kpii81"
+#romfile = "81-187.rom"     # 81-235.rom duplicate
+#fontname = "kpii81"
 
 rowsize = 16
 colsize = 8
@@ -33,7 +33,7 @@ with open(romfile, "rb", encoding=None) as romf:
     # We skip over all the control charaters (0,.31) because those
     # are blank (from inspection)
     #
-    for charloop in range(32, 256):
+    for charloop in range(0, 256):
 
         print("Starting", charloop)
 

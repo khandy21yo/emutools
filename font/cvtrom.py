@@ -108,6 +108,16 @@ with open(romfile, "rb", encoding=None) as romf:
 
 #        print()
         if dodots:
+            if charloop == 9:
+                #
+                # Character 9 causes problems because it has too many points.
+                # fill in the center with a black blob to deal with it.
+                #
+                pen.moveTo((200, 200))
+                pen.lineTo((200, 600))
+                pen.lineTo((600, 600))
+                pen.lineTo((600, 200))
+                pen.closePath()
             newglyph.removeOverlap()
             newglyph.simplify()
             newglyph.autoHint()
