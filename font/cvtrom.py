@@ -12,7 +12,7 @@ import fontforge
 dodots = 1      # Use round dots instead of rectangles to make glyphs.
 
 romfile = "81-187.rom"
-fontname = "kpii81"
+fontname = "kaypro10"
 
 rowsize = 16
 colsize = 8
@@ -26,8 +26,8 @@ print("rom file =", romfile, ", font name =", fontname)
 #
 newfont=fontforge.font()
 newfont.fontname = fontname
-newfont.fullname = "Kaypro II (81) font"
-newfont.familyname = "Kaypro II 81"
+newfont.fullname = "Kaypro 10 font"
+newfont.familyname = "Kaypro 10"
 #newfont.descent = 300
 
 #
