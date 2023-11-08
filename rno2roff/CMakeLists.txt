@@ -1,5 +1,5 @@
+cmake_minimum_required(VERSION 3.5)
 project(rno2roff)
-cmake_minimum_required(VERSION 3.1)
 
 # The following line enables static analys of the code.
 # It flags many things as warning that exit in the code, but are actually Ok.
