@@ -1,4 +1,4 @@
-rno2eoff
+rno2roff
 
 This is a filter to convert RSTS/E DSR RNO (Digital Standard
 Runoff) files into Unix nroff/troff files. Some VAX RNO commands
@@ -37,10 +37,14 @@ Currently, no options exist.
 Compile:
 	 c++ -g -o rno2roff rno2roff.cc 
 
+	or
+
+	cmake .; make
+
 Requirements:
 	Under Debian, you need to install the groff package.
 	There is usually a partial install to handle man pages,
-	but ir is missing the 'ma' macros.
+	but it is missing the 'ma' macros.
 
 Author
 

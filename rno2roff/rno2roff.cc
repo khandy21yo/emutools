@@ -85,7 +85,7 @@ std::string parse_text(
 	int firstchar = 1;	//< Are we on the first character?
 
 	//
-	// Handle any dor commands
+	// Handle any dot commands
 	//
 	while (ptr < src.size() && src[ptr] == '.')
 	{
@@ -252,22 +252,11 @@ std::string parse_text(
 
 		ptr++;
 	}
-#if 0
-	if (*(result.rbegin()) == '\n')
-	{
-		return result.substr(0, result.size() -1);
-	}
-	else
-	{
-		return result;
-	}
-#else
 	if (*(result.rbegin()) == '\n' || *(result.rbegin()) == ' ')
 	{
 		result.erase(result.size() - 1, 1);
 	}
 	return result;
-#endif
 }
 
 
