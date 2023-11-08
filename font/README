@@ -1,0 +1,28 @@
+This directory contains a python script to convert a Kaypro II font rom into
+a modern font file usable by modern systems.
+
+The generated font uses rectangular blocks to generate the font, but it looks
+close to what the Kaypro looked like.
+
+Does NOT include any characters that were not available on the Kaypro II.
+File/font name currently hardcoded in the script.
+
+There is probably a lot of font options that should be set in the font file,
+but that is for another day.
+
+To run, and generate the fontforde file,
+
+	./cvtrom.py
+
+To generate useable font
+
+	fontforge kpii81.sfd
+
+and select file/Generate fonts. It does cause several "Self intersecting" waarnings,
+but I'm not sure how to fix this yet. These are caused by the corners of the blocls
+that make up the characters touching. Ignore the warning and build anyway.
+
+Kevin Handy, July 2023
+
+Licensed under BSD license.
+
