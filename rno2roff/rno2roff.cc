@@ -20,7 +20,7 @@
 //
 // Prototypes
 //
-int rno_filter(std::istream &in);
+void rno_filter(std::istream &in);
 std::string parse_text(const std::string &src, int &ptr);
 std::string parse_dot(const std::string &src, int &ptr);
 int search_dot(const std::string &src, int &ptr);
@@ -45,7 +45,6 @@ static int in_footnote = 0;	//!< In footnote?
 //!
 int main(int argc, char **argv)
 {
-
 	rno_filter(std::cin);
 }
 
@@ -53,7 +52,7 @@ int main(int argc, char **argv)
 //!
 //! Main filter program
 //!
-int rno_filter(std::istream &in)
+void rno_filter(std::istream &in)
 {
 	std::string buffer;
 	int ptr;
