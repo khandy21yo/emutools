@@ -36,8 +36,9 @@ static int uc1_flag = 0;	//!< Upper case next character (^)?
 static int uc2_flag = 0;	//!< Upper case characters (\^)?
 static int ul1_flag = 0;	//!< Underline next character?
 static int in_footnote = 0;	//!< In footnote?
-
-static int debug = 1;		//!< Enable debugging output?
+static int lm;			//!< Left margin position (runoff)
+static int rm;			//!< Right margin position (runoff)
+static int debug = 0;		//!< Enable debugging output?
 				//!< 0=No, 1=Yes.
 
 //! \brief Main function.
@@ -279,7 +280,11 @@ enum dotopt
 	OP_INDEX,		// Index entry
 	OP_CHAPTER,		// Chapter title
 	OP_CASE,		// Upper/lower case flags
-	OP_REPEAT		// Repeat operator
+	OP_REPEAT,		// Repeat operator
+	OP_LEFT,		//LLeft margin
+	OP_RIGHT,		// Right margin
+	OP_DEBUG,		// Turn on debug outyput
+	OP_NODEBUG		// Turn off debug output
 };
 //! \brief Structure to handle list of RNO commands
 //!
@@ -392,8 +397,10 @@ struct rno_commands rnoc[] =
 	"LIT", OP_DRPPRM, ".VERBON 1",
 	"END LITERAL", OP_DRPPRM, ".VERBOFF",
 	"ELI", OP_DRPPRM, ".VERBOFF",
-	"LEFT MARGIN", OP_EASY, ".po",
-	"LM", OP_EASY, ".po",
+	"LEFT MARGIN", OP_LEFT, ".po",
+	"LM", OP_LEFT, ".po",
+	"RIGHT MARGIN", OP_RIGHT, ".ll",
+	"RM", OP_RIGHT, ".ll",
 	"RIGHT MARGIN", 0, 0,
 	"RM", 0, 0,
 	"PAPER SIZE", 0, 0,
@@ -411,6 +418,8 @@ struct rno_commands rnoc[] =
 	"NAP", 0, 0,
 	"REQUIRE", OP_EASY, ".so",
 	"REPEAT", OP_REPEAT, 0,
+	"DEBUG", OP_DEBUG, 0,
+	"NODEBUG", OP_NODEBUG, 0,
 	0, 0, 0
 };
 
@@ -458,6 +467,92 @@ std::string parse_dot(
 				" " + src.substr(ptr) + "\n";
 			ptr = src.size();
 			break;
+
+		//
+		// Left margin opcode
+		//
+		case OP_LEFT:
+			result += std::string(rnoc[cmd].value) + " ";
+			partial = "";
+
+			//
+			// Copy to eol or ;
+			//
+			while (ptr < src.size() && src[ptr] != ';' &&
+				!(src[ptr] == '.' && src[ptr - 1]== ' '))
+			{
+				partial += src[ptr];
+				result += src[ptr++];
+			}
+			//
+			// Skip whitespace
+			//
+			while (ptr < src.size() && 
+				(src[ptr] == ';' || src[ptr] == ' '))
+			{
+				ptr++;
+			}
+			result += "\n";
+
+			value = atoi(partial.c_str());
+			if (partial[0] == '+' || partial[0] == '-')
+			{
+				lm += value;
+			}
+			else
+			{
+				lm = value;
+			}
+			result += ".ll " +
+				std::to_string(rm - lm) + "\n";
+			if (debug)
+			{
+				result += ".\\\" LM=" + std::to_string(lm) + 
+					", RM=" + std::to_string(rm) + "\n";
+			}
+			break;
+
+		//
+		// Right margin opcode
+		//
+		case OP_RIGHT:
+
+			//
+			// Copy to eol or ;
+			//
+			while (ptr < src.size() && src[ptr] != ';' &&
+				!(src[ptr] == '.' && src[ptr - 1]== ' '))
+			{
+				partial += src[ptr++];
+			}
+			//
+			// Skip whitespace
+			//
+			while (ptr < src.size() && 
+				(src[ptr] == ';' || src[ptr] == ' '))
+			{
+				ptr++;
+			}
+//			result += "\n";
+
+			value = atoi(partial.c_str());
+			if (partial[0] == '+' || partial[0] == '-')
+			{
+				rm += value;
+			}
+			else
+			{
+				rm = value;
+			}
+			result += ".ll " +
+				std::to_string(rm - lm) + "\n";
+			if (debug)
+			{
+				result += ".\\\" LM=" + std::to_string(lm) + 
+					", RM=" + std::to_string(rm) + "\n";
+			}
+			break;
+
 		//
 		// Easy opcode
 		//
@@ -472,6 +567,9 @@ std::string parse_dot(
 			{
 				result += src[ptr++];
 			}
+			//
+			// Skip whitespace
+			//
 			while (ptr < src.size() && 
 				(src[ptr] == ';' || src[ptr] == ' '))
 			{
@@ -689,6 +787,14 @@ std::string parse_dot(
 			}
 			result += "\n";
 			uc2_flag = 0;
+			break;
+
+		case OP_DEBUG:
+			debug = 1;
+			break;
+
+		case OP_NODEBUG:
+			debug = 0;
 			break;
 
 		//
