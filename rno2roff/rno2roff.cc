@@ -38,6 +38,7 @@ static int ul1_flag = 0;	//!< Underline next character?
 static int in_footnote = 0;	//!< In footnote?
 static int lm;			//!< Left margin position (runoff)
 static int rm;			//!< Right margin position (runoff)
+static int chapter = 0;		//!< Chapter number
 static int debug = 0;		//!< Enable debugging output?
 				//!< 0=No, 1=Yes.
 
@@ -696,8 +697,10 @@ std::string parse_dot(
 			// Pull off text
 			//
 			partial = parse_text(src, ptr);
+			chapter++;
 			result +=
-				std::string(".bp\n.sp 4\n.ce\nCHAPTER\n.ce\n") +
+				".bp\n.sp 4\n.ce\nCHAPTER " +
+				std::to_string(chapter) + "\n.ce\n" +
 				partial + "\n.sp 2\n";
 			ptr = src.size();
 			uc2_flag = 0;
@@ -708,7 +711,7 @@ std::string parse_dot(
 		// Upper/Lower case
 		//
 		case OP_CASE:
-			uc_flag = rnoc[cmd].value == 0;
+			uc_flag = rnoc[cmd].value != 0;
 
 			//
 			// Copy to eol or ;
