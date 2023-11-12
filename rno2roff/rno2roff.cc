@@ -37,6 +37,9 @@ static int uc2_flag = 0;	//!< Upper case characters (\^)?
 static int ul1_flag = 0;	//!< Underline next character?
 static int in_footnote = 0;	//!< In footnote?
 
+static int debug = 1;		//!< Enable debugging output?
+				//!< 0=No, 1=Yes.
+
 //! \brief Main function.
 //!
 //! Main function.
@@ -426,6 +429,12 @@ std::string parse_dot(
 	std::string partial;	//!< Partial result
 	int value;		//!< Temporary value
 
+	if (debug)
+	{
+		result += std::string(".\\\" ") +
+			src + "\n";
+	}
+
 	//
 	// Skip over the dot
 	//
@@ -445,15 +454,15 @@ std::string parse_dot(
 		// Copy everything to end of line
 		//
 		case OP_COMMENT:
-			result = std::string(rnoc[cmd].value) +
+			result += std::string(rnoc[cmd].value) +
 				" " + src.substr(ptr) + "\n";
 			ptr = src.size();
-			return result;
+			break;
 		//
 		// Easy opcode
 		//
 		case OP_EASY:
-			result = std::string(rnoc[cmd].value) + " ";
+			result += std::string(rnoc[cmd].value) + " ";
 
 			//
 			// Copy to eol or ;
@@ -469,7 +478,7 @@ std::string parse_dot(
 				ptr++;
 			}
 			result += "\n";
-			return result;
+			break;
 
 		//
 		//
@@ -478,7 +487,7 @@ std::string parse_dot(
 		// for the parameters.
 		//
 		case OP_DRPPRM:
-			result = std::string(rnoc[cmd].value) + "\n";
+			result += std::string(rnoc[cmd].value) + "\n";
 
 			//
 			// Copy to eol or ;
@@ -492,16 +501,16 @@ std::string parse_dot(
 			{
 				ptr++;
 			}
-			return result;
+			break;
 
 		//
 		// Copy everything to end of line
 		//
 		case OP_FOOTNOTE:
-			result = std::string(rnoc[cmd].value) + "\n";
+			result += std::string(rnoc[cmd].value) + "\n";
 			ptr = src.size();
 			in_footnote = 1;
-			return result;
+			break;
 
 		//
 		// FIGURE
@@ -521,15 +530,15 @@ std::string parse_dot(
 			{
 				ptr++;
 			}
-			result = std::string(".ne ") +partial +
+			result += std::string(".ne ") +partial +
 				"\n.sp " + partial + "\n";
-			return result;
+			break;
 
 		//
 		// .HEADER LEVEL
 		//
 		case OP_HEADER:
-			result = std::string(rnoc[cmd].value) + " ";
+			result += std::string(rnoc[cmd].value) + " ";
 
 			//
 			// Pick off header level number
@@ -554,13 +563,13 @@ std::string parse_dot(
 			result += std::string(" \"") + partial + "\"\n";
 			ptr = src.size();
 			uc2_flag = 0;
-			return result;
+			break;
 
 		//
 		// .INDEX
 		//
 		case OP_INDEX:
-			result = std::string(rnoc[cmd].value) + " ";
+			result += std::string(rnoc[cmd].value) + " ";
 
 			while (ptr < src.size() && src[ptr] == ' ')
 			{
@@ -573,7 +582,7 @@ std::string parse_dot(
 			partial = parse_text(src, ptr);
 			result += std::string(" \"") + partial + "\"\n";
 			ptr = src.size();
-			return result;
+			break;
 
 		//
 		// .CHAPTER
@@ -589,12 +598,12 @@ std::string parse_dot(
 			// Pull off text
 			//
 			partial = parse_text(src, ptr);
-			result =
+			result +=
 				std::string(".bp\n.sp 4\n.ce\nCHAPTER\n.ce\n") +
 				partial + "\n.sp 2\n";
 			ptr = src.size();
 			uc2_flag = 0;
-			return result;
+			break;
 
 		//
 		//
@@ -615,13 +624,12 @@ std::string parse_dot(
 			{
 				ptr++;
 			}
-			return result;
+			break;
 
 		//
 		// .REPEAT
 		//
 		case OP_REPEAT:
-			result = "";
 
 			//
 			// Pick off header level number
@@ -681,16 +689,16 @@ std::string parse_dot(
 			}
 			result += "\n";
 			uc2_flag = 0;
-			return result;
+			break;
 
 		//
 		// Unknown command
 		//
 		default:
-			result = std::string(".\\\" Unhandled .") +
+			result += std::string(".\\\" Unhandled .") +
 				src + "\n";
 			ptr = src.size();
-			return result;
+			break;
 		}
 	}
 	else
@@ -698,11 +706,11 @@ std::string parse_dot(
 	//
 	// If we cannot handle this command
 	//
-		result = std::string(".\\\" Unknown .") +
+		result += std::string(".\\\" Unknown .") +
 			src + "\n";
 		ptr = src.size();
-		return result;
 	}
+	return result;
 }
 
 //! \brief Search for dot command in ist
