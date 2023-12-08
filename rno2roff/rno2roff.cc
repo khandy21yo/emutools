@@ -37,7 +37,7 @@ static int uc2_flag = 0;	//!< Upper case characters (\^)?
 static int ul1_flag = 0;	//!< Underline next character?
 static int in_footnote = 0;	//!< In footnote?
 static int lm;			//!< Left margin position (runoff)
-static int rm;			//!< Right margin position (runoff)
+static int rm = 72;		//!< Right margin position (runoff)
 static int chapter = 0;		//!< Chapter number
 static int debug = 0;		//!< Enable debugging output?
 				//!< 0=No, 1=Yes.
@@ -64,9 +64,10 @@ void rno_filter(std::istream &in)
 
 	std::cout <<
 		".\\\" Converted from RNO to nroff\n" <<
-		".\\\" Uses the -mm macro\n" <<
-		".INITI B \"/tmp/rnoindex\"" <<
-		".INITR \"/tmp/rnoindex\"\n" << std::endl;
+		".\\\" Uses the -mm macro package\n" <<
+		".INITI N rnoindex\n" <<
+		".INITR rnoindex\n" <<
+	       ".nr Ej 1\n" << std::endl;
 
 	while (getline(in, buffer))
 	{
@@ -646,10 +647,12 @@ std::string parse_dot(
 			{
 				ptr++;
 			}
+			partial = "";
 			while (ptr < src.size() && src[ptr] != ' ')
 			{
-				result += src[ptr++];
+				partial += src[ptr++];
 			}
+			result += std::to_string(atoi(partial.c_str()) + 1);
 			while (ptr < src.size() && src[ptr] == ' ')
 			{
 				ptr++;
@@ -698,10 +701,14 @@ std::string parse_dot(
 			//
 			partial = parse_text(src, ptr);
 			chapter++;
+//			result +=
+//				".bp\n.sp 4\n.ce\nCHAPTER " +
+//				std::to_string(chapter) +
+//				"\n.sp 1\n.ce\n" +
+//				partial +
+//				"\n.sp 3\n";
 			result +=
-				".bp\n.sp 4\n.ce\nCHAPTER " +
-				std::to_string(chapter) + "\n.ce\n" +
-				partial + "\n.sp 2\n";
+				".H 1 \"" + partial + "\"\n"; 
 			ptr = src.size();
 			uc2_flag = 0;
 			break;
