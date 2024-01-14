@@ -32,7 +32,25 @@ Usage:
 	groff -mm dest.roff > dest.ps
 	nroff -mm dest.rod > dest.txt
 
+	Run the commands twice if you have indexes or a table of contents.
+
 Currently, no options exist.
+
+Modifications to output .roff file
+
+	Add this line at the front of the .roff file to enable hyphenation.
+		.nr Hy 1
+
+	If you want to use troff/groff instead  of nroff, then the line
+	widths are probably going to be too wide. It is based on 12 point
+	font size instead of the 8 point that text uses. You can change
+	to an 8 point font bi assind
+		.S 8
+	at the front of the .nr file, but the font is rather small.
+	The other option is to adjust all of the ".po, .ll, .ti"
+	values in the .nr file by adjusting them by "*8/12". But only
+	if you wanr troff only instead of nroff.
+
 
 Compile:
 	 c++ -g -o rno2roff rno2roff.cc 
